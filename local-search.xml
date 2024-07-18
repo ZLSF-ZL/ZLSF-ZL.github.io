@@ -4,11 +4,11 @@
   
   
   <entry>
-    <title>安装pwn环境</title>
-    <link href="/2024/07/18/%E5%AE%89%E8%A3%85pwn%E7%8E%AF%E5%A2%83/"/>
-    <url>/2024/07/18/%E5%AE%89%E8%A3%85pwn%E7%8E%AF%E5%A2%83/</url>
+    <title>start</title>
+    <link href="/2024/07/18/start/"/>
+    <url>/2024/07/18/start/</url>
     
-    <content type="html"><![CDATA[<p><h7>晚点写</h7></p>]]></content>
+    <content type="html"><![CDATA[<p>Let’s start</p><p><img src="/.com//start.jpg" alt="test"></p>]]></content>
     
     
     
@@ -17,11 +17,11 @@
   
   
   <entry>
-    <title>start</title>
-    <link href="/2024/07/18/start/"/>
-    <url>/2024/07/18/start/</url>
+    <title>安装pwn环境</title>
+    <link href="/2024/07/18/%E5%AE%89%E8%A3%85pwn%E7%8E%AF%E5%A2%83/"/>
+    <url>/2024/07/18/%E5%AE%89%E8%A3%85pwn%E7%8E%AF%E5%A2%83/</url>
     
-    <content type="html"><![CDATA[<p>Let's start</p>![test](start/start.jpg)]]></content>
+    <content type="html"><![CDATA[<p><h7>晚点写</h7></p>]]></content>
     
     
     
