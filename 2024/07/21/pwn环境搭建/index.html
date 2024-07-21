@@ -16,15 +16,15 @@
   <meta name="author" content="ZLSF">
   <meta name="keywords" content="ZLSF,zlsf">
   
-    <meta name="description" content="咕着先">
+    <meta name="description" content="pwn环境搭建 XTpwn-UBUNUT   阿里云盘：https:&#x2F;&#x2F;www.alipan.com&#x2F;s&#x2F;e3cy98miaXT 提取码 ：2h0c  登录的用户名和密码   用户名:xtpwn&#x2F;XTPWN密码:pwnyes! 用户名:root密码:toor  基础情况   基础镜像：Ubuntu24.04 LTS工具清单：    pwntools Version: 4.12.0">
 <meta property="og:type" content="article">
 <meta property="og:title" content="pwn环境搭建">
-<meta property="og:url" content="https://zlsf-zl.github.io/2024/07/18/pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/index.html">
+<meta property="og:url" content="https://zlsf-zl.github.io/2024/07/21/pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/index.html">
 <meta property="og:site_name" content="ZLSF的博客">
-<meta property="og:description" content="咕着先">
+<meta property="og:description" content="pwn环境搭建 XTpwn-UBUNUT   阿里云盘：https:&#x2F;&#x2F;www.alipan.com&#x2F;s&#x2F;e3cy98miaXT 提取码 ：2h0c  登录的用户名和密码   用户名:xtpwn&#x2F;XTPWN密码:pwnyes! 用户名:root密码:toor  基础情况   基础镜像：Ubuntu24.04 LTS工具清单：    pwntools Version: 4.12.0">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2024-07-18T12:20:17.000Z">
-<meta property="article:modified_time" content="2024-07-18T12:20:39.137Z">
+<meta property="article:published_time" content="2024-07-21T01:50:17.000Z">
+<meta property="article:modified_time" content="2024-07-21T02:05:51.083Z">
 <meta property="article:author" content="ZLSF">
 <meta property="article:tag" content="ZLSF,zlsf">
 <meta name="twitter:card" content="summary_large_image">
@@ -237,8 +237,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-07-18 20:20" pubdate>
-          2024年7月18日 晚上
+        <time datetime="2024-07-21 09:50" pubdate>
+          2024年7月21日 上午
         </time>
       </span>
     
@@ -249,7 +249,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          3 字
+          512 字
         
       </span>
     
@@ -260,7 +260,7 @@
         
         
         
-          1 分钟
+          5 分钟
         
       </span>
     
@@ -310,7 +310,50 @@
             
               <div class="markdown-body">
                 
-                <center>咕着先</center>
+                <br>
+
+<h3 id="pwn环境搭建"><a href="#pwn环境搭建" class="headerlink" title="pwn环境搭建"></a>pwn环境搭建</h3><hr>
+<p><strong>XTpwn-UBUNUT</strong></p>
+<br>
+
+<p><strong>阿里云盘</strong>：<a target="_blank" rel="noopener" href="https://www.alipan.com/s/e3cy98miaXT">https://www.alipan.com/s/e3cy98miaXT</a></p>
+<p><strong>提取码</strong> ：2h0c</p>
+<hr>
+<p><strong>登录的用户名和密码</strong></p>
+<br>
+
+<p>用户名:xtpwn&#x2F;XTPWN<br>密码:pwnyes!</p>
+<p>用户名:root<br>密码:toor</p>
+<hr>
+<p><strong>基础情况</strong></p>
+<br>
+
+<p>基础镜像：Ubuntu24.04 LTS<br>工具清单：<br>    pwntools Version: 4.12.0<br>    gdb-&gt;pwndbg (2024.6.30克隆)<br>    ROPgadget v7.4<br>    OneGadget Version 1.9.0<br>    SeccompTools Version 1.6.1<br>    glibc-all-in-one (2024.6.30克隆）<br>    zsh-&gt;oh-my-zsh-&gt;powerlevel10k (2024.6.30安装)</p>
+<hr>
+<p><strong>食用方法</strong></p>
+<br>
+
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs clean"><span class="hljs-number">1.</span>下载后将文件XTpwn.MP4改为XTpwn.zip<br><span class="hljs-number">2.</span>将XTpwn-UBUNTU.ova解压出来<br><span class="hljs-number">3.</span>运行virtualbox7<span class="hljs-number">.0</span><span class="hljs-number">.18</span>.exe自解压程序到合适位置<br><span class="hljs-number">4.</span>运行VirtualBox<span class="hljs-number">-7.0</span><span class="hljs-number">.18</span><span class="hljs-number">-162988</span>-Win.exe安装程序到合适位置<br><span class="hljs-number">5.</span>安装Oracle_VM_VirtualBox_Extension_Pack<span class="hljs-number">-7.0</span><span class="hljs-number">.18</span>.vbox-extpack扩展包 【可选】（方法自行百度）<br><span class="hljs-number">6.</span>打开Oracle VM VirtualBox，选择管理-&gt;导入虚拟电脑-&gt;选择一个文件-&gt;选中XTpwn-UBUNTU.ova<br>-&gt;选择默认虚拟电脑位置为一个较大空间的盘的文件夹（这里是以后虚拟机硬盘的位置）-&gt;完成<br>-&gt;选中左侧的新增选项-&gt;启动<br></code></pre></td></tr></table></figure>
+
+<hr>
+<p><strong>可能的问题</strong></p>
+<br>
+
+<figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs llvm">一直卡在启动界面<br>    原因：ubuntu版本太新，要等以后virtualbox更新<br>    解决：重启虚拟机即可<br>打开桌面上的文件夹或其他窗口鬼畜：<br>    原因：ubuntu版本太新，要等以后virtualbox更新<br>    解决：设置-&gt;显示-&gt;关闭启用<span class="hljs-number">3</span>D加速<br>未开启电脑虚拟化<br>    解决：https://answer.baidu.com/answer/land?params<span class="hljs-operator">=</span><span class="hljs-variable">%2</span>BXJJPHYvVnkHCzT<span class="hljs-number">6</span>mcfyUlHLwLQkdgXUmrjIA<span class="hljs-number">3</span>DeEoCZZ<span class="hljs-number">5</span>kbbOm<span class="hljs-number">36</span><span class="hljs-keyword">c</span><span class="hljs-number">0</span>cMeWofVpVtjNst<span class="hljs-variable">%2</span>FXITE<span class="hljs-number">8</span>sm<span class="hljs-variable">%2</span>FN<span class="hljs-number">0</span>zzJ<span class="hljs-number">8</span>LGBMWHE<span class="hljs-number">7</span>Ih<span class="hljs-number">6</span>CmEJoYzUq<span class="hljs-number">3</span>YbknCis<span class="hljs-number">6</span>eGvAK<span class="hljs-variable">%2</span>BOgtUW<span class="hljs-number">78</span>tDu<span class="hljs-number">1</span>y<span class="hljs-number">8</span>uLclVe<span class="hljs-number">39</span>d<span class="hljs-variable">%2</span>FHs<span class="hljs-number">7</span>IGkNtrTf<span class="hljs-number">7</span>ChjMe<span class="hljs-number">65</span>lBB<span class="hljs-number">8</span><span class="hljs-variable">%2</span>BEcU<span class="hljs-number">1</span>rqho<span class="hljs-number">844</span>pbmYDNK<span class="hljs-variable">%2</span>BoKAXs<span class="hljs-number">6</span>nDsXZHsqGXBikY<span class="hljs-number">5</span>WHv<span class="hljs-number">4</span>P<span class="hljs-number">5</span>uLuCbgUj<span class="hljs-number">98</span>PYKzUHf<span class="hljs-variable">%2</span>FjJ<span class="hljs-number">2</span>LU<span class="hljs-variable">%3</span>D&amp;from<span class="hljs-operator">=</span>dqa&amp;lid<span class="hljs-operator">=</span>b<span class="hljs-number">50</span>dacb<span class="hljs-number">000044</span>d<span class="hljs-number">9</span>f&amp;word<span class="hljs-operator">=</span><span class="hljs-variable">%E5</span><span class="hljs-variable">%A6</span><span class="hljs-variable">%82</span><span class="hljs-variable">%E4</span><span class="hljs-variable">%BD</span><span class="hljs-variable">%95</span><span class="hljs-variable">%E5</span><span class="hljs-variable">%BC</span><span class="hljs-variable">%80</span><span class="hljs-variable">%E5</span><span class="hljs-variable">%90</span><span class="hljs-variable">%AF</span><span class="hljs-variable">%E7</span><span class="hljs-variable">%94</span><span class="hljs-variable">%B5</span><span class="hljs-variable">%E8</span><span class="hljs-variable">%84</span><span class="hljs-variable">%91</span><span class="hljs-variable">%E8</span><span class="hljs-variable">%99</span><span class="hljs-variable">%9</span>A<span class="hljs-variable">%E6</span><span class="hljs-variable">%8</span>B<span class="hljs-variable">%9</span>F<span class="hljs-variable">%E5</span><span class="hljs-variable">%8</span>C<span class="hljs-variable">%96</span><br></code></pre></td></tr></table></figure>
+
+<hr>
+<p><strong>2024&#x2F;7&#x2F;21追加修补</strong></p>
+<p>使用命令赋予用户共享文件夹权限（可以直接用cp复制共享目录下的文件）</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs css">sudo usermod -<span class="hljs-selector-tag">a</span> -<span class="hljs-selector-tag">G</span> vboxsf <span class="hljs-selector-attr">[你的用户名]</span><br></code></pre></td></tr></table></figure>
+
+<hr>
+<p>如果你认为此虚拟机装的不好用。</p>
+<p>是的，它确实不好用。</p>
+<p>准确来说，它是一个实验性作物。</p>
+<p>如果你装一台自己的<strong>PWN虚拟机</strong> ，那就继续往下看。</p>
+<hr>
+<p><strong>未完待续</strong>（狗头）<br>2024&#x2F;7&#x2F;21更新</p>
+
                 
               </div>
             
@@ -328,7 +371,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>pwn环境搭建</div>
-      <div>https://zlsf-zl.github.io/2024/07/18/pwn环境搭建/</div>
+      <div>https://zlsf-zl.github.io/2024/07/21/pwn环境搭建/</div>
     </div>
     <div class="license-meta">
       
@@ -340,7 +383,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2024年7月18日</div>
+          <div>2024年7月21日</div>
         </div>
       
       
