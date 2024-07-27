@@ -16,29 +16,28 @@
   <meta name="author" content="ZLSF">
   <meta name="keywords" content="ZLSF,zlsf">
   
-    <meta name="description" content="pwn环境搭建 XTpwn-UBUNUT   阿里云盘：https:&#x2F;&#x2F;www.alipan.com&#x2F;s&#x2F;e3cy98miaXT 提取码 ：2h0c  登录的用户名和密码   用户名:xtpwn&#x2F;XTPWN密码:pwnyes! 用户名:root密码:toor  基础情况   基础镜像：Ubuntu24.04 LTS工具清单：    pwntools Version: 4.12.0">
+    <meta name="description" content="pwn环境预制 XTpwn-UBUNUT   阿里云盘：https:&#x2F;&#x2F;www.alipan.com&#x2F;s&#x2F;e3cy98miaXT 提取码 ：2h0c  登录的用户名和密码   用户名:xtpwn&#x2F;XTPWN密码:pwnyes! 用户名:root密码:toor  基础情况   基础镜像：Ubuntu24.04 LTS工具清单：    pwntools Version: 4.12.0">
 <meta property="og:type" content="article">
-<meta property="og:title" content="pwn环境搭建">
-<meta property="og:url" content="https://zlsf-zl.github.io/2024/07/21/pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/index.html">
+<meta property="og:title" content="pwn环境预制">
+<meta property="og:url" content="https://zlsf-zl.github.io/2024/07/27/pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/index.html">
 <meta property="og:site_name" content="ZLSF的博客">
-<meta property="og:description" content="pwn环境搭建 XTpwn-UBUNUT   阿里云盘：https:&#x2F;&#x2F;www.alipan.com&#x2F;s&#x2F;e3cy98miaXT 提取码 ：2h0c  登录的用户名和密码   用户名:xtpwn&#x2F;XTPWN密码:pwnyes! 用户名:root密码:toor  基础情况   基础镜像：Ubuntu24.04 LTS工具清单：    pwntools Version: 4.12.0">
+<meta property="og:description" content="pwn环境预制 XTpwn-UBUNUT   阿里云盘：https:&#x2F;&#x2F;www.alipan.com&#x2F;s&#x2F;e3cy98miaXT 提取码 ：2h0c  登录的用户名和密码   用户名:xtpwn&#x2F;XTPWN密码:pwnyes! 用户名:root密码:toor  基础情况   基础镜像：Ubuntu24.04 LTS工具清单：    pwntools Version: 4.12.0">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://zlsf-zl.github.io/2024/07/21/pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/xfceinstall.png">
-<meta property="og:image" content="https://zlsf-zl.github.io/2024/07/21/pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/xfceinstall2.png">
-<meta property="og:image" content="https://zlsf-zl.github.io/2024/07/21/pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/xfceinstall3.png">
-<meta property="og:image" content="https://zlsf-zl.github.io/2024/07/21/pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/xfceinstall4.png">
-<meta property="og:image" content="https://zlsf-zl.github.io/2024/07/21/pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/xfceinstall5.png">
-<meta property="og:image" content="https://zlsf-zl.github.io/2024/07/21/pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/KDEinstall.png">
-<meta property="article:published_time" content="2024-07-21T01:50:17.000Z">
-<meta property="article:modified_time" content="2024-07-27T08:31:14.927Z">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/07/27/pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/xfceinstall.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/07/27/pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/xfceinstall2.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/07/27/pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/xfceinstall3.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/07/27/pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/xfceinstall5.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/07/27/pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/KDEinstall.png">
+<meta property="article:published_time" content="2024-07-27T01:50:17.000Z">
+<meta property="article:modified_time" content="2024-07-27T13:31:48.589Z">
 <meta property="article:author" content="ZLSF">
 <meta property="article:tag" content="ZLSF,zlsf">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://zlsf-zl.github.io/2024/07/21/pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/xfceinstall.png">
+<meta name="twitter:image" content="https://zlsf-zl.github.io/2024/07/27/pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/xfceinstall.png">
   
   
   
-  <title>pwn环境搭建 - ZLSF的博客</title>
+  <title>pwn环境预制 - ZLSF的博客</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -233,7 +232,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="pwn环境搭建"></span>
+            <span id="subtitle" data-typed-text="pwn环境预制"></span>
           
         </div>
 
@@ -244,8 +243,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-07-21 09:50" pubdate>
-          2024年7月21日 上午
+        <time datetime="2024-07-27 09:50" pubdate>
+          2024年7月27日 上午
         </time>
       </span>
     
@@ -256,7 +255,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          746 字
+          757 字
         
       </span>
     
@@ -312,14 +311,14 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">pwn环境搭建</h1>
+            <h1 id="seo-header">pwn环境预制</h1>
             
             
               <div class="markdown-body">
                 
                 <br>
 
-<h3 id="pwn环境搭建"><a href="#pwn环境搭建" class="headerlink" title="pwn环境搭建"></a>pwn环境搭建</h3><hr>
+<h3 id="pwn环境预制"><a href="#pwn环境预制" class="headerlink" title="pwn环境预制"></a>pwn环境预制</h3><hr>
 <p><strong>XTpwn-UBUNUT</strong></p>
 <br>
 
@@ -359,19 +358,18 @@
 <p>1.安装XFCE界面</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">sudo</span> apt install tasksel<br><span class="hljs-built_in">sudo</span> tasksel<br></code></pre></td></tr></table></figure>
 
-<p><img src="/2024/07/21/pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/xfceinstall.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2024/07/27/pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/xfceinstall.png" srcset="/img/loading.gif" lazyload></p>
 <p>通过按↓到xfce，按空格键选择xfce，按TEB键移动到OK，按Enter键确认安装。</p>
-<p><img src="/2024/07/21/pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/xfceinstall2.png" srcset="/img/loading.gif" lazyload></p>
-<p>一旦在进程之间开始安装 XFCE，它就会要求选择显示管理器。按↓选择“ lightdm ”，按 Tab 移至OK，然后按Enter键。最后重启系统。</p>
-<p><img src="/2024/07/21/pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/xfceinstall3.png" srcset="/img/loading.gif" lazyload></p>
-<p><img src="/2024/07/21/pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/xfceinstall4.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2024/07/27/pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/xfceinstall2.png" srcset="/img/loading.gif" lazyload></p>
+<p>一旦在进程之间开始安装 XFCE，它就会要求选择显示管理器。选择 “gdm3”，按 Tab 移至OK，然后按Enter键。最后重启系统。</p>
+<p><img src="/2024/07/27/pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/xfceinstall3.png" srcset="/img/loading.gif" lazyload></p>
 <p>按以上方式选择XFCE会话输入密码登录后进入XFCE图形化界面。</p>
-<p><img src="/2024/07/21/pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/xfceinstall5.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2024/07/27/pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/xfceinstall5.png" srcset="/img/loading.gif" lazyload></p>
 <p>效果展示。</p>
 <br>
 
 <p>还可以选择KDE图形化环境，在选择XFCE时选择KDE Plasma即可。</p>
-<p><img src="/2024/07/21/pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/KDEinstall.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2024/07/27/pwn%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/KDEinstall.png" srcset="/img/loading.gif" lazyload></p>
 <p>效果展示。（KDE更好看，对电脑性能有信心的可以选择这个）</p>
 <hr>
 <p>如果你认为此虚拟机装的不好用。</p>
@@ -379,7 +377,7 @@
 <p>准确来说，它是一个实验性作物。</p>
 <p>如果你装一台自己的<strong>PWN虚拟机</strong> ，那就继续往下看。</p>
 <hr>
-<p>别自己装了，太累了，墙的厉害，很多工具都不好装。</p>
+<p>别自己装了，太累了，墙的厉害，很多工具都不好装，刚自己想在装一个，累的够呛。</p>
 
                 
               </div>
@@ -397,8 +395,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>pwn环境搭建</div>
-      <div>https://zlsf-zl.github.io/2024/07/21/pwn环境搭建/</div>
+      <div>pwn环境预制</div>
+      <div>https://zlsf-zl.github.io/2024/07/27/pwn环境搭建/</div>
     </div>
     <div class="license-meta">
       
@@ -410,7 +408,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2024年7月21日</div>
+          <div>2024年7月27日</div>
         </div>
       
       
