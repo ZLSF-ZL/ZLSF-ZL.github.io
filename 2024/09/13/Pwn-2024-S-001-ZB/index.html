@@ -16,12 +16,12 @@
   <meta name="author" content="ZLSF">
   <meta name="keywords" content="ZLSF,zlsf">
   
-    <meta name="description" content="[BaseCTF2024]–Pwn–五子棋check：  ​	64位程序，保护全开。 ida分析关键漏洞点如下： ​	 ​	在我们输入的时候没有做负数检查。  ​	我们可以发现dword_4020和dword_4040是决定判断我们输赢的关键。经过查看我们可以发现dowrd_4020[1]为0，dword_4040[1]为-1，我们可以控制负整数溢出写dword_4040[1]为0，这样的话我们只">
+    <meta name="description" content="[BaseCTF2024]–Pwn–五子棋链接： https:&#x2F;&#x2F;z-l-s-f.lanzouq.com&#x2F;iVx4h2a119rg check：  ​	64位程序，保护全开。 ida分析关键漏洞点如下： ​	 ​	在我们输入的时候没有做负数检查。  ​	我们可以发现dword_4020和dword_4040是决定判断我们输赢的关键。经过查看我们可以发现dowrd_4020[1]为0，dword_4">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Pwn_2024_S_001_ZB">
 <meta property="og:url" content="https://zlsf-zl.github.io/2024/09/13/Pwn-2024-S-001-ZB/index.html">
 <meta property="og:site_name" content="ZLSF的博客">
-<meta property="og:description" content="[BaseCTF2024]–Pwn–五子棋check：  ​	64位程序，保护全开。 ida分析关键漏洞点如下： ​	 ​	在我们输入的时候没有做负数检查。  ​	我们可以发现dword_4020和dword_4040是决定判断我们输赢的关键。经过查看我们可以发现dowrd_4020[1]为0，dword_4040[1]为-1，我们可以控制负整数溢出写dword_4040[1]为0，这样的话我们只">
+<meta property="og:description" content="[BaseCTF2024]–Pwn–五子棋链接： https:&#x2F;&#x2F;z-l-s-f.lanzouq.com&#x2F;iVx4h2a119rg check：  ​	64位程序，保护全开。 ida分析关键漏洞点如下： ​	 ​	在我们输入的时候没有做负数检查。  ​	我们可以发现dword_4020和dword_4040是决定判断我们输赢的关键。经过查看我们可以发现dowrd_4020[1]为0，dword_4">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://zlsf-zl.github.io/2024/09/13/Pwn-2024-S-001-ZB/001.png">
 <meta property="og:image" content="https://zlsf-zl.github.io/2024/09/13/Pwn-2024-S-001-ZB/002.png">
@@ -38,7 +38,7 @@
 <meta property="og:image" content="https://zlsf-zl.github.io/2024/09/13/Pwn-2024-S-001-ZB/013.png">
 <meta property="og:image" content="https://zlsf-zl.github.io/2024/09/13/Pwn-2024-S-001-ZB/014.png">
 <meta property="article:published_time" content="2024-09-13T12:27:51.000Z">
-<meta property="article:modified_time" content="2024-09-15T04:36:09.967Z">
+<meta property="article:modified_time" content="2024-09-15T04:57:47.104Z">
 <meta property="article:author" content="ZLSF">
 <meta property="article:tag" content="ZLSF,zlsf">
 <meta name="twitter:card" content="summary_large_image">
@@ -264,7 +264,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.4k 字
+          2.5k 字
         
       </span>
     
@@ -325,7 +325,8 @@
             
               <div class="markdown-body">
                 
-                <h3 id="BaseCTF2024-–Pwn–五子棋"><a href="#BaseCTF2024-–Pwn–五子棋" class="headerlink" title="[BaseCTF2024]–Pwn–五子棋"></a><strong>[BaseCTF2024]–Pwn–五子棋</strong></h3><p><strong>check：</strong></p>
+                <h3 id="BaseCTF2024-–Pwn–五子棋"><a href="#BaseCTF2024-–Pwn–五子棋" class="headerlink" title="[BaseCTF2024]–Pwn–五子棋"></a><strong>[BaseCTF2024]–Pwn–五子棋</strong></h3><p><strong>链接：</strong> <a target="_blank" rel="noopener" href="https://z-l-s-f.lanzouq.com/iVx4h2a119rg">https://z-l-s-f.lanzouq.com/iVx4h2a119rg</a></p>
+<p><strong>check：</strong></p>
 <p><img src="/2024/09/13/Pwn-2024-S-001-ZB/001.png" srcset="/img/loading.gif" lazyload alt="001"></p>
 <p>​	64位程序，保护全开。</p>
 <p><strong>ida分析关键漏洞点如下：</strong></p>
@@ -339,7 +340,8 @@
 
 
 <hr>
-<h3 id="BaseCTF2024-–Pwn–没有-canary-我要死了"><a href="#BaseCTF2024-–Pwn–没有-canary-我要死了" class="headerlink" title="[BaseCTF2024]–Pwn–没有 canary 我要死了!"></a><strong>[BaseCTF2024]</strong>–Pwn–没有 canary 我要死了!</h3><p><strong>check:</strong></p>
+<h3 id="BaseCTF2024-–Pwn–没有-canary-我要死了"><a href="#BaseCTF2024-–Pwn–没有-canary-我要死了" class="headerlink" title="[BaseCTF2024]–Pwn–没有 canary 我要死了!"></a><strong>[BaseCTF2024]</strong>–Pwn–没有 canary 我要死了!</h3><p><strong>链接：</strong> <a target="_blank" rel="noopener" href="https://z-l-s-f.lanzouq.com/ihYsL2a119pe">https://z-l-s-f.lanzouq.com/ihYsL2a119pe</a></p>
+<p><strong>check:</strong></p>
 <p><img src="/2024/09/13/Pwn-2024-S-001-ZB/004.png" srcset="/img/loading.gif" lazyload alt="004"></p>
 <p>​	64位程序，保护全开。</p>
 <p><strong>ida分析关键漏洞点如下：</strong></p>
@@ -356,7 +358,8 @@
 
 
 <hr>
-<h3 id="BaseCTF2024-–Pwn–orz！"><a href="#BaseCTF2024-–Pwn–orz！" class="headerlink" title="[BaseCTF2024]–Pwn–orz！"></a><strong>[BaseCTF2024]–Pwn–orz！</strong></h3><p><strong>check:</strong></p>
+<h3 id="BaseCTF2024-–Pwn–orz！"><a href="#BaseCTF2024-–Pwn–orz！" class="headerlink" title="[BaseCTF2024]–Pwn–orz！"></a><strong>[BaseCTF2024]–Pwn–orz！</strong></h3><p><strong>链接：</strong> <a target="_blank" rel="noopener" href="https://z-l-s-f.lanzouq.com/isqWQ2a119qf">https://z-l-s-f.lanzouq.com/isqWQ2a119qf</a></p>
+<p><strong>check:</strong></p>
 <p><img src="/2024/09/13/Pwn-2024-S-001-ZB/008.png" srcset="/img/loading.gif" lazyload alt="008"></p>
 <p>​	64位程序，除了canary其他保护全开。</p>
 <p><strong>seccomp：</strong></p>
@@ -370,7 +373,8 @@
 
 
 <hr>
-<h3 id="UnKnow-–Pwn–mcback2dabasics"><a href="#UnKnow-–Pwn–mcback2dabasics" class="headerlink" title="[UnKnow]–Pwn–mcback2dabasics"></a><strong>[UnKnow]–Pwn–mcback2dabasics</strong></h3><p><strong>Glibc: Ubuntu GLIBC 2.24-9ubuntu2.2</strong></p>
+<h3 id="UnKnow-–Pwn–mcback2dabasics"><a href="#UnKnow-–Pwn–mcback2dabasics" class="headerlink" title="[UnKnow]–Pwn–mcback2dabasics"></a><strong>[UnKnow]–Pwn–mcback2dabasics</strong></h3><p><strong>链接：</strong> <a target="_blank" rel="noopener" href="https://z-l-s-f.lanzouq.com/iu89w2a10gyj">https://z-l-s-f.lanzouq.com/iu89w2a10gyj</a></p>
+<p><strong>Glibc: Ubuntu GLIBC 2.24-9ubuntu2.2</strong></p>
 <p><strong>check:</strong></p>
 <p><img src="/2024/09/13/Pwn-2024-S-001-ZB/011.png" srcset="/img/loading.gif" lazyload alt="011"></p>
 <p>​	64位程序，保护全开。</p>
