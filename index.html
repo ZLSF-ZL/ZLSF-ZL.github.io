@@ -264,7 +264,7 @@
       
       <a class="index-excerpt index-excerpt__noimg" href="/2024/09/13/Pwn-2024-S-001-ZB/" target="_self">
         <div>
-          
+          [BaseCTF2024]–Pwn–五子棋check：  ​	64位程序，保护全开。 ida分析关键漏洞点如下： ​	 ​	在我们输入的时候没有做负数检查。  ​	我们可以发现dword_4020和dword_4040是决定判断我们输赢的关键。经过查看我们可以发现dowrd_4020[1]为0，dword_4040[1]为-1，我们可以控制负整数溢出写dword_4040[1]为0，这样的话我们只
         </div>
       </a>
 
