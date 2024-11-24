@@ -16,12 +16,12 @@
   <meta name="author" content="ZLSF">
   <meta name="keywords" content="ZLSF,zlsf">
   
-    <meta name="description" content="one_heap​	check：  ​	题目保护全开 ​	漏洞点： ​	1.  ​	uaf漏洞。 ​	2.  ​	输出指向当前堆块的地址（而非堆块的内容）。 ​	思路： ​	题目只允许一次操作一个堆块，但是我们可以通过magic函数来造成tcachebin的uaf，释放任意一堆块获得heap的基地址，通过tcatche的uaf申请到tcachebin的开头（也就是堆块的起始地址这个位置，这里记录了">
+    <meta name="description" content="蜀道山CTF-PWN附件下载：https:&#x2F;&#x2F;z-l-s-f.lanzouq.com&#x2F;ixEZc2g31zdg  one_heap​	check：  ​	题目保护全开 ​	漏洞点： ​	1.  ​	uaf漏洞。 ​	2.  ​	输出指向当前堆块的地址（而非堆块的内容）。 ​	思路： ​	题目只允许一次操作一个堆块，但是我们可以通过magic函数来造成tcachebin的uaf，释放任意一堆块获得">
 <meta property="og:type" content="article">
 <meta property="og:title" content="蜀道山CTF-PWN全解WP">
 <meta property="og:url" content="https://zlsf-zl.github.io/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/index.html">
 <meta property="og:site_name" content="ZLSF的博客">
-<meta property="og:description" content="one_heap​	check：  ​	题目保护全开 ​	漏洞点： ​	1.  ​	uaf漏洞。 ​	2.  ​	输出指向当前堆块的地址（而非堆块的内容）。 ​	思路： ​	题目只允许一次操作一个堆块，但是我们可以通过magic函数来造成tcachebin的uaf，释放任意一堆块获得heap的基地址，通过tcatche的uaf申请到tcachebin的开头（也就是堆块的起始地址这个位置，这里记录了">
+<meta property="og:description" content="蜀道山CTF-PWN附件下载：https:&#x2F;&#x2F;z-l-s-f.lanzouq.com&#x2F;ixEZc2g31zdg  one_heap​	check：  ​	题目保护全开 ​	漏洞点： ​	1.  ​	uaf漏洞。 ​	2.  ​	输出指向当前堆块的地址（而非堆块的内容）。 ​	思路： ​	题目只允许一次操作一个堆块，但是我们可以通过magic函数来造成tcachebin的uaf，释放任意一堆块获得">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://zlsf-zl.github.io/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732428396401.png">
 <meta property="og:image" content="https://zlsf-zl.github.io/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732428501259.png">
@@ -38,7 +38,7 @@
 <meta property="og:image" content="https://zlsf-zl.github.io/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732432521110.png">
 <meta property="og:image" content="https://zlsf-zl.github.io/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732432587514.png">
 <meta property="article:published_time" content="2024-11-24T05:57:44.000Z">
-<meta property="article:modified_time" content="2024-11-24T07:20:12.528Z">
+<meta property="article:modified_time" content="2024-11-24T07:31:35.378Z">
 <meta property="article:author" content="ZLSF">
 <meta property="article:tag" content="ZLSF,zlsf">
 <meta name="twitter:card" content="summary_large_image">
@@ -264,7 +264,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          3.2k 字
+          3.3k 字
         
       </span>
     
@@ -325,7 +325,10 @@
             
               <div class="markdown-body">
                 
-                <h3 id="one-heap"><a href="#one-heap" class="headerlink" title="one_heap"></a><strong>one_heap</strong></h3><p>​	check：</p>
+                <hr>
+<p>蜀道山CTF-PWN附件下载：<a target="_blank" rel="noopener" href="https://z-l-s-f.lanzouq.com/ixEZc2g31zdg">https://z-l-s-f.lanzouq.com/ixEZc2g31zdg</a></p>
+<hr>
+<h3 id="one-heap"><a href="#one-heap" class="headerlink" title="one_heap"></a><strong>one_heap</strong></h3><p>​	check：</p>
 <p><img src="/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732428396401.png" srcset="/img/loading.gif" lazyload></p>
 <p>​	题目保护全开</p>
 <p>​	漏洞点：</p>
