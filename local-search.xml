@@ -17,19 +17,6 @@
   
   
   <entry>
-    <title>Pwn环境预制镜像</title>
-    <link href="/2024/10/02/Pwn%E7%8E%AF%E5%A2%83%E9%A2%84%E5%88%B6%E9%95%9C%E5%83%8F/"/>
-    <url>/2024/10/02/Pwn%E7%8E%AF%E5%A2%83%E9%A2%84%E5%88%B6%E9%95%9C%E5%83%8F/</url>
-    
-    <content type="html"><![CDATA[<h3 id="Pwn环境预制镜像-Ubuntu22-04"><a href="#Pwn环境预制镜像-Ubuntu22-04" class="headerlink" title="Pwn环境预制镜像-Ubuntu22.04"></a><strong>Pwn环境预制镜像-Ubuntu22.04</strong></h3><hr><h3 id="下载与简介"><a href="#下载与简介" class="headerlink" title="下载与简介"></a>下载与简介</h3><p><strong>下载链接（阿里云盘）：</strong><a href="https://www.alipan.com/s/cJAfEc5pNWs">https://www.alipan.com/s/cJAfEc5pNWs</a></p><p><strong>提取码：</strong>j8o3</p><p><strong>完成日期：</strong>2024.10.1</p><p><strong>基础镜像：</strong>Ubuntu22.04</p><p><strong>桌面环境：</strong>KDE</p><hr><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a><strong>安装</strong></h3><p><strong>食用教程：</strong></p><p>​1.下载XTpwn.MP4和VirtualBox-7.1.2.exe到合适位置。</p><p>​2.修改XTpwn.MP4的后缀.MP4为.iso放置一旁。</p><p>​3.双击VirtualBox-7.1.2.exe解压内容到合适位置</p><p>​4.解压后应该能得到VirtualBox-7.1.2-164945-Win.exe(免费且开源)和Oracle_VirtualBox_Extension_Pack-7.1.2.vbox-extpack两文件。</p><p>​5.运行VirtualBox-7.1.2-164945-Win.exe安装到合适位置。</p><p>​6.导入Oracle_VirtualBox_Extension_Pack-7.1.2.vbox-extpack增强包：</p><p>​第一步：</p><p><img src="/2024/10/02/Pwn%E7%8E%AF%E5%A2%83%E9%A2%84%E5%88%B6%E9%95%9C%E5%83%8F/004.png"></p><p>​第二步：</p><p><img src="/2024/10/02/Pwn%E7%8E%AF%E5%A2%83%E9%A2%84%E5%88%B6%E9%95%9C%E5%83%8F/005.png"></p><p>​在磁盘中找到Oracle_VirtualBox_Extension_Pack-7.1.2.vbox-extpack选择然后同意(反正你也不得不同意的)条约即可成功安装。</p><p>​7.双击XTpwn.iso文件并将XTpwn.ova解压到合适位置。</p><p>​8.导入虚拟镜像：</p><p>​第一步：</p><p><img src="/2024/10/02/Pwn%E7%8E%AF%E5%A2%83%E9%A2%84%E5%88%B6%E9%95%9C%E5%83%8F/006.png"></p><p>​第二步：</p><p><img src="/2024/10/02/Pwn%E7%8E%AF%E5%A2%83%E9%A2%84%E5%88%B6%E9%95%9C%E5%83%8F/007.png"></p><p>​第三步：</p><p><img src="/2024/10/02/Pwn%E7%8E%AF%E5%A2%83%E9%A2%84%E5%88%B6%E9%95%9C%E5%83%8F/008.png"></p><p>​注：默认虚拟电脑位置应该尽量选择硬盘空间剩余足够大的硬盘。导入后约占28.9 GB。</p><p>​9.启动虚拟机。</p><p><img src="/2024/10/02/Pwn%E7%8E%AF%E5%A2%83%E9%A2%84%E5%88%B6%E9%95%9C%E5%83%8F/009.png"></p><hr><h3 id="用户与密码"><a href="#用户与密码" class="headerlink" title="用户与密码"></a><strong>用户与密码</strong></h3><p><strong>用户：</strong>xtpwn</p><p><strong>登录密码：</strong>Pwnyes!</p><p><strong>用户：</strong>root</p><p><strong>登录密码：</strong>toor</p><hr><h3 id="工具"><a href="#工具" class="headerlink" title="工具"></a><strong>工具</strong></h3><p><strong>工具清单：</strong></p><p>​Python 3.10.12</p><p>​pwntools 4.13.0</p><p>​gdb —-&gt; pwngdb 2024-09-21克隆</p><p>​ROPgadget v7.4</p><p>​patchelf 0.18.0</p><p>​glibc-all-in-one 2024-09-25克隆</p><p>​OneGadget Version 1.9.0</p><p>​SeccompTools Version 1.6.1</p><p>​Clash.for.Windows-0.20.39-x64-linux（机场请自备）</p><p>​zsh 5.8.1 —-&gt; oh-my-zsh —-&gt; powerlevel10k&#x2F;powerlevel10k</p><hr><h3 id="展示"><a href="#展示" class="headerlink" title="展示"></a><strong>展示</strong></h3><p><strong>虚拟机展示：</strong></p><p>​<img src="/2024/10/02/Pwn%E7%8E%AF%E5%A2%83%E9%A2%84%E5%88%B6%E9%95%9C%E5%83%8F/001.png" alt="登录界面"></p><p><img src="/2024/10/02/Pwn%E7%8E%AF%E5%A2%83%E9%A2%84%E5%88%B6%E9%95%9C%E5%83%8F/002.png" alt="桌面"></p><p><img src="/2024/10/02/Pwn%E7%8E%AF%E5%A2%83%E9%A2%84%E5%88%B6%E9%95%9C%E5%83%8F/003.png" alt="终端"></p>]]></content>
-    
-    
-    
-  </entry>
-  
-  
-  
-  <entry>
     <title>Pwn-2024-S-002-ZB</title>
     <link href="/2024/09/19/Pwn-2024-S-002-ZB/"/>
     <url>/2024/09/19/Pwn-2024-S-002-ZB/</url>
