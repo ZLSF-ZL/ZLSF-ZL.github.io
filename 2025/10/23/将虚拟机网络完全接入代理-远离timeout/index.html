@@ -1,0 +1,787 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/bug.png">
+  <link rel="icon" href="/img/bug.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#1F3144">
+  <meta name="author" content="ZLSF">
+  <meta name="keywords" content="ZLSF,zlsf">
+  
+    <meta name="description" content="当你使用虚拟机中的 linux 系统时你能很轻易发现其 terminal 终端相当难以走代理，所以你可能会遇到以下情况：  pip3 install 出现 timeout 安装 pwndbg 时总是被莫名奇妙打断和乱七八糟的报错 docker 出现 Error response from daemon: Get https:&#x2F;&#x2F;registry-1.docker.io&#x2F;v2&#x2F;: net&#x2F;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="将虚拟机网络完全接入代理-远离timeout">
+<meta property="og:url" content="https://zlsf-zl.github.io/2025/10/23/%E5%B0%86%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AE%8C%E5%85%A8%E6%8E%A5%E5%85%A5%E4%BB%A3%E7%90%86-%E8%BF%9C%E7%A6%BBtimeout/index.html">
+<meta property="og:site_name" content="ZLSF的博客">
+<meta property="og:description" content="当你使用虚拟机中的 linux 系统时你能很轻易发现其 terminal 终端相当难以走代理，所以你可能会遇到以下情况：  pip3 install 出现 timeout 安装 pwndbg 时总是被莫名奇妙打断和乱七八糟的报错 docker 出现 Error response from daemon: Get https:&#x2F;&#x2F;registry-1.docker.io&#x2F;v2&#x2F;: net&#x2F;">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://zlsf-zl.github.io/2025/10/23/%E5%B0%86%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AE%8C%E5%85%A8%E6%8E%A5%E5%85%A5%E4%BB%A3%E7%90%86-%E8%BF%9C%E7%A6%BBtimeout/001.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2025/10/23/%E5%B0%86%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AE%8C%E5%85%A8%E6%8E%A5%E5%85%A5%E4%BB%A3%E7%90%86-%E8%BF%9C%E7%A6%BBtimeout/002.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2025/10/23/%E5%B0%86%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AE%8C%E5%85%A8%E6%8E%A5%E5%85%A5%E4%BB%A3%E7%90%86-%E8%BF%9C%E7%A6%BBtimeout/003.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2025/10/23/%E5%B0%86%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AE%8C%E5%85%A8%E6%8E%A5%E5%85%A5%E4%BB%A3%E7%90%86-%E8%BF%9C%E7%A6%BBtimeout/004.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2025/10/23/%E5%B0%86%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AE%8C%E5%85%A8%E6%8E%A5%E5%85%A5%E4%BB%A3%E7%90%86-%E8%BF%9C%E7%A6%BBtimeout/005.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2025/10/23/%E5%B0%86%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AE%8C%E5%85%A8%E6%8E%A5%E5%85%A5%E4%BB%A3%E7%90%86-%E8%BF%9C%E7%A6%BBtimeout/006.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2025/10/23/%E5%B0%86%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AE%8C%E5%85%A8%E6%8E%A5%E5%85%A5%E4%BB%A3%E7%90%86-%E8%BF%9C%E7%A6%BBtimeout/007.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2025/10/23/%E5%B0%86%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AE%8C%E5%85%A8%E6%8E%A5%E5%85%A5%E4%BB%A3%E7%90%86-%E8%BF%9C%E7%A6%BBtimeout/008.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2025/10/23/%E5%B0%86%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AE%8C%E5%85%A8%E6%8E%A5%E5%85%A5%E4%BB%A3%E7%90%86-%E8%BF%9C%E7%A6%BBtimeout/009.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2025/10/23/%E5%B0%86%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AE%8C%E5%85%A8%E6%8E%A5%E5%85%A5%E4%BB%A3%E7%90%86-%E8%BF%9C%E7%A6%BBtimeout/010.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2025/10/23/%E5%B0%86%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AE%8C%E5%85%A8%E6%8E%A5%E5%85%A5%E4%BB%A3%E7%90%86-%E8%BF%9C%E7%A6%BBtimeout/011.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2025/10/23/%E5%B0%86%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AE%8C%E5%85%A8%E6%8E%A5%E5%85%A5%E4%BB%A3%E7%90%86-%E8%BF%9C%E7%A6%BBtimeout/012.png">
+<meta property="article:published_time" content="2025-10-23T09:57:17.000Z">
+<meta property="article:modified_time" content="2025-10-23T12:13:52.657Z">
+<meta property="article:author" content="ZLSF">
+<meta property="article:tag" content="ZLSF,zlsf">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://zlsf-zl.github.io/2025/10/23/%E5%B0%86%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AE%8C%E5%85%A8%E6%8E%A5%E5%85%A5%E4%BB%A3%E7%90%86-%E8%BF%9C%E7%A6%BBtimeout/001.png">
+  
+  
+  
+  <title>将虚拟机网络完全接入代理-远离timeout - ZLSF的博客</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"zlsf-zl.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"6qfbMdW9PFOPATbmhAiyPWcK-MdYXbMMI","app_key":"X9xyyWbc7hafcwTqYXwdhjE5","server_url":"https://6qfbmdw9.api.lncldglobal.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>ZLSF的博客</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/start.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="将虚拟机网络完全接入代理-远离timeout"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-10-23 17:57" pubdate>
+          2025年10月23日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          11 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">将虚拟机网络完全接入代理-远离timeout</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>当你使用虚拟机中的 linux 系统时你能很轻易发现其 terminal 终端相当难以走代理，所以你可能会遇到以下情况：</p>
+<ul>
+<li>pip3 install 出现 timeout</li>
+<li>安装 pwndbg 时总是被莫名奇妙打断和乱七八糟的报错</li>
+<li>docker 出现 Error response from daemon: Get <a target="_blank" rel="noopener" href="https://registry-1.docker.io/v2/">https://registry-1.docker.io/v2/</a>: net&#x2F;http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)</li>
+</ul>
+<hr>
+<p><img src="/2025/10/23/%E5%B0%86%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AE%8C%E5%85%A8%E6%8E%A5%E5%85%A5%E4%BB%A3%E7%90%86-%E8%BF%9C%E7%A6%BBtimeout/001.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2025/10/23/%E5%B0%86%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AE%8C%E5%85%A8%E6%8E%A5%E5%85%A5%E4%BB%A3%E7%90%86-%E8%BF%9C%E7%A6%BBtimeout/002.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2025/10/23/%E5%B0%86%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AE%8C%E5%85%A8%E6%8E%A5%E5%85%A5%E4%BB%A3%E7%90%86-%E8%BF%9C%E7%A6%BBtimeout/003.png" srcset="/img/loading.gif" lazyload></p>
+<hr>
+<p>一般来说解决办法都是需要换各种源啦，利用 proxychains 配置上宿主机的代理啦。</p>
+<p>Nein！</p>
+<p>设置网卡系统级代理才是你该做的事。</p>
+<p>让整台虚拟机所有流量才是最正确的。</p>
+<p>而且一次设置可以提供给多台实例使用，几乎完全不需要修改！</p>
+<hr>
+<h3 id="示例环境："><a href="#示例环境：" class="headerlink" title="示例环境："></a>示例环境：</h3><p>宿主机：Windows 11 + Clash Verge v2.4.2</p>
+<p>虚拟机：virtualbox 7.1.10 r169112 + Ubuntu 24.04</p>
+<h3 id="操作步骤："><a href="#操作步骤：" class="headerlink" title="操作步骤："></a>操作步骤：</h3><ol>
+<li><p>下载代理工具 <a target="_blank" rel="noopener" href="https://github.com/clash-verge-rev/clash-verge-rev/releases/tag/v2.4.2">Clahs Verge</a></p>
+</li>
+<li><p>随便整一个什么机场，这里放一个我用的<a target="_blank" rel="noopener" href="https://良心云.com/#/register?code=jSuQtXEW">机场</a> , 仅推荐其中的2元包月套餐，100GB流量，这种便宜机场随时会跑路，买多了得不偿失。</p>
+</li>
+<li><p>在机场的教程中找到导入订阅链接的办法，不出意外显示如下：</p>
+<p><img src="/2025/10/23/%E5%B0%86%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AE%8C%E5%85%A8%E6%8E%A5%E5%85%A5%E4%BB%A3%E7%90%86-%E8%BF%9C%E7%A6%BBtimeout/004.png" srcset="/img/loading.gif" lazyload></p>
+</li>
+<li><p>正常在当前节点组中延迟显示数字正常且为绿色代表网络良好，我们需要用到的网络设置组中的虚拟网卡模式选项卡。（建议先关闭软件然后右击用管理员模式启动）</p>
+</li>
+<li><p>从管理员启动后打开图片中的虚拟网卡模式，这里可能会卡住无响应，最好等待他自己恢复，因为此时是正在建立一张虚拟网卡。</p>
+</li>
+<li><p>打开控制面板中的网络连接显示如下：</p>
+<p><img src="/2025/10/23/%E5%B0%86%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AE%8C%E5%85%A8%E6%8E%A5%E5%85%A5%E4%BB%A3%E7%90%86-%E8%BF%9C%E7%A6%BBtimeout/005.png" srcset="/img/loading.gif" lazyload></p>
+<p>我们可以注意到其中的 Mihomo 是 Clash Verge 新建的虚拟网卡。</p>
+</li>
+<li><p>在 virtualbox 管理器的工具选项卡中存在网络子选项卡：</p>
+<p><img src="/2025/10/23/%E5%B0%86%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AE%8C%E5%85%A8%E6%8E%A5%E5%85%A5%E4%BB%A3%E7%90%86-%E8%BF%9C%E7%A6%BBtimeout/006.png" srcset="/img/loading.gif" lazyload></p>
+<p>如果你没有建立仅主机网络网卡，就在这里建立一块，同样会显示在之前的控制面板中的网络连接图片中，显示为以太网3（也可能是其他名字，注意其下面的小字区分）。</p>
+</li>
+<li><p>右击之前的控制面板中的网络连接图片中的 Mihomo 网卡选择属性中的共享选项卡，启用允许其他网络用户通过此计算机的 Internet 连接来连接，然后家庭网络连接选择我们创建的虚拟网卡：</p>
+<p><img src="/2025/10/23/%E5%B0%86%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AE%8C%E5%85%A8%E6%8E%A5%E5%85%A5%E4%BB%A3%E7%90%86-%E8%BF%9C%E7%A6%BBtimeout/007.png" srcset="/img/loading.gif" lazyload></p>
+</li>
+<li><p>弹出警告：</p>
+<p><img src="/2025/10/23/%E5%B0%86%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AE%8C%E5%85%A8%E6%8E%A5%E5%85%A5%E4%BB%A3%E7%90%86-%E8%BF%9C%E7%A6%BBtimeout/008.png" srcset="/img/loading.gif" lazyload></p>
+</li>
+<li><p>记得在之前 virtualbox 管理器的工具选项卡中存在网络子选项卡设置成警告中的静态 ip 并禁用 DHCP 服务器。</p>
+</li>
+<li><p>设置完成后 Mihomo 应该变成共享的：</p>
+<p><img src="/2025/10/23/%E5%B0%86%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AE%8C%E5%85%A8%E6%8E%A5%E5%85%A5%E4%BB%A3%E7%90%86-%E8%BF%9C%E7%A6%BBtimeout/009.png" srcset="/img/loading.gif" lazyload></p>
+</li>
+<li><p>在 virtualbox 管理器中选择你想要的实例的设置按钮，选择其中的网络选项卡，修改其连接方式为仅主机网络，名称选择你刚刚创建的那张虚拟网卡：</p>
+<p><img src="/2025/10/23/%E5%B0%86%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AE%8C%E5%85%A8%E6%8E%A5%E5%85%A5%E4%BB%A3%E7%90%86-%E8%BF%9C%E7%A6%BBtimeout/010.png" srcset="/img/loading.gif" lazyload></p>
+</li>
+<li><p>检查 ip 是否正确，比如我刚刚警告弹窗显示的是 192.168.137.0 网段的，我的网卡也应该拿到了相应的地址：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs bash">╰─ ip addr<br>1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000<br>    <span class="hljs-built_in">link</span>/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00<br>    inet 127.0.0.1/8 scope host lo<br>       valid_lft forever preferred_lft forever<br>    inet6 ::1/128 scope host noprefixroute <br>       valid_lft forever preferred_lft forever<br>2: enp0s3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc fq_codel state UP group default qlen 1000<br>    <span class="hljs-built_in">link</span>/ether 08:00:27:cc:70:77 brd ff:ff:ff:ff:ff:ff<br>    inet 192.168.137.45/24 brd 192.168.137.255 scope global dynamic noprefixroute enp0s3<br>       valid_lft 604770sec preferred_lft 604770sec<br>    inet6 fe80::a00:27ff:fecc:7077/64 scope <span class="hljs-built_in">link</span> <br>       valid_lft forever preferred_lft forever<br>3: docker0: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt; mtu 1500 qdisc noqueue state DOWN group default <br>    <span class="hljs-built_in">link</span>/ether 02:42:8f:8e:50:97 brd ff:ff:ff:ff:ff:ff<br>    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0<br>       valid_lft forever preferred_lft forever<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>因为我们有时还有在完全代理和无代理切换网络的需求，我用的时候发现了一个小 bug，网卡会因为地址来不及释放且又马上会接收一个新 ip 地址，最后导致 ip 网段不匹配导致无法联网，用 chatgpt 写了个刷新脚本，每次切换完后刷新一下就行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-meta">#!/bin/bash</span><br><span class="hljs-comment"># =============================================</span><br><span class="hljs-comment">#  refresh-net.sh</span><br><span class="hljs-comment">#  自动清理并重新申请 enp0s3 的 IP 地址</span><br><span class="hljs-comment">#  兼容 NetworkManager / systemd-networkd / dhclient</span><br><span class="hljs-comment"># =============================================</span><br><br>IFACE=<span class="hljs-variable">$&#123;1:-enp0s3&#125;</span>   <span class="hljs-comment"># 默认网卡名称，可通过参数指定</span><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;[*] 正在刷新网卡: <span class="hljs-variable">$IFACE</span>&quot;</span><br><br><span class="hljs-comment"># 检查网卡是否存在</span><br><span class="hljs-keyword">if</span> ! ip <span class="hljs-built_in">link</span> show <span class="hljs-string">&quot;<span class="hljs-variable">$IFACE</span>&quot;</span> &amp;&gt;/dev/null; <span class="hljs-keyword">then</span><br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;[!] 找不到网卡 <span class="hljs-variable">$IFACE</span>&quot;</span><br>    <span class="hljs-built_in">exit</span> 1<br><span class="hljs-keyword">fi</span><br><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;[1/4] 关闭网卡...&quot;</span><br><span class="hljs-built_in">sudo</span> ip <span class="hljs-built_in">link</span> <span class="hljs-built_in">set</span> <span class="hljs-string">&quot;<span class="hljs-variable">$IFACE</span>&quot;</span> down<br><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;[2/4] 清除旧的 IP 地址...&quot;</span><br><span class="hljs-built_in">sudo</span> ip addr flush dev <span class="hljs-string">&quot;<span class="hljs-variable">$IFACE</span>&quot;</span><br><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;[3/4] 启用网卡...&quot;</span><br><span class="hljs-built_in">sudo</span> ip <span class="hljs-built_in">link</span> <span class="hljs-built_in">set</span> <span class="hljs-string">&quot;<span class="hljs-variable">$IFACE</span>&quot;</span> up<br><br><span class="hljs-comment"># 检查使用的网络管理器类型</span><br><span class="hljs-keyword">if</span> systemctl is-active --quiet NetworkManager; <span class="hljs-keyword">then</span><br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;[4/4] NetworkManager 管理环境，重新请求 DHCP...&quot;</span><br>    <span class="hljs-built_in">sudo</span> nmcli device reapply <span class="hljs-string">&quot;<span class="hljs-variable">$IFACE</span>&quot;</span> || <span class="hljs-built_in">sudo</span> nmcli device connect <span class="hljs-string">&quot;<span class="hljs-variable">$IFACE</span>&quot;</span><br><span class="hljs-keyword">elif</span> systemctl is-active --quiet systemd-networkd; <span class="hljs-keyword">then</span><br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;[4/4] systemd-networkd 管理环境，重启网络服务...&quot;</span><br>    <span class="hljs-built_in">sudo</span> systemctl restart systemd-networkd<br><span class="hljs-keyword">else</span><br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;[4/4] 无显式网络管理器，使用 dhclient 手动获取 IP...&quot;</span><br>    <span class="hljs-built_in">sudo</span> dhclient -r <span class="hljs-string">&quot;<span class="hljs-variable">$IFACE</span>&quot;</span> 2&gt;/dev/null<br>    <span class="hljs-built_in">sudo</span> dhclient <span class="hljs-string">&quot;<span class="hljs-variable">$IFACE</span>&quot;</span><br><span class="hljs-keyword">fi</span><br><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;[✓] 已完成刷新。当前 IP：&quot;</span><br>ip -4 addr show <span class="hljs-string">&quot;<span class="hljs-variable">$IFACE</span>&quot;</span> | grep inet || <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;未获取到 IPv4 地址，请检查 DHCP 服务。&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>另外 DHCP 服务器反应需要时间，切换网卡时有时不能马上联网，所以切换后需要稍微缓一下。</p>
+</li>
+</ol>
+<hr>
+<h3 id="效果："><a href="#效果：" class="headerlink" title="效果："></a>效果：</h3><p><img src="/2025/10/23/%E5%B0%86%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AE%8C%E5%85%A8%E6%8E%A5%E5%85%A5%E4%BB%A3%E7%90%86-%E8%BF%9C%E7%A6%BBtimeout/011.png" srcset="/img/loading.gif" lazyload></p>
+<p>浏览器未特殊设置可以直接访问油管。</p>
+<p><img src="/2025/10/23/%E5%B0%86%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AE%8C%E5%85%A8%E6%8E%A5%E5%85%A5%E4%BB%A3%E7%90%86-%E8%BF%9C%E7%A6%BBtimeout/012.png" srcset="/img/loading.gif" lazyload></p>
+<p>terminal 终端也可以直接拉取到油管的网络页面。</p>
+<p>至此再也不需要配置各种各样的源了，代理万岁！</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>将虚拟机网络完全接入代理-远离timeout</div>
+      <div>https://zlsf-zl.github.io/2025/10/23/将虚拟机网络完全接入代理-远离timeout/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>ZLSF</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年10月23日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/10/15/Pwn%E8%A7%A3%E9%A2%98%E6%A8%A1%E7%89%88%E9%9B%86%E5%90%88/" title="Pwn解题模版集合">
+                        <span class="hidden-mobile">Pwn解题模版集合</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"6qfbMdW9PFOPATbmhAiyPWcK-MdYXbMMI","appKey":"X9xyyWbc7hafcwTqYXwdhjE5","path":"window.location.pathname","placeholder":"文明发言","avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"https://6qfbmdw9.api.lncldglobal.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+      <span>by ZLSF</span>
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
