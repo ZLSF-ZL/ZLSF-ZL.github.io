@@ -16,22 +16,22 @@
   <meta name="author" content="ZLSF">
   <meta name="keywords" content="ZLSF,zlsf">
   
-    <meta name="description" content="生命周期 当引用的生命周期可能以几种不同的方式相关联时，就必须标注生命周期了。 借用检查器Borrow Checker  确保数据存活的时间长于其引用(Outlive) 比较作用域，以确定所有的借用是否有效  例： 1234567891011121314151617181920212223242526272829&#x2F;&#x2F;函数中的泛型生命周期fn main() &#123;    let string1">
+    <meta name="description" content="零成本抽象(zero-cost abstractions)  迭代器虽然是高级抽象，但在编译后，它们被转换成了与你手写低级代码几乎相同的代码。 迭代器是Rust的零成本抽象之一，这意味着使用这种抽象不会引入任何额外的运行时开销。  结论：在Rust中可放心使用迭代器和闭包等高级特性，它们提供了更高层次的代码抽象，同时保持着极高的运行时性能，不会带来性能损失。  自定义构建与发布配置 Cargo提供">
 <meta property="og:type" content="article">
-<meta property="og:title" content="学习rust_day08">
-<meta property="og:url" content="https://zlsf-zl.github.io/2026/03/17/%E5%AD%A6%E4%B9%A0rust-day08/index.html">
+<meta property="og:title" content="学习rust_day10">
+<meta property="og:url" content="https://zlsf-zl.github.io/2026/03/20/%E5%AD%A6%E4%B9%A0rust-day10/index.html">
 <meta property="og:site_name" content="ZLSF的博客">
-<meta property="og:description" content="生命周期 当引用的生命周期可能以几种不同的方式相关联时，就必须标注生命周期了。 借用检查器Borrow Checker  确保数据存活的时间长于其引用(Outlive) 比较作用域，以确定所有的借用是否有效  例： 1234567891011121314151617181920212223242526272829&#x2F;&#x2F;函数中的泛型生命周期fn main() &#123;    let string1">
+<meta property="og:description" content="零成本抽象(zero-cost abstractions)  迭代器虽然是高级抽象，但在编译后，它们被转换成了与你手写低级代码几乎相同的代码。 迭代器是Rust的零成本抽象之一，这意味着使用这种抽象不会引入任何额外的运行时开销。  结论：在Rust中可放心使用迭代器和闭包等高级特性，它们提供了更高层次的代码抽象，同时保持着极高的运行时性能，不会带来性能损失。  自定义构建与发布配置 Cargo提供">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2026-03-17T12:24:53.000Z">
-<meta property="article:modified_time" content="2026-03-18T05:07:46.068Z">
+<meta property="article:published_time" content="2026-03-20T02:40:15.000Z">
+<meta property="article:modified_time" content="2026-03-20T03:33:57.399Z">
 <meta property="article:author" content="ZLSF">
 <meta property="article:tag" content="ZLSF,zlsf">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>学习rust_day08 - ZLSF的博客</title>
+  <title>学习rust_day10 - ZLSF的博客</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -226,7 +226,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="学习rust_day08"></span>
+            <span id="subtitle" data-typed-text="学习rust_day10"></span>
           
         </div>
 
@@ -237,8 +237,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2026-03-17 20:24" pubdate>
-          2026年3月17日 晚上
+        <time datetime="2026-03-20 10:40" pubdate>
+          2026年3月20日 上午
         </time>
       </span>
     
@@ -249,7 +249,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          906 字
+          515 字
         
       </span>
     
@@ -260,7 +260,7 @@
         
         
         
-          8 分钟
+          5 分钟
         
       </span>
     
@@ -305,71 +305,81 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">学习rust_day08</h1>
+            <h1 id="seo-header">学习rust_day10</h1>
             
             
               <div class="markdown-body">
                 
-                <p>生命周期</p>
-<p>当引用的生命周期可能以几种不同的方式相关联时，就必须标注生命周期了。</p>
-<p>借用检查器Borrow Checker</p>
+                <p>零成本抽象(zero-cost abstractions)</p>
 <ul>
-<li>确保数据存活的时间长于其引用(Outlive)</li>
-<li>比较作用域，以确定所有的借用是否有效</li>
+<li>迭代器虽然是高级抽象，但在编译后，它们被转换成了与你手写低级代码几乎相同的代码。</li>
+<li>迭代器是Rust的零成本抽象之一，这意味着使用这种抽象不会引入任何额外的运行时开销。</li>
+</ul>
+<p>结论：在Rust中可放心使用迭代器和闭包等高级特性，它们提供了更高层次的代码抽象，同时保持着极高的运行时性能，不会带来性能损失。</p>
+<hr>
+<p>自定义构建与发布配置</p>
+<p>Cargo提供两个主要的配置文件：</p>
+<ul>
+<li>dev: 运行cargo build时使用，适用于开发，默认优化调试体验</li>
+<li>release: 运行cargo build-release时使用，适用于发布，默认优化性能</li>
 </ul>
 <p>例：</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-comment">//函数中的泛型生命周期</span><br><span class="hljs-keyword">fn</span> <span class="hljs-title function_">main</span>() &#123;<br>    <span class="hljs-keyword">let</span> <span class="hljs-variable">string1</span> = <span class="hljs-type">String</span>::<span class="hljs-title function_ invoke__">from</span>(<span class="hljs-string">&quot;abcd&quot;</span>);<br>    <span class="hljs-keyword">let</span> <span class="hljs-variable">string2</span> = <span class="hljs-string">&quot;xyz&quot;</span>;<br>    <span class="hljs-keyword">let</span> <span class="hljs-variable">s</span>: &amp;<span class="hljs-symbol">&#x27;static</span> <span class="hljs-type">str</span> = <span class="hljs-string">&quot;hello world&quot;</span>; <span class="hljs-comment">//静态生命周期，存活于在整个程序运行</span><br><br>    <span class="hljs-keyword">let</span> <span class="hljs-variable">result</span> = <span class="hljs-title function_ invoke__">longest</span>(string1.<span class="hljs-title function_ invoke__">as_str</span>(), string2);<br>    <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;&#123;result&#125;&quot;</span>);<br>&#125;<br><br><span class="hljs-keyword">fn</span> <span class="hljs-title function_">longest</span>&lt;<span class="hljs-symbol">&#x27;a</span>&gt;(x: &amp;<span class="hljs-symbol">&#x27;a</span> <span class="hljs-type">str</span>, y: &amp;<span class="hljs-symbol">&#x27;a</span> <span class="hljs-type">str</span>) <span class="hljs-punctuation">-&gt;</span> &amp;<span class="hljs-symbol">&#x27;a</span> <span class="hljs-type">str</span> &#123; <span class="hljs-comment">//&#x27;a 该返回值的生命周期与参数中较短的生命周期一样长</span><br>    <span class="hljs-keyword">if</span> x.<span class="hljs-title function_ invoke__">len</span>() &gt; y.<span class="hljs-title function_ invoke__">len</span>() &#123;<br>        x<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        y<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">//struct定义中的生命周期注释</span><br><span class="hljs-keyword">struct</span> <span class="hljs-title class_">Import</span>&lt;<span class="hljs-symbol">&#x27;a</span>&gt; &#123; <span class="hljs-comment">//多用在含有引用的结构体</span><br>    part: &amp;<span class="hljs-symbol">&#x27;a</span> <span class="hljs-type">str</span><br>&#125;<br><br><span class="hljs-comment">//方法定义中的生命周期注解</span><br><span class="hljs-keyword">impl</span>&lt;<span class="hljs-symbol">&#x27;a</span>&gt; Import&lt;<span class="hljs-symbol">&#x27;a</span>&gt; &#123;<br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">level</span>(&amp;<span class="hljs-keyword">self</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">i32</span> &#123;<br>        <span class="hljs-number">3</span><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>Cargo.toml</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs toml"><span class="hljs-section">[package]</span><br><span class="hljs-attr">name</span> = <span class="hljs-string">&quot;trysomething&quot;</span><br><span class="hljs-attr">version</span> = <span class="hljs-string">&quot;0.1.0&quot;</span><br><span class="hljs-attr">edition</span> = <span class="hljs-string">&quot;2024&quot;</span><br><br><span class="hljs-section">[dependencies]</span><br><br><span class="hljs-section">[profile.dev]</span><br><span class="hljs-attr">opt-level</span> = <span class="hljs-number">0</span> <span class="hljs-comment">#表示优化级别，0为最少优化</span><br><br><span class="hljs-section">[profile.release]</span><br><span class="hljs-attr">opt-level</span> = <span class="hljs-number">3</span><br></code></pre></td></tr></table></figure>
 
-<p>三条规则（在没有显式生命周期注解时）</p>
-<ul>
-<li>编译器为每个输入类型中的每个生命周期分配不同的生命周期参数</li>
-<li>如果只有一个输入生命周期参数，该生命周期将被分配给所有的输出生命周期参数</li>
-<li>如果有多个输入生命周期参数，但其中一个是&amp;sef或&amp;mut self(因为这是一个方法)，那么self的生命周期会被分配给所有的输出生命周期参数</li>
-</ul>
+<p>Cargo在线选项文档: <a target="_blank" rel="noopener" href="https://doc.rust-lang.org/cargo/reference/profiles.html">https://doc.rust-lang.org/cargo/reference/profiles.html</a></p>
 <hr>
-<p>编写测试</p>
-<p>例：</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-meta">#[derive(Debug)]</span><br><span class="hljs-keyword">struct</span> <span class="hljs-title class_">Rectangle</span> &#123;<br>    width: <span class="hljs-type">u32</span>,<br>    height: <span class="hljs-type">u32</span><br>&#125;<br><br><span class="hljs-keyword">impl</span> <span class="hljs-title class_">Rectangle</span> &#123;<br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">can_hold</span>(&amp;<span class="hljs-keyword">self</span>, other: &amp;Rectangle) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">bool</span> &#123;<br>        <span class="hljs-keyword">self</span>.width &gt; other.width &amp;&amp;<span class="hljs-keyword">self</span>.height &gt; other.height<br>    &#125;<br>&#125;<br><br><span class="hljs-meta">#[cfg(test)]</span> <span class="hljs-comment">//设置该测试代码只在cargo test生效</span><br><span class="hljs-keyword">mod</span> test &#123;<br>    <span class="hljs-keyword">use</span> super::*; <span class="hljs-comment">//应用模块外的内容</span><br><br>    <span class="hljs-meta">#[test]</span><br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">larger_can_hold_smaller</span>() &#123;<br>        <span class="hljs-keyword">let</span> <span class="hljs-variable">larger</span> = Rectangle &#123;<br>            width: <span class="hljs-number">8</span>,<br>            height: <span class="hljs-number">7</span><br>        &#125;;<br><br>        <span class="hljs-keyword">let</span> <span class="hljs-variable">smaller</span> = Rectangle &#123;<br>            width: <span class="hljs-number">5</span>,<br>            height: <span class="hljs-number">1</span><br>        &#125;;<br>        <span class="hljs-built_in">assert!</span>(larger.<span class="hljs-title function_ invoke__">can_hold</span>(&amp;smaller));<br>    &#125;<br><br>    <span class="hljs-meta">#[test]</span><br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">larger_cannot_hold_smaller</span>() &#123;<br>        <span class="hljs-keyword">let</span> <span class="hljs-variable">larger</span> = Rectangle &#123;<br>            width: <span class="hljs-number">8</span>,<br>            height: <span class="hljs-number">7</span><br>        &#125;;<br><br>        <span class="hljs-keyword">let</span> <span class="hljs-variable">smaller</span> = Rectangle &#123;<br>            width: <span class="hljs-number">5</span>,<br>            height: <span class="hljs-number">1</span><br>        &#125;;<br>        <span class="hljs-built_in">assert!</span>(!smaller.<span class="hljs-title function_ invoke__">can_hold</span>(&amp;larger));<br>    &#125;    <br><br>    <span class="hljs-comment">//assert_eq!()测试相等断言，asser_ne!()测试不等断言</span><br>    <span class="hljs-comment">//断言失败显示提示信息：assert!(fun(), &quot;失败信息&quot;)</span><br>    <span class="hljs-comment">//测试应该发生panic:在#[test]后加上#[should_panic(expected = &quot;指定匹配发生的错误信息&quot;)]</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>在crates.io上发布crate</p>
+<p>文档注释，使用 “&#x2F;&#x2F;&#x2F;“，支持Markdown，会生成html网页。</p>
+<p>使用命令生成文档：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">cargo doc [--open]<br></code></pre></td></tr></table></figure>
 
+<p>文档位置：target&#x2F;doc&#x2F;</p>
+<p>常用的Sections</p>
+<ul>
+<li>Examples</li>
+<li>Panics</li>
+<li>Errors</li>
+<li>Safety</li>
+</ul>
+<p>cargo test 会触发文档中的测试代码</p>
+<p>“&#x2F;&#x2F;!” 为整个crate添加说明，而不是只为了单个函数添加说明。</p>
 <hr>
-<p>执行与组织测试</p>
-<p>测试命令的参数</p>
-<ul>
-<li>先列出cargo test的参数    cargo test –help</li>
-<li>然后跟着–    cargo test – –help ，再列出Test binary(测试二进制文件)的参数</li>
-</ul>
-<p>测试的默认运行模式：使用线程并行运行</p>
-<p>必须确保：</p>
-<ul>
-<li>各个测试不互相依赖</li>
-<li>不依赖于共享的状态（包括环境：目录、环境变量等）</li>
-</ul>
-<p>单线程测试：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">cargo <span class="hljs-built_in">test</span> -- --test-threads=1<br></code></pre></td></tr></table></figure>
+<p>使用pub use导出方便的公共API</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">pub</span> <span class="hljs-keyword">use</span> self::modname::name;<br></code></pre></td></tr></table></figure>
 
-<p>在测试时将函数输出打印出来：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">cargo <span class="hljs-built_in">test</span> -- --show-output<br></code></pre></td></tr></table></figure>
+<p>在此之后，用户想使用模块内部的资源只需要 项目名::资源 。</p>
+<p>发布前准备工作：</p>
+<p>提交文件</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">git add --all<br>git commit --all -m update<br></code></pre></td></tr></table></figure>
 
-<p>运行指定的测试：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">cargo <span class="hljs-built_in">test</span> 函数名称(多个函数可以取其公有名称的部分)<br></code></pre></td></tr></table></figure>
+<p>设置开源协议和信息</p>
+<p>Cargo.toml:</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs toml"><span class="hljs-section">[package]</span><br><span class="hljs-attr">name</span> = <span class="hljs-string">&quot;trysomething&quot;</span><br><span class="hljs-attr">version</span> = <span class="hljs-string">&quot;0.1.0&quot;</span><br><span class="hljs-attr">edition</span> = <span class="hljs-string">&quot;2024&quot;</span><br><span class="hljs-attr">license</span> = <span class="hljs-string">&quot;MIT&quot;</span><br><span class="hljs-attr">description</span> = <span class="hljs-string">&quot;OvO&quot;</span><br><br><span class="hljs-section">[dependencies]</span><br></code></pre></td></tr></table></figure>
 
-<p>在#[test]后加上#[ignore]后该测试默认不运行。</p>
-<p>运行该被忽略的测试：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">cargo <span class="hljs-built_in">test</span> -- --ignored<br></code></pre></td></tr></table></figure>
+<p>发布：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">cargo publish<br></code></pre></td></tr></table></figure>
 
-<p>或者全部运行：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">cargo <span class="hljs-built_in">test</span> -- --include-ignored<br></code></pre></td></tr></table></figure>
+<p>注意，你的代码发布后将无法删除！！！</p>
+<p>除非：</p>
+<table>
+<thead>
+<tr>
+<th><strong>发布未满 72 小时</strong></th>
+<th>新发布的包可以在 3 天内删除</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>低下载量 + 单所有者 + 无依赖</strong></td>
+<td>每月下载量 &lt; 500 次，且只有一个所有者，且没有其他 crate 依赖它</td>
+</tr>
+</tbody></table>
+<p>废弃项目：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">cargo yank --vers 版本号<br></code></pre></td></tr></table></figure>
 
-<p>单元测试(Unit tests):小而集中的测试，每次只测试一个模块，并且可以测试私有接口</p>
-<p>集成测试(Integration tests):完全外部的测试，它们以其他外部代码的方式使用你的代码，仅使用公共接口，并且可能<br>在一个测试中覆盖多个模块</p>
-<p>如果项目只有binary crate(只有src&#x2F;main.rs)不能创建集成测试</p>
-<p>推荐的项目结构是：</p>
-<ul>
-<li>src&#x2F;main.rs保持简单，主要用于调用</li>
-<li>src&#x2F;Iib.rs包含主要逻辑</li>
-</ul>
-<p>这样可以对ib.rs进行集成测试</p>
-<p>原因是只有lib crate才能暴露函数供其他crate使用</p>
+<p>撤回废弃操作：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">cargo yank --vers 版本号 --undo<br></code></pre></td></tr></table></figure>
+
 
                 
               </div>
@@ -387,8 +397,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>学习rust_day08</div>
-      <div>https://zlsf-zl.github.io/2026/03/17/学习rust-day08/</div>
+      <div>学习rust_day10</div>
+      <div>https://zlsf-zl.github.io/2026/03/20/学习rust-day10/</div>
     </div>
     <div class="license-meta">
       
@@ -400,7 +410,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2026年3月17日</div>
+          <div>2026年3月20日</div>
         </div>
       
       
@@ -432,9 +442,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2026/03/19/%E5%AD%A6%E4%B9%A0rust-day09/" title="学习rust_day09">
+                      <a href="/2026/03/20/%E5%AD%A6%E4%B9%A0rust-day11/" title="学习rust_day11">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">学习rust_day09</span>
+                        <span class="hidden-mobile">学习rust_day11</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -442,8 +452,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2026/03/16/%E5%AD%A6%E4%B9%A0rust-day07/" title="学习rust_day07">
-                        <span class="hidden-mobile">学习rust_day07</span>
+                      <a href="/2026/03/19/%E5%AD%A6%E4%B9%A0rust-day09/" title="学习rust_day09">
+                        <span class="hidden-mobile">学习rust_day09</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
