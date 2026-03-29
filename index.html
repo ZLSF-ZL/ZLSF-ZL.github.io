@@ -1,7 +1,7 @@
 
 
 <!DOCTYPE html>
-<html lang="zh-CN" data-default-color-scheme=auto>
+<html lang="zh-CN" data-default-color-scheme=dark>
 
 
 
@@ -158,30 +158,6 @@
           
           
             <li class="nav-item">
-              <a class="nav-link" href="/categories/" target="_self">
-                <i class="iconfont icon-category-fill"></i>
-                <span>分类</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/tags/" target="_self">
-                <i class="iconfont icon-tags-fill"></i>
-                <span>标签</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
               <a class="nav-link" href="/about/" target="_self">
                 <i class="iconfont icon-user-fill"></i>
                 <span>关于</span>
@@ -264,7 +240,7 @@
       
       <a class="index-excerpt index-excerpt__noimg" href="/2026/03/28/%E5%AD%A6%E4%B9%A0rust-day18/" target="_self">
         <div>
-          Macro （宏）  Macro“宏”，在Rust中是一个“家族”，宏主要分为两大类： 声明式宏(Declarative Macros),也就是通过macro_rules!定义的宏。 过程宏(Procedural Macros)，它又可以细分为三种不同的形式： 自定义的[derive]宏，它们用于结构体(struct)或枚举(enum)上，配合derive属性，自动为类型生成一些代码。 类似属性的
+          
         </div>
       </a>
 
@@ -297,7 +273,7 @@
       
       <a class="index-excerpt index-excerpt__noimg" href="/2026/03/27/%E5%AD%A6%E4%B9%A0rust-day17/" target="_self">
         <div>
-          Unsafe Rust Unsafe Rust:隐藏在安全背后的强大能力  Rust默认保证内存安全 Unsafe Rust不强制这些保证 用于更底层的系统编程或绕过编译器限制  Unsafe Rust的五个超能力  解引用裸&#x2F;原始指针 调用不安全函数或方法 访问或修改可变静态变量 实现不安全的trait 访问union的字段  Unsafe≠不安全  borrow checker仍然工
+          
         </div>
       </a>
 
@@ -330,7 +306,7 @@
       
       <a class="index-excerpt index-excerpt__noimg" href="/2026/03/26/%E5%AD%A6%E4%B9%A0rust-day16/" target="_self">
         <div>
-          模式匹配 模式Pattern  Rust中的特殊语法，用于匹配简单或复杂类型的结构 例如：与match耒表达式和其他构造结合，增强程序控制流程    模式的组成  字面值(Literals):例如数字或字符串 解构数据结构：数组、枚举、结构体、元组等 变量(Variables):命名的变量 通配符(Vildcards):_表示任意值 占位符(Placeholders):尚未具体定义的部分  使用方
+          
         </div>
       </a>
 
@@ -363,7 +339,7 @@
       
       <a class="index-excerpt index-excerpt__noimg" href="/2026/03/25/%E5%AD%A6%E4%B9%A0rust-day15/" target="_self">
         <div>
-          面向对象编程特性 隐藏实现细节的封装对象的实现细节不能被使用该对象的代码访问  pub关键字来决定我们代码中的哪些模块、类型、函数和方法应该是公共的 默认情况下其他所有内容都是私有的  继承作为类型系统和代码共享  继承是一种机制，通过它一个对象可以继承另一个对象定义中的元素，从而获得父对象的数据和行为，而无需再次定义它们 在不使用宏的情况下，没有办法定义一个继承父结构体的字段和方法实现的结构体
+          
         </div>
       </a>
 
@@ -396,7 +372,7 @@
       
       <a class="index-excerpt index-excerpt__noimg" href="/2026/03/24/%E5%AD%A6%E4%B9%A0rust-day14/" target="_self">
         <div>
-          Streams “消息传递”中异步的recv方法会随着时间产生一系列项目，这称为stream StreamExt Ext是Rust社区中使用另外一个trait扩展某个trait的常见模式  简单来说 Stream trait定义了一个低级接口，有效地结合了Iterator和Future traits StreamExt在Stream之上提供了一组更高级的APl,包括next方法以及类似于Itera
+          
         </div>
       </a>
 
@@ -429,7 +405,7 @@
       
       <a class="index-excerpt index-excerpt__noimg" href="/2026/03/22/%E5%AD%A6%E4%B9%A0rust-day13/" target="_self">
         <div>
-          异步编程  并行性Parallelism:同时执行多个操作 并发性Concurrency:在操作间进行切换 阻塞操作Blocking Operations:阻止程序继续执行直到操作完成 非阻塞操作Non-blocking Operations:允许程序在等待时执行其他任务  操作类型  CPU密集型(CPU-bound):受处理器能力限制（如视频导出） IO密集型O-bound):受输入&#x2F
+          
         </div>
       </a>
 
@@ -462,7 +438,7 @@
       
       <a class="index-excerpt index-excerpt__noimg" href="/2026/03/21/%E5%AD%A6%E4%B9%A0rust-day12/" target="_self">
         <div>
-          引用循环可能导致内存泄漏 内存泄漏 永远不会被清理掉的内存  Rust的安全保障使得意外的内存泄漏很难发生，但不是不可能 完全防止内存泄漏并不是Rust的保证之一 一&gt; 内存泄漏是内存安全的 例如：通过Rc和RefCell就可创建出循环引用，导致内存泄漏 各个项的引用数永不为0    例： 123456789101112131415161718192021222324252627282930
+          
         </div>
       </a>
 
@@ -495,7 +471,7 @@
       
       <a class="index-excerpt index-excerpt__noimg" href="/2026/03/20/%E5%AD%A6%E4%B9%A0rust-day11/" target="_self">
         <div>
-          Cargo WorkspacesWorkspace（工作空间)是一组共享同一个Cargo.lock文件和输出目录的包Vorkspace例子：  一个Binary crate: main 两个Library Crate: add_one add two    例： 在项目顶级文件夹下创建Cargo.toml： 12345[workspace]members = [    &quot;adder&qu
+          
         </div>
       </a>
 
@@ -528,7 +504,7 @@
       
       <a class="index-excerpt index-excerpt__noimg" href="/2026/03/20/%E5%AD%A6%E4%B9%A0rust-day10/" target="_self">
         <div>
-          零成本抽象(zero-cost abstractions)  迭代器虽然是高级抽象，但在编译后，它们被转换成了与你手写低级代码几乎相同的代码。 迭代器是Rust的零成本抽象之一，这意味着使用这种抽象不会引入任何额外的运行时开销。  结论：在Rust中可放心使用迭代器和闭包等高级特性，它们提供了更高层次的代码抽象，同时保持着极高的运行时性能，不会带来性能损失。  自定义构建与发布配置 Cargo提供
+          
         </div>
       </a>
 
@@ -561,7 +537,7 @@
       
       <a class="index-excerpt index-excerpt__noimg" href="/2026/03/19/%E5%AD%A6%E4%B9%A0rust-day09/" target="_self">
         <div>
-          闭包 可以存储在变量中或作为参数传递给其他函数的匿名函数。 闭包中的捕获概念可以理解成从该闭包的上下文获得一些变量的信息以至于可以穿透函数定义的界限使用这些变量。 闭包的类型推断和注释  闭包通常不需要像n函数那样标注参数或返回值的类型 不会在暴露给用户的接口中使用 通常很短，只在有限的上下文中使用，以便编译器可推断其参数和返回值的类型 可以添加类型注释  闭包有点类似匿名函数。 例： 12345
+          
         </div>
       </a>
 
