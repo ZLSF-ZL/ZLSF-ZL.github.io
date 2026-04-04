@@ -1,0 +1,861 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/bug.png">
+  <link rel="icon" href="/img/bug.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#1F3144">
+  <meta name="author" content="ZLSF">
+  <meta name="keywords" content="ZLSF,zlsf">
+  
+    <meta name="description" content="练习1 - Xpdf版本：XPDF 3.02 漏洞编号：CVE-2019-13288 CVE-2019-13288 是一个漏洞，可能导致通过精心制作的文件进行无限递归。 由于程序中每个被调用函数都会在栈上分配一个栈帧，如果某个函数被递归调用过多次，可能会导致堆栈内存耗尽和程序崩溃。 因此，远程攻击者可以利用这一点发动 DoS 攻击。 下载Xpdf创建项目目录并下载源码： 12345mkdir -p">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AFL++实战其一">
+<meta property="og:url" content="https://zlsf-zl.github.io/2026/04/04/AFL-%E5%AE%9E%E6%88%98%E5%85%B6%E4%B8%80/index.html">
+<meta property="og:site_name" content="ZLSF的博客">
+<meta property="og:description" content="练习1 - Xpdf版本：XPDF 3.02 漏洞编号：CVE-2019-13288 CVE-2019-13288 是一个漏洞，可能导致通过精心制作的文件进行无限递归。 由于程序中每个被调用函数都会在栈上分配一个栈帧，如果某个函数被递归调用过多次，可能会导致堆栈内存耗尽和程序崩溃。 因此，远程攻击者可以利用这一点发动 DoS 攻击。 下载Xpdf创建项目目录并下载源码： 12345mkdir -p">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://zlsf-zl.github.io/2026/04/04/AFL-%E5%AE%9E%E6%88%98%E5%85%B6%E4%B8%80/01000.png">
+<meta property="article:published_time" content="2026-04-04T05:54:38.000Z">
+<meta property="article:modified_time" content="2026-04-04T16:08:49.731Z">
+<meta property="article:author" content="ZLSF">
+<meta property="article:tag" content="ZLSF,zlsf">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://zlsf-zl.github.io/2026/04/04/AFL-%E5%AE%9E%E6%88%98%E5%85%B6%E4%B8%80/01000.png">
+  
+  
+  
+  <title>AFL++实战其一 - ZLSF的博客</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"zlsf-zl.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"6qfbMdW9PFOPATbmhAiyPWcK-MdYXbMMI","app_key":"X9xyyWbc7hafcwTqYXwdhjE5","server_url":"https://6qfbmdw9.api.lncldglobal.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>ZLSF的博客</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/start.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="AFL++实战其一"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-04-04 13:54" pubdate>
+          2026年4月4日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          24 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">AFL++实战其一</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="练习1-Xpdf"><a href="#练习1-Xpdf" class="headerlink" title="练习1 - Xpdf"></a>练习1 - Xpdf</h2><p>版本：XPDF 3.02</p>
+<p>漏洞编号：CVE-2019-13288</p>
+<p>CVE-2019-13288 是一个漏洞，可能导致通过精心制作的文件进行无限递归。</p>
+<p>由于程序中每个被调用函数都会在栈上分配一个栈帧，如果某个函数被递归调用过多次，可能会导致堆栈内存耗尽和程序崩溃。</p>
+<p>因此，远程攻击者可以利用这一点发动 DoS 攻击。</p>
+<h3 id="下载Xpdf"><a href="#下载Xpdf" class="headerlink" title="下载Xpdf"></a>下载Xpdf</h3><p>创建项目目录并下载源码：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">mkdir</span> -p <span class="hljs-variable">$HOME</span>/fuzz_main/exercise1/<br><span class="hljs-built_in">cd</span> <span class="hljs-variable">$HOME</span>/fuzz_main/exercise1/<br><span class="hljs-built_in">mkdir</span> fuzzing_xpdf &amp;&amp; <span class="hljs-built_in">cd</span> fuzzing_xpdf/<br>wget https://dl.xpdfreader.com/old/xpdf-3.02.tar.gz<br>tar -xvzf xpdf-3.02.tar.gz<br></code></pre></td></tr></table></figure>
+
+<p>构建Xpdf：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">cd</span> xpdf-3.02<br><span class="hljs-built_in">sudo</span> apt update &amp;&amp; <span class="hljs-built_in">sudo</span> apt install -y build-essential gcc<br>./configure --prefix=<span class="hljs-string">&quot;<span class="hljs-variable">$HOME</span>/fuzz_main/exercise1/fuzzing_xpdf/install/&quot;</span><br>make<br>make install<br></code></pre></td></tr></table></figure>
+
+<p>下载测试用例：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">cd</span> <span class="hljs-variable">$HOME</span>/fuzz_main/exercise1/fuzzing_xpdf/<br><span class="hljs-built_in">mkdir</span> pdf_examples &amp;&amp; <span class="hljs-built_in">cd</span> pdf_examples<br>wget https://github.com/mozilla/pdf.js-sample-files/raw/master/helloworld.pdf<br></code></pre></td></tr></table></figure>
+
+<p>试试看是否构建成功：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">pdfinfo <span class="hljs-variable">$HOME</span>/fuzz_main/exercise1/fuzzing_xpdf/pdf_examples/helloworld.pdf<br></code></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs sh">╰─ pdfinfo <span class="hljs-variable">$HOME</span>/fuzz_main/exercise1/fuzzing_xpdf/pdf_examples/helloworld.pdf<br>Custom Metadata: no<br>Metadata Stream: no<br>Tagged:          no<br>UserProperties:  no<br>Suspects:        no<br>Form:            none<br>JavaScript:      no<br>Pages:           1<br>Encrypted:       no<br>Page size:       200 x 200 pts<br>Page rot:        0<br>File size:       678 bytes<br>Optimized:       no<br>PDF version:     1.7<br></code></pre></td></tr></table></figure>
+
+<h3 id="安装AFL"><a href="#安装AFL" class="headerlink" title="安装AFL++"></a>安装AFL++</h3><p>可见：<a target="_blank" rel="noopener" href="https://github.com/AFLplusplus/AFLplusplus/blob/stable/docs/INSTALL.md">https://github.com/AFLplusplus/AFLplusplus/blob/stable/docs/INSTALL.md</a></p>
+<h3 id="使用AFL"><a href="#使用AFL" class="headerlink" title="使用AFL++"></a>使用AFL++</h3><p>AFL 是一种<strong>覆盖导向的模糊器</strong> ，意味着它会为每个变异输入收集覆盖信息，以发现新的执行路径和潜在的漏洞。实际上，它会在每个基本代码块中插入函数（插桩）来获得反馈信息，常见的是在跳转代码<code>jz</code>类附近插入函数。</p>
+<p>我们需要用AFL的专用编译器来重新编译我们的代码。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">rm</span> -fr <span class="hljs-variable">$HOME</span>/fuzz_main/exercise1/fuzzing_xpdf/install/<br><span class="hljs-built_in">cd</span> <span class="hljs-variable">$HOME</span>/fuzz_main/exercise1/xpdf-3.02/<br>make clean<br></code></pre></td></tr></table></figure>
+
+<p>使用<em>afl-clang-fast</em>编译器构建 xpdf：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">export</span> LLVM_CONFIG=<span class="hljs-string">&quot;llvm-config-11&quot;</span><br>CC=<span class="hljs-variable">$HOME</span>/AFLplusplus/afl-clang-fast CXX=<span class="hljs-variable">$HOME</span>/AFLplusplus/afl-clang-fast++ ./configure --prefix=<span class="hljs-string">&quot;<span class="hljs-variable">$HOME</span>/fuzz_main/exercise1/fuzzing_xpdf/install/&quot;</span><br>make<br>make install<br></code></pre></td></tr></table></figure>
+
+<p>需要按照你实际的AFL路径来改变。</p>
+<p>现在你可以运行FUZZ：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">mkdir</span> <span class="hljs-variable">$HOME</span>/fuzz_main/exercise1/fuzz<br><span class="hljs-built_in">cd</span> <span class="hljs-variable">$HOME</span>/fuzz_main/exercise1/fuzz<br><span class="hljs-built_in">sudo</span> afl-system-config<br>afl-fuzz -i <span class="hljs-variable">$HOME</span>/fuzz_main/exercise1/fuzzing_xpdf/pdf_examples -o ./out -s 123 -- <span class="hljs-variable">$HOME</span>/fuzz_main/exercise1/fuzzing_xpdf/install/bin/pdftotext @@ <span class="hljs-variable">$HOME</span>/fuzz_main/exercise1/fuzzing_xpdf/output<br></code></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-i</code></td>
+<td><strong>输入目录</strong>，存放初始种子 PDF 文件，AFL 会基于这些文件进行变异</td>
+</tr>
+<tr>
+<td><code>-o</code></td>
+<td><strong>输出目录</strong>，存放崩溃样本、挂起样本、队列文件等测试结果</td>
+</tr>
+<tr>
+<td><code>-s 123</code></td>
+<td>设置随机种子为 <code>123</code>，使模糊测试过程可重现</td>
+</tr>
+<tr>
+<td><code>--</code></td>
+<td>分隔符，后面是被测试的目标程序及其参数</td>
+</tr>
+<tr>
+<td><code>@@</code></td>
+<td><strong>关键占位符</strong>，AFL 会自动将其替换为变异后的临时文件路径</td>
+</tr>
+<tr>
+<td>最后的 <code>$HOME/fuzzing_xpdf/output</code></td>
+<td><code>pdftotext</code> 的输出参数，指定转换后的文本存放位置</td>
+</tr>
+</tbody></table>
+<p>接下来就是耐心等待：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs sh">    AFL ++4.41a &#123;default&#125; (../fuzzing_xpdf/install/bin/pdftotext) [explore]<br>┌─ process timing ────────────────────────────────────┬─ overall results ────┐<br>│        run time : 0 days, 0 hrs, 30 min, 26 sec     │  cycles <span class="hljs-keyword">done</span> : 0     │<br>│   last new find : 0 days, 0 hrs, 0 min, 4 sec       │ corpus count : 2079  │<br>│last saved crash : 0 days, 0 hrs, 19 min, 20 sec     │saved crashes : 2     │<br>│ last saved hang : 0 days, 0 hrs, 10 min, 51 sec     │  saved hangs : 10    │<br>├─ cycle progress ─────────────────────┬─ map coverage┴──────────────────────┤<br>│  now processing : 1966.2 (94.6%)     │    map density : 4.25% / 11.90%     │<br>│  runs timed out : 0 (0.00%)          │ count coverage : 4.63 bits/tuple    │<br>├─ stage progress ─────────────────────┼─ findings <span class="hljs-keyword">in</span> depth ─────────────────┤<br>│  now trying : havoc                  │ favored items : 194 (9.33%)         │<br>│ stage execs : 381/400 (95.25%)       │  new edges on : 364 (17.51%)        │<br>│ total execs : 1.46M                  │ total crashes : 2 (2 saved)         │<br>│  <span class="hljs-built_in">exec</span> speed : 799.4/sec              │  total tmouts : 88 (0 saved)        │<br>├─ fuzzing strategy yields ────────────┴─────────────┬─ item geometry ───────┤<br>│   bit flips : 3/59.1k, 1/59.1k, 2/59.1k            │    levels : 19        │<br>│  byte flips : 0/7392, 0/7381, 2/7359               │   pending : 1544      │<br>│ arithmetics : 10/517k, 0/1.03M, 0/1.03M            │  pend fav : 0         │<br>│  known ints : 0/66.4k, 1/280k, 2/411k              │ own finds : 2078      │<br>│  dictionary : 0/0, 0/0, 0/0, 0/0                   │  imported : 0         │<br>│havoc/splice : 1774/1.11M, 0/0                      │ stability : 100.00%   │<br>│py/custom/rq : unused, unused, unused, unused       ├───────────────────────┘<br>│    trim/eff : 0.41%/170k, 99.62%                   │          [cpu000: 75%]<br>└─ strategy: explore ────────── state: <span class="hljs-keyword">in</span> progress ──┘^C<br><br>+++ Testing aborted by user +++<br><br>[!] Stopped during the first cycle, results may be incomplete.<br>    (For info on resuming, see /usr/local/share/doc/afl/README.md)<br>[*] Writing ./out/default/fastresume.bin ...<br>[+] fastresume.bin successfully written with 763463 bytes.<br>[+] We<span class="hljs-string">&#x27;re done here. Have a nice day!</span><br></code></pre></td></tr></table></figure>
+
+<p>直到<code>overall results</code>中的<code>saved crashes</code>不再为0时就可以停止FUZZ。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">cd</span> <span class="hljs-variable">$HOME</span>/fuzz_main/exercise1/fuzz/out/default/crashes<br></code></pre></td></tr></table></figure>
+
+<p>该目录下就是导致程序崩溃的输入文件集合。</p>
+<h3 id="重现崩溃过程"><a href="#重现崩溃过程" class="headerlink" title="重现崩溃过程"></a>重现崩溃过程</h3><p>将崩溃输入传递给pdftotext：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-variable">$HOME</span>/fuzz_main/exercise1/fuzzing_xpdf/install/bin/pdftotext <span class="hljs-variable">$HOME</span>/fuzz_main/exercise1/fuzz/out/default/crashes/&lt;your filename&gt; <span class="hljs-variable">$HOME</span>/fuzz_main/exercise1/fuzzing_xpdf/output<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh">╰─ <span class="hljs-variable">$HOME</span>/fuzz_main/exercise1/fuzzing_xpdf/install/bin/pdftotext ./out/default/crashes/id:000000,sig:11,src:001110,time:252252,execs:138241,op:havoc,rep:13 <span class="hljs-variable">$HOME</span>/fuzz_main/exercise1/fuzzing_xpdf/output<br>Error (18145): Illegal character <span class="hljs-string">&#x27;)&#x27;</span><br>Error: PDF file is damaged - attempting to reconstruct xref table...<br>[1]    471912 segmentation fault  <span class="hljs-variable">$HOME</span>/fuzz_main/exercise1/fuzzing_xpdf/install/bin/pdftotext<br></code></pre></td></tr></table></figure>
+
+<p>可以看到存在崩溃。</p>
+<h3 id="调试"><a href="#调试" class="headerlink" title="调试"></a>调试</h3><p>重新编译带源码的文件：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">rm</span> -fr <span class="hljs-variable">$HOME</span>/fuzz_main/exercise1/fuzzing_xpdf/install/<br><span class="hljs-built_in">cd</span> <span class="hljs-variable">$HOME</span>/fuzz_main/exercise1/xpdf-3.02/<br>make clean<br>CFLAGS=<span class="hljs-string">&quot;-g -O0&quot;</span> CXXFLAGS=<span class="hljs-string">&quot;-g -O0&quot;</span> ./configure --prefix=<span class="hljs-string">&quot;<span class="hljs-variable">$HOME</span>/fuzz_main/exercise1/fuzzing_xpdf/install/&quot;</span><br>make<br>make install<br></code></pre></td></tr></table></figure>
+
+<p>我们使用gdb分析该崩溃文件：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">gdb --args <span class="hljs-variable">$HOME</span>/fuzz_main/exercise1/fuzzing_xpdf/install/bin/pdftotext <span class="hljs-variable">$HOME</span>/fuzz_main/exercise1/fuzz/out/default/crashes/&lt;your filename&gt; <span class="hljs-variable">$HOME</span>/fuzz_main/exercise1/fuzzing_xpdf/output<br></code></pre></td></tr></table></figure>
+
+<p>然后再gdb中输入：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">&gt;&gt; r<br></code></pre></td></tr></table></figure>
+
+<p>你会看见输出：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><code class="hljs sh">GNU gdb (Ubuntu 15.0.50.20240403-0ubuntu1) 15.0.50.20240403-git<br>Copyright (C) 2024 Free Software Foundation, Inc.<br>License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;<br>This is free software: you are free to change and redistribute it.<br>There is NO WARRANTY, to the extent permitted by law.<br>Type <span class="hljs-string">&quot;show copying&quot;</span> and <span class="hljs-string">&quot;show warranty&quot;</span> <span class="hljs-keyword">for</span> details.<br>This GDB was configured as <span class="hljs-string">&quot;x86_64-linux-gnu&quot;</span>.<br>Type <span class="hljs-string">&quot;show configuration&quot;</span> <span class="hljs-keyword">for</span> configuration details.<br>For bug reporting instructions, please see:<br>&lt;https://www.gnu.org/software/gdb/bugs/&gt;.<br>Find the GDB manual and other documentation resources online at:<br>    &lt;http://www.gnu.org/software/gdb/documentation/&gt;.<br><br>For <span class="hljs-built_in">help</span>, <span class="hljs-built_in">type</span> <span class="hljs-string">&quot;help&quot;</span>.<br>Type <span class="hljs-string">&quot;apropos word&quot;</span> to search <span class="hljs-keyword">for</span> commands related to <span class="hljs-string">&quot;word&quot;</span>...<br>pwndbg: loaded 175 pwndbg commands and 47 shell commands. Type pwndbg [--shell | --all] [filter] <span class="hljs-keyword">for</span> a list.<br>pwndbg: created <span class="hljs-variable">$rebase</span>, <span class="hljs-variable">$base</span>, <span class="hljs-variable">$hex2ptr</span>, <span class="hljs-variable">$bn_sym</span>, <span class="hljs-variable">$bn_var</span>, <span class="hljs-variable">$bn_eval</span>, <span class="hljs-variable">$ida</span> GDB <span class="hljs-built_in">functions</span> (can be used with <span class="hljs-built_in">print</span>/break)<br>Reading symbols from /home/zlsf/fuzz_main/exercise1/fuzzing_xpdf/install/bin/pdftotext...<br>------- tip of the day (<span class="hljs-built_in">disable</span> with <span class="hljs-built_in">set</span> show-tips off) -------<br>Want to NOP some instructions? Use patch &lt;address&gt; <span class="hljs-string">&#x27;nop; nop; nop&#x27;</span><br>pwndbg&gt; r<br>Starting program: /home/zlsf/fuzz_main/exercise1/fuzzing_xpdf/install/bin/pdftotext /home/zlsf/fuzz_main/exercise1/fuzz/out/default/crashes/id:000000,sig:11,src:001110,time:252252,execs:138241,op:havoc,rep:13 /home/zlsf/fuzz_main/exercise1/fuzzing_xpdf/output<br>[Thread debugging using libthread_db enabled]<br>Using host libthread_db library <span class="hljs-string">&quot;/lib/x86_64-linux-gnu/libthread_db.so.1&quot;</span>.<br>Error (18145): Illegal character <span class="hljs-string">&#x27;)&#x27;</span><br>Error: PDF file is damaged - attempting to reconstruct xref table...<br><br>Program received signal SIGSEGV, Segmentation fault.<br>0x00007ffff78ac4d9 <span class="hljs-keyword">in</span> _int_malloc (av=av@entry=0x7ffff7a03ac0 &lt;main_arena&gt;, bytes=4) at ./malloc/malloc.c:4460<br>warning: 4460   ./malloc/malloc.c: No such file or directory<br>LEGEND: STACK | HEAP | CODE | DATA | WX | RODATA<br>──────────────────────────────────────────────────────────────[ REGISTERS / show-flags off / show-compact-regs off ]───────────────────────────────────────────────────────────────<br> RAX  0x17d41<br> RBX  0x20<br> RCX  0x55555742b2c0 ◂— 0<br> RDX  0x21<br> RDI  0x55555742b2b0 ◂— 0<br> RSI  4<br> R8   0x7ffff7a03b20 (main_arena+96) —▸ 0x55555742b2c0 ◂— 0<br> R9   0x20<br> R10  1<br> R11  0<br> R12  0x7ffff7a03ac0 (main_arena) ◂— 0<br> R13  4<br> R14  0x55555742b2b0 ◂— 0<br> R15  0x20<br> RBP  0x7fffff7ff060 —▸ 0x7fffff7ff0a0 ◂— 1<br> RSP  0x7fffff7fefe0<br> RIP  0x7ffff78ac4d9 (_int_malloc+3945) ◂— call alloc_perturb<br>───────────────────────────────────────────────────────────────────────[ DISASM / x86-64 / <span class="hljs-built_in">set</span> <span class="hljs-built_in">emulate</span> on ]────────────────────────────────────────────────────────────────────────<br> ► 0x7ffff78ac4d9 &lt;_int_malloc+3945&gt;    call   alloc_perturb               &lt;alloc_perturb&gt;<br>        rdi: 0x55555742b2b0 ◂— 0<br>        rsi: 4<br><br>   0x7ffff78ac4de &lt;_int_malloc+3950&gt;    jmp    _int_malloc+1402            &lt;_int_malloc+1402&gt;<br>    ↓<br>   0x7ffff78abaea &lt;_int_malloc+1402&gt;    mov    rax, qword ptr [rbp - 0x38]<br>   0x7ffff78abaee &lt;_int_malloc+1406&gt;    sub    rax, qword ptr fs:[0x28]<br>   0x7ffff78abaf7 &lt;_int_malloc+1415&gt;    jne    _int_malloc+3955            &lt;_int_malloc+3955&gt;<br><br>   0x7ffff78abafd &lt;_int_malloc+1421&gt;    add    rsp, 0x58<br>   0x7ffff78abb01 &lt;_int_malloc+1425&gt;    mov    rax, r14<br>   0x7ffff78abb04 &lt;_int_malloc+1428&gt;    pop    rbx<br>   0x7ffff78abb05 &lt;_int_malloc+1429&gt;    pop    r12<br>   0x7ffff78abb07 &lt;_int_malloc+1431&gt;    pop    r13<br>   0x7ffff78abb09 &lt;_int_malloc+1433&gt;    pop    r14<br>─────────────────────────────────────────────────────────────────────────────────────[ STACK ]─────────────────────────────────────────────────────────────────────────────────────<br>&lt;Could not <span class="hljs-built_in">read</span> memory at 0x7fffff7fefe0&gt;<br>───────────────────────────────────────────────────────────────────────────────────[ BACKTRACE ]───────────────────────────────────────────────────────────────────────────────────<br> ► 0   0x7ffff78ac4d9 _int_malloc+3945<br>   1   0x7ffff78ad812 malloc+418<br>   2   0x555555673212 copyString+82<br>   3   0x555555673212 copyString+82<br>   4   0x5555556214c1 Lexer::getObj(Object*)+9361<br>   5   0x55555562bc47 Parser::getObj(Object*, unsigned char*, CryptAlgorithm, int, int, int)+1207<br>   6   0x55555562bc47 Parser::getObj(Object*, unsigned char*, CryptAlgorithm, int, int, int)+1207<br>   7   0x555555662a74 XRef::fetch(int, int, Object*)+468<br>───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────<br>pwndbg&gt;<br></code></pre></td></tr></table></figure>
+
+<p>输入bt回溯调用的栈：</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ruby"><span class="hljs-meta prompt_">&gt;&gt;</span> bt -<span class="hljs-number">30</span><br></code></pre></td></tr></table></figure>
+
+<p>可以查看程序启动最开始调用的30层。程序是无限递归的，全部查看不现实。</p>
+<p><img src="/2026/04/04/AFL-%E5%AE%9E%E6%88%98%E5%85%B6%E4%B8%80/01000.png" srcset="/img/loading.gif" lazyload></p>
+<p>我们可以看到出现了循环调用：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs text">Parser::makeStream (Frame N)<br>    ↓<br>Parser::getObj (Frame N+1)<br>    ↓<br>XRef::fetch (Frame N+2)<br>    ↓<br>Object::dictLookup (Frame N+3)<br>    ↓<br>Parser::makeStream (Frame N+4)<br></code></pre></td></tr></table></figure>
+
+<h3 id="源码追踪"><a href="#源码追踪" class="headerlink" title="源码追踪"></a>源码追踪</h3><p><code>main (argc=3, argv=argv@entry=0x7fffffffe1e8)</code>：pdftotext.cc:89</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> *argv[])</span> &#123;<br>  PDFDoc *doc;<br>  GString *fileName;<br>  GString *textFileName;<br>  GString *ownerPW, *userPW;<br>  TextOutputDev *textOut;<br>  FILE *f;<br>  <span class="hljs-comment">// ...</span><br>  doc = new PDFDoc(fileName, ownerPW, userPW); <span class="hljs-comment">//pdftotext.cc:151</span><br>  <span class="hljs-comment">// ...</span><br></code></pre></td></tr></table></figure>
+
+<p>新建了一个PDFDoc对象并传入文件名和密码。</p>
+<p><code>PDFDoc::PDFDoc (this=0x55555593b110, fileNameA=&lt;optimized out&gt;, ownerPassword=0x0, userPassword=0x0, guiDataA=&lt;optimized out&gt;)</code>：PDFDoc.cc:160</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs C">PDFDoc::PDFDoc(BaseStream *strA, GString *ownerPassword,<br>	       GString *userPassword, <span class="hljs-type">void</span> *guiDataA) &#123;<br>  ok = gFalse;<br>  errCode = errNone;<br>  guiData = guiDataA;<br>  <span class="hljs-keyword">if</span> (strA-&gt;getFileName()) &#123;<br>    fileName = strA-&gt;getFileName()-&gt;copy();<br>  &#125; <span class="hljs-keyword">else</span> &#123;<br>    fileName = <span class="hljs-literal">NULL</span>;<br>  &#125;<br>  <span class="hljs-comment">// ...</span><br>  ok = setup(ownerPassword, userPassword); <span class="hljs-comment">//PDFDoc.cc:177</span><br>  <span class="hljs-comment">// ...</span><br></code></pre></td></tr></table></figure>
+
+<p>主要是想从流中获得文件名，启动setup函数完成核心初始化。</p>
+<p><code>PDFDoc::setup (this=this@entry=0x55555593b110, ownerPassword=ownerPassword@entry=0x0, userPassword=userPassword@entry=0x0)</code>：PDFDoc.cc:180</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs C">GBool <span class="hljs-title function_">PDFDoc::setup</span><span class="hljs-params">(GString *ownerPassword, GString *userPassword)</span> &#123;<br>  str-&gt;reset();<br><br>  <span class="hljs-comment">// check header</span><br>  checkHeader();<br><br>  <span class="hljs-comment">// read xref table</span><br>  xref = new XRef(str);<br>  <span class="hljs-keyword">if</span> (!xref-&gt;isOk()) &#123;<br>    error(<span class="hljs-number">-1</span>, <span class="hljs-string">&quot;Couldn&#x27;t read xref table&quot;</span>);<br>    errCode = xref-&gt;getErrorCode();<br>    <span class="hljs-keyword">return</span> gFalse;<br>  &#125;<br>  <span class="hljs-comment">// ...</span><br>  catalog = new Catalog(xref); <span class="hljs-comment">//PDFDoc.cc:201</span><br>  <span class="hljs-comment">// ...</span><br></code></pre></td></tr></table></figure>
+
+<p>对pdf进行初级检查，从调用流上看问题发生在读取目录这一块也就是新建Catalog这行。</p>
+<p><code>Catalog::Catalog (this=0x55555593d940, xrefA=&lt;optimized out&gt;)</code>：Catalog.cc:30</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs C">Catalog::Catalog(XRef *xrefA) &#123;<br>  Object catDict, pagesDict, pagesDictRef;<br>  Object obj, obj2;<br>  <span class="hljs-type">char</span> *alreadyRead;<br>  <span class="hljs-type">int</span> numPages0;<br>  <span class="hljs-type">int</span> i;<br>  <span class="hljs-comment">// ...</span><br>  numPages = readPageTree(pagesDict.getDict(), <span class="hljs-literal">NULL</span>, <span class="hljs-number">0</span>, alreadyRead); <span class="hljs-comment">//Catalog.cc:83</span><br>  <span class="hljs-comment">// ...</span><br></code></pre></td></tr></table></figure>
+
+<p>readPageTree从函数名来看像是要读取页目录树。</p>
+<p><code>Catalog::readPageTree (this=this@entry=0x55555593d940, pagesDict=&lt;optimized out&gt;, attrs=attrs@entry=0x0, start=start@entry=0,alreadyRead=alreadyRead@entry=0x55555593dd00 &quot;&quot;)</code>：Catalog.cc:182</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-type">int</span> <span class="hljs-title function_">Catalog::readPageTree</span><span class="hljs-params">(Dict *pagesDict, PageAttrs *attrs, <span class="hljs-type">int</span> start,</span><br><span class="hljs-params">			  <span class="hljs-type">char</span> *alreadyRead)</span> &#123;<br>  Object kids;<br>  Object kid;<br>  Object kidRef;<br>  PageAttrs *attrs1, *attrs2;<br>  Page *page;<br>  <span class="hljs-type">int</span> i, j;<br>  <span class="hljs-comment">// ...</span><br>  attrs2 = new PageAttrs(attrs1, kid.getDict()); <span class="hljs-comment">//Catalog.cc:212</span><br>  <span class="hljs-comment">// ...</span><br></code></pre></td></tr></table></figure>
+
+<p>这里实锤了要递归读取 PDF 页面树结构，PageAttrs是用来创建新的页面属性对象，继承父节点的属性。</p>
+<p><code>PageAttrs::PageAttrs (this=&lt;optimized out&gt;, attrs=&lt;optimized out&gt;, dict=0x55555593df80)</code>：Page.cc:63</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs C">PageAttrs::PageAttrs(PageAttrs *attrs, Dict *dict) &#123;<br>  Object obj1;<br><br>  <span class="hljs-comment">// get old/default values</span><br>  <span class="hljs-keyword">if</span> (attrs) &#123;<br>    mediaBox = attrs-&gt;mediaBox;<br>    cropBox = attrs-&gt;cropBox;<br>    haveCropBox = attrs-&gt;haveCropBox;<br>    rotate = attrs-&gt;rotate;<br>    attrs-&gt;resources.copy(&amp;resources);<br>  &#125; <span class="hljs-keyword">else</span> &#123;<br>  <span class="hljs-comment">// ...</span><br>  dict-&gt;lookup(<span class="hljs-string">&quot;Resources&quot;</span>, &amp;obj1); <span class="hljs-comment">//Page.cc:133</span><br>  <span class="hljs-comment">// ...</span><br></code></pre></td></tr></table></figure>
+
+<p>该函数用于从给定的页面字典中读取页面属性，并继承父节点的属性（如果提供了父节点属性）。dict-&gt;lookup(“Resources”, &amp;obj1);是在读取页面的资源字典（字体、图像、颜色空间等）</p>
+<p><code>XRef::fetch (this=&lt;optimized out&gt;, num=6, gen=0, obj=0x7fffffffde50)</code>：XRef.cc:789</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs C">Object *<span class="hljs-title function_">XRef::fetch</span><span class="hljs-params">(<span class="hljs-type">int</span> num, <span class="hljs-type">int</span> gen, Object *obj)</span> &#123;<br>  XRefEntry *e;<br>  Parser *parser;<br>  Object obj1, obj2, obj3;<br>  <span class="hljs-comment">// ...</span><br>  parser-&gt;getObj(obj, encrypted ? fileKey : (Guchar *)<span class="hljs-literal">NULL</span>,<br>		   encAlgorithm, keyLength, num, gen); <span class="hljs-comment">//XRef.cc:823</span><br>  <span class="hljs-comment">// ...</span><br></code></pre></td></tr></table></figure>
+
+<p>前面忽略了两次调用链，应该是Dict::lookup中的e-&gt;val.fetch(xref, obj)跳到Object::fetch再触发xref-&gt;fetch(ref.num, ref.gen, obj) : copy(obj);才会跳转到这里。</p>
+<p>该函数是 xpdf 中用于获取间接对象的核心函数。其主要功能是根据对象编号和生成号从 PDF 文件中获取对应的对象。</p>
+<p>根据给定的对象编号 (num) 和生成号 (gen)，从 PDF 文件的交叉引用表中查找并解析对应的间接对象。</p>
+<p><code>Parser::getObj (this=0x55555593c170, obj=0x7fffffffde50, fileKey=0x0, encAlgorithm=cryptRC4, keyLength=0, objNum=6, objGen=0)</code>：Parser.cc:39</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs C">Object *<span class="hljs-title function_">Parser::getObj</span><span class="hljs-params">(Object *obj, Guchar *fileKey,</span><br><span class="hljs-params">		       CryptAlgorithm encAlgorithm, <span class="hljs-type">int</span> keyLength,</span><br><span class="hljs-params">		       <span class="hljs-type">int</span> objNum, <span class="hljs-type">int</span> objGen)</span> &#123;<br>  <span class="hljs-type">char</span> *key;<br>  Stream *str;<br>  Object obj2;<br>  <span class="hljs-type">int</span> num;<br>  DecryptStream *decrypt;<br>  GString *s, *s2;<br>  <span class="hljs-type">int</span> c;<br>  <span class="hljs-comment">// ...</span><br>  obj-&gt;dictAdd(key, getObj(&amp;obj2, fileKey, encAlgorithm, keyLength,<br>				 objNum, objGen)); <span class="hljs-comment">//Parser.cc:85</span><br>  <span class="hljs-comment">// ...</span><br></code></pre></td></tr></table></figure>
+
+<p>这个函数是 xpdf 中用于解析 PDF 语法对象的递归下降解析器的核心函数。其主要功能是从输入流中读取并解析 PDF 对象。这次解析为字典和流解析， 如果后面跟着 stream关键字，则创建流对象，且调用 makeStream解析流。</p>
+<p><code>Parser::getObj (this=this@entry=0x55555593c170, obj=obj@entry=0x7fffffffdd68, fileKey=fileKey@entry=0x0, encAlgorithm=encAlgorithm@entry=cryptRC4,keyLength=keyLength@entry=0, objNum=objNum@entry=6, objGen=0) </code>：Parser.cc:39</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs C">Object *<span class="hljs-title function_">Parser::getObj</span><span class="hljs-params">(Object *obj, Guchar *fileKey,</span><br><span class="hljs-params">		       CryptAlgorithm encAlgorithm, <span class="hljs-type">int</span> keyLength,</span><br><span class="hljs-params">		       <span class="hljs-type">int</span> objNum, <span class="hljs-type">int</span> objGen)</span> &#123;<br>  <span class="hljs-type">char</span> *key;<br>  Stream *str;<br>  Object obj2;<br>  <span class="hljs-type">int</span> num;<br>  DecryptStream *decrypt;<br>  GString *s, *s2;<br>  <span class="hljs-type">int</span> c;<br>  <span class="hljs-comment">// ...</span><br>  obj-&gt;arrayAdd(getObj(&amp;obj2, fileKey, encAlgorithm, keyLength,<br>			   objNum, objGen)); <span class="hljs-comment">//Parser.cc:64</span><br>  <span class="hljs-comment">// ...</span><br></code></pre></td></tr></table></figure>
+
+<p>数组解析。</p>
+<p><code> Parser::getObj (this=this@entry=0x55555593c170, obj=obj@entry=0x7fffffffdce8, fileKey=fileKey@entry=0x0, encAlgorithm=encAlgorithm@entry=cryptRC4,keyLength=keyLength@entry=0, objNum=objNum@entry=6, objGen=0)</code>：Parser.cc:39</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs C">Object *<span class="hljs-title function_">Parser::getObj</span><span class="hljs-params">(Object *obj, Guchar *fileKey,</span><br><span class="hljs-params">		       CryptAlgorithm encAlgorithm, <span class="hljs-type">int</span> keyLength,</span><br><span class="hljs-params">		       <span class="hljs-type">int</span> objNum, <span class="hljs-type">int</span> objGen)</span> &#123;<br>  <span class="hljs-type">char</span> *key;<br>  Stream *str;<br>  Object obj2;<br>  <span class="hljs-type">int</span> num;<br>  DecryptStream *decrypt;<br>  GString *s, *s2;<br>  <span class="hljs-type">int</span> c;<br>  <span class="hljs-comment">// ...</span><br>  <span class="hljs-keyword">if</span> ((str = makeStream(obj, fileKey, encAlgorithm, keyLength,<br>			    objNum, objGen))) &#123;<br>	obj-&gt;initStream(str); <span class="hljs-comment">//Parser.cc:94</span><br>  <span class="hljs-comment">// ...</span><br></code></pre></td></tr></table></figure>
+
+<p>尝试解析流数据。</p>
+<p><code>Parser::makeStream (this=this@entry=0x55555593c170, dict=dict@entry=0x7fffffffdce8, fileKey=fileKey@entry=0x0, encAlgorithm=encAlgorithm@entry=cryptRC4,keyLength=keyLength@entry=0, objNum=objNum@entry=6, objGen=0)</code>：Parser.cc:143</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs C">Stream *<span class="hljs-title function_">Parser::makeStream</span><span class="hljs-params">(Object *dict, Guchar *fileKey,</span><br><span class="hljs-params">			   CryptAlgorithm encAlgorithm, <span class="hljs-type">int</span> keyLength,</span><br><span class="hljs-params">			   <span class="hljs-type">int</span> objNum, <span class="hljs-type">int</span> objGen)</span> &#123;<br>  Object obj;<br>  BaseStream *baseStr;<br>  Stream *str;<br>  Guint pos, endPos, length;<br>  <span class="hljs-comment">// ...</span><br>  dict-&gt;dictLookup(<span class="hljs-string">&quot;Length&quot;</span>, &amp;obj);<br>  <span class="hljs-comment">// ...</span><br></code></pre></td></tr></table></figure>
+
+<p>从之前的分析可以看出，<code>Parser::getObj</code> 函数在以下情况下可能导致无限递归：</p>
+<ol>
+<li>在 <code>makeStream</code> 中调用 <code>dict-&gt;dictLookup(&quot;Length&quot;, &amp;obj)</code></li>
+<li>如果 “Length” 是间接引用，<code>dictLookup</code> 会调用 <code>fetch</code></li>
+<li><code>fetch</code> 创建新的 <code>Parser</code> 并调用 <code>getObj</code></li>
+<li>新的 <code>Parser</code> 可能再次遇到流对象，调用 <code>makeStream</code></li>
+</ol>
+<p>最终我们追踪到：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs C">Object *<span class="hljs-title function_">Dict::lookup</span><span class="hljs-params">(<span class="hljs-type">char</span> *key, Object *obj)</span> &#123;<br>  DictEntry *e;<br><br>  <span class="hljs-keyword">return</span> (e = find(key)) ? e-&gt;val.fetch(xref, obj) : obj-&gt;initNull();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>其中e-&gt;val.fetch(xref, obj)是不是十分眼熟，其会调用XRef::fetch造成同样原因的递归。</p>
+<p>接下来的调用：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs routeros">Object::dictLookup (<span class="hljs-attribute">this</span>=0x7fffffffdce8, <span class="hljs-attribute">key</span>=0x4 &lt;error: Cannot access memory at<span class="hljs-built_in"> address </span>0x4&gt;, <span class="hljs-attribute">obj</span>=0x7fffffffdbd8) at ./Object.h:253<br>↓<br>XRef::fetch (<span class="hljs-attribute">this</span>=&lt;optimized out&gt;, <span class="hljs-attribute">num</span>=11, <span class="hljs-attribute">gen</span>=0, <span class="hljs-attribute">obj</span>=0x7fffffffdbd8) at XRef.cc:823<br>↓<br>Parser::getObj (<span class="hljs-attribute">this</span>=0x55555593c860, <span class="hljs-attribute">obj</span>=0x7fffffffdbd8, <span class="hljs-attribute">fileKey</span>=0x0, <span class="hljs-attribute">encAlgorithm</span>=cryptRC4, <span class="hljs-attribute">keyLength</span>=0, <span class="hljs-attribute">objNum</span>=11, <span class="hljs-attribute">objGen</span>=0) at Parser.cc:94<br>↓<br>Parser::makeStream (<span class="hljs-attribute">this</span>=this@entry=0x55555593c860, <span class="hljs-attribute">dict</span>=dict@entry=0x7fffffffdbd8, <span class="hljs-attribute">fileKey</span>=fileKey@entry=0x0, <span class="hljs-attribute">encAlgorithm</span>=encAlgorithm@entry=cryptRC4,keyLength=keyLength@entry=0, <span class="hljs-attribute">objNum</span>=objNum@entry=11, <span class="hljs-attribute">objGen</span>=0) at Parser.cc:156<br>↓<br>Object::dictLookup (<span class="hljs-attribute">this</span>=0x7fffffffdbd8, <span class="hljs-attribute">key</span>=0x4 &lt;error: Cannot access memory at<span class="hljs-built_in"> address </span>0x4&gt;, <span class="hljs-attribute">obj</span>=0x7fffffffda48) at ./Object.h:253<br><span class="hljs-built_in">..</span>.<br></code></pre></td></tr></table></figure>
+
+<p>开始循环。</p>
+<h3 id="修补"><a href="#修补" class="headerlink" title="修补"></a>修补</h3><p>添加一个递归深度变量，在完成一个条目前增加，完成后减少，超过最大值终止程序。</p>
+<p>XRef.h：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-comment">// add in line 123</span><br><span class="hljs-comment">// Recursion depth tracking for fetch operations</span><br><span class="hljs-type">static</span> <span class="hljs-type">const</span> <span class="hljs-type">int</span> maxRecursionDepth = <span class="hljs-number">100</span>;<br><span class="hljs-type">int</span> recursionDepth;<br></code></pre></td></tr></table></figure>
+
+<p>XRef.cc:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-comment">//add in line 204</span><br>recursionDepth = <span class="hljs-number">0</span>;<br><br><span class="hljs-comment">//add in line 795</span><br><span class="hljs-comment">// check recursion depth to prevent infinite recursion</span><br><span class="hljs-keyword">if</span> (recursionDepth &gt;= maxRecursionDepth) &#123;<br>error(<span class="hljs-number">-1</span>, <span class="hljs-string">&quot;Maximum recursion depth (%d) exceeded while fetching object %d %d R&quot;</span>, <br>      maxRecursionDepth, num, gen);<br><span class="hljs-keyword">return</span> obj-&gt;initNull();<br>&#125;<br><br><span class="hljs-comment">//add in line 815</span><br><span class="hljs-comment">// Increment recursion depth before creating new parser</span><br>recursionDepth++;<br><br><span class="hljs-comment">//add in line 833</span><br>recursionDepth--;<br><br><span class="hljs-comment">//add in line 843</span><br><span class="hljs-comment">// Decrement recursion depth after parsing</span><br>recursionDepth--;<br><br><span class="hljs-comment">//add in line 852</span><br><span class="hljs-comment">// Increment recursion depth before fetching from object stream</span><br>recursionDepth++;<br><br><span class="hljs-comment">//add in line 863</span><br><span class="hljs-comment">// Decrement recursion depth after fetching</span><br>recursionDepth--;<br></code></pre></td></tr></table></figure>
+
+<p>从&#x2F;&#x2F;add in line 795由于是同一文件所以行号会随前面的变化，从这开始后面的都是修改后实际所在的行号。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>AFL++实战其一</div>
+      <div>https://zlsf-zl.github.io/2026/04/04/AFL-实战其一/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>ZLSF</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年4月4日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="NC - 非商业性使用">
+                    <i class="iconfont icon-nc"></i>
+                  </span>
+                </a>
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="SA - 相同方式共享">
+                    <i class="iconfont icon-sa"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2026/04/01/Fuzz%E4%B9%8B%E5%86%8D%E8%A7%81%E7%AB%AF%E5%80%AA/" title="Fuzz之再见端倪">
+                        <span class="hidden-mobile">Fuzz之再见端倪</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"6qfbMdW9PFOPATbmhAiyPWcK-MdYXbMMI","appKey":"X9xyyWbc7hafcwTqYXwdhjE5","path":"window.location.pathname","placeholder":"文明发言","avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"https://6qfbmdw9.api.lncldglobal.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+      <span>by ZLSF</span>
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
