@@ -1,0 +1,788 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/bug.png">
+  <link rel="icon" href="/img/bug.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#1F3144">
+  <meta name="author" content="ZLSF">
+  <meta name="keywords" content="ZLSF,zlsf">
+  
+    <meta name="description" content="练习2 - libexif版本：libexif-0.6.14 漏洞编号：CVE-2009-3895与CVE-2012-2836  CVE-2009-3895 是一个基于堆的缓冲区溢出，可以被无效的 EXIF 映像触发。 基于堆的缓冲区溢出是一种发生在堆数据区域的缓冲区溢出类型，通常与显式动态内存管理（通过 malloc（）和 free（）函数进行分配&#x2F;释放）有关。 因此，远程攻击者可以利">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AFL++实战其二">
+<meta property="og:url" content="https://zlsf-zl.github.io/2026/04/06/AFL-%E5%AE%9E%E6%88%98%E5%85%B6%E4%BA%8C/index.html">
+<meta property="og:site_name" content="ZLSF的博客">
+<meta property="og:description" content="练习2 - libexif版本：libexif-0.6.14 漏洞编号：CVE-2009-3895与CVE-2012-2836  CVE-2009-3895 是一个基于堆的缓冲区溢出，可以被无效的 EXIF 映像触发。 基于堆的缓冲区溢出是一种发生在堆数据区域的缓冲区溢出类型，通常与显式动态内存管理（通过 malloc（）和 free（）函数进行分配&#x2F;释放）有关。 因此，远程攻击者可以利">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-04-06T06:46:43.000Z">
+<meta property="article:modified_time" content="2026-04-06T15:37:10.156Z">
+<meta property="article:author" content="ZLSF">
+<meta property="article:tag" content="ZLSF,zlsf">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>AFL++实战其二 - ZLSF的博客</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"zlsf-zl.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"6qfbMdW9PFOPATbmhAiyPWcK-MdYXbMMI","app_key":"X9xyyWbc7hafcwTqYXwdhjE5","server_url":"https://6qfbmdw9.api.lncldglobal.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>ZLSF的博客</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/start.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="AFL++实战其二"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-04-06 14:46" pubdate>
+          2026年4月6日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          20 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">AFL++实战其二</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="练习2-libexif"><a href="#练习2-libexif" class="headerlink" title="练习2 - libexif"></a>练习2 - libexif</h2><p>版本：libexif-0.6.14</p>
+<p>漏洞编号：<code>CVE-2009-3895</code>与<code>CVE-2012-2836</code></p>
+<hr>
+<p>CVE-2009-3895 是一个基于堆的缓冲区溢出，可以被无效的 EXIF 映像触发。</p>
+<p>基于堆的缓冲区溢出是一种发生在堆数据区域的缓冲区溢出类型，通常与显式动态内存管理（通过 malloc（）和 free（）函数进行分配&#x2F;释放）有关。</p>
+<p>因此，远程攻击者可以利用此问题在使用受影响库的应用程序上下文中执行任意代码。</p>
+<hr>
+<p>CVE-2012-2836 是一个可通过带有精心设计的 EXIF 标签的镜像触发的“越界读取”漏洞。</p>
+<p>越界读取是指程序读取数据超过预期缓冲区的结束点或开始时发生的漏洞。</p>
+<p>因此，它允许远程攻击者实施拒绝服务，或可能从进程内存中获取潜在敏感信息。</p>
+<hr>
+<h3 id="下载libexit"><a href="#下载libexit" class="headerlink" title="下载libexit"></a>下载libexit</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">mkdir</span> <span class="hljs-variable">$HOME</span>/fuzz_main<br><span class="hljs-built_in">cd</span> <span class="hljs-variable">$HOME</span>/fuzz_main<br>wget https://github.com/libexif/libexif/archive/refs/tags/libexif-0_6_14-release.tar.gz<br>tar -xzvf libexif-0_6_14-release.tar.gz<br></code></pre></td></tr></table></figure>
+
+<p>构建并安装：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">cd</span> libexif-libexif-0_6_14-release/<br><span class="hljs-built_in">sudo</span> apt-get install autopoint libtool gettext libpopt-dev<br>autoreconf -fvi<br>./configure --enable-shared=no --prefix=<span class="hljs-string">&quot;<span class="hljs-variable">$HOME</span>/fuzz_main/install/&quot;</span><br>make<br>make install<br></code></pre></td></tr></table></figure>
+
+<h3 id="选择接口应用"><a href="#选择接口应用" class="headerlink" title="选择接口应用"></a>选择接口应用</h3><p>由于libexif是一个库，我们可以使用作者的另外一个项目来利用这个库。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">cd</span> <span class="hljs-variable">$HOME</span>/fuzz_main<br>wget https://github.com/libexif/exif/archive/refs/tags/exif-0_6_15-release.tar.gz<br>tar -xzvf exif-0_6_15-release.tar.gz<br></code></pre></td></tr></table></figure>
+
+<p>构建该应用：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">cd</span> exif-exif-0_6_15-release/<br>autoreconf -fvi<br>./configure --enable-shared=no --prefix=<span class="hljs-string">&quot;<span class="hljs-variable">$HOME</span>/fuzz_main/install/&quot;</span> PKG_CONFIG_PATH=<span class="hljs-variable">$HOME</span>/fuzz_main/install/lib/pkgconfig<br>make<br>make install<br></code></pre></td></tr></table></figure>
+
+<p>测试你的工具：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs sh">╰─ <span class="hljs-variable">$HOME</span>/fuzz_main/install/bin/exif<br>Usage: exif [OPTION...] file<br>  -v, --version                   Display software version<br>  -i, --ids                       Show IDs instead of tag names<br>  -t, --tag=tag                   Select tag<br>      --ifd=IFD                   Select IFD<br>  -l, --list-tags                 List all EXIF tags<br>  -|, --show-mnote                Show contents of tag MakerNote<br>      --remove                    Remove tag or ifd<br>  -s, --show-description          Show description of tag<br>  -e, --extract-thumbnail         Extract thumbnail<br>  -r, --remove-thumbnail          Remove thumbnail<br>  -n, --insert-thumbnail=FILE     Insert FILE as thumbnail<br>  -o, --output=FILE               Write data to FILE<br>      --set-value=STRING          Value<br>  -m, --machine-readable          Output <span class="hljs-keyword">in</span> a machine-readable (tab delimited) format<br>  -x, --xml-output                Output <span class="hljs-keyword">in</span> a XML format<br>  -d, --debug                     Show debugging messages<br><br>Help options:<br>  -?, --<span class="hljs-built_in">help</span>                      Show this <span class="hljs-built_in">help</span> message<br>      --usage                     Display brief usage message<br></code></pre></td></tr></table></figure>
+
+<p>种子语料库创建：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">cd</span> <span class="hljs-variable">$HOME</span>/fuzz_main<br>wget https://github.com/ianare/exif-samples/archive/refs/heads/master.zip<br>unzip master.zip<br></code></pre></td></tr></table></figure>
+
+<p>测试一下：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><code class="hljs sh">╰─ <span class="hljs-variable">$HOME</span>/fuzz_main/install/bin/exif <span class="hljs-variable">$HOME</span>/fuzz_main/exif-samples-master/jpg/Canon_40D.jpg<br>EXIF tags <span class="hljs-keyword">in</span> <span class="hljs-string">&#x27;/home/zlsf/fuzz_main/exif-samples-master/jpg/Canon_40D.jpg&#x27;</span> (<span class="hljs-string">&#x27;Intel&#x27;</span> byte order):<br>--------------------+----------------------------------------------------------<br>Tag                 |Value<br>--------------------+----------------------------------------------------------<br>Manufacturer        |Canon<br>Model               |Canon EOS 40D<br>Orientation         |top - left<br>x-Resolution        |72.00<br>y-Resolution        |72.00<br>Resolution Unit     |Inch<br>Software            |GIMP 2.4.5<br>Date and Time       |2008:07:31 10:38:11<br>YCbCr Positioning   |co-sited<br>Compression         |JPEG compression<br>x-Resolution        |72.00<br>y-Resolution        |72.00<br>Resolution Unit     |Inch<br>Exposure Time       |1/160 sec.<br>FNumber             |f/7.1<br>ExposureProgram     |Manual<br>ISO Speed Ratings   |100<br>Exif Version        |Exif Version 2.21<br>Date and Time (origi|2008:05:30 15:56:01<br>Date and Time (digit|2008:05:30 15:56:01<br>ComponentsConfigurat|Y Cb Cr -<br>Shutter speed       |7.38 EV (APEX: 12, 1/165 sec.)<br>Aperture            |5.62 EV (f/7.0)<br>Exposure Bias       |0.00 EV<br>Metering Mode       |Pattern<br>Flash               |Flash fired, compulsory flash mode.<br>Focal Length        |135.0 mm<br>User Comment        |<br>SubsecTime          |00<br>SubSecTimeOriginal  |00<br>SubSecTimeDigitized |00<br>FlashPixVersion     |FlashPix Version 1.0<br>Color Space         |sRGB<br>PixelXDimension     |100<br>PixelYDimension     |68<br>Focal Plane x-Resolu|4438.36<br>Focal Plane y-Resolu|4445.97<br>Focal Plane Resoluti|Inch<br>Custom Rendered     |Normal process<br>Exposure Mode       |Manual exposure<br>White Balance       |Auto white balance<br>Scene Capture Type  |Standard<br>GPS tag version     |0x02, 0x02, 0x00, 0x00<br>InteroperabilityInde|R98<br>InteroperabilityVers|0100<br>--------------------+----------------------------------------------------------<br>EXIF data contains a thumbnail (1378 bytes).<br></code></pre></td></tr></table></figure>
+
+<h3 id="使用afl-clang-lto编译"><a href="#使用afl-clang-lto编译" class="headerlink" title="使用afl-clang-lto编译"></a>使用afl-clang-lto编译</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">rm</span> -fr <span class="hljs-variable">$HOME</span>/fuzz_main/install<br><span class="hljs-built_in">cd</span> <span class="hljs-variable">$HOME</span>/fuzz_main/libexif-libexif-0_6_14-release/<br>make clean<br><span class="hljs-built_in">export</span> LLVM_CONFIG=<span class="hljs-string">&quot;llvm-config-11&quot;</span><br>CC=afl-clang-lto ./configure --enable-shared=no --prefix=<span class="hljs-string">&quot;<span class="hljs-variable">$HOME</span>/fuzz_main/install/&quot;</span><br>make<br>make install<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">cd</span> <span class="hljs-variable">$HOME</span>/fuzz_main/exif-exif-0_6_15-release<br>make clean<br><span class="hljs-built_in">export</span> LLVM_CONFIG=<span class="hljs-string">&quot;llvm-config-11&quot;</span><br>CC=afl-clang-lto ./configure --enable-shared=no --prefix=<span class="hljs-string">&quot;<span class="hljs-variable">$HOME</span>/fuzz_main/install/&quot;</span> PKG_CONFIG_PATH=<span class="hljs-variable">$HOME</span>/fuzz_main/install/lib/pkgconfig<br>make<br>make install<br></code></pre></td></tr></table></figure>
+
+<p>afl-clang-lto 比其 afl-clang-fast更快，对于什么时候取决哪个编译器可以参照如下：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs text">+ -------------------------------- +<br>| 可使用clang/clang++ 11+ | --&gt; 使用LTO模式（afl-clang-lto/afl-clang-lto++）<br>+--------------------------------+<br>|<br>| 如果不是，或者目标在使用LTO时失败afl-clang-lto/++<br>|<br>v<br>+ --------------------------------- +<br>| Clang/Clang++ 6.0及以上版本可用 | --&gt; 使用LLVM模式（afl-clang-fast/afl-clang-fast++）<br>+---------------------------------+ <br>|<br>| 如果不是，或者目标在使用LLVM afl-clang-fast/++ 编译时失败<br>|<br>v<br>+ -------------------------------- +<br>| gcc 5 + 可用 | -&gt; 使用GCC_PLUGIN模式 (afl-gcc-fast/afl-g ++-fast)<br>+ -------------------------------- +<br>|<br>| 如果没有，或者您没有支持插件的gcc<br>|<br>v<br>使用GCC模式 (afl-gcc/afl-g ++) (或afl-clang/afl-clang ++ 用于clang)<br></code></pre></td></tr></table></figure>
+
+<h3 id="开始fuzz"><a href="#开始fuzz" class="headerlink" title="开始fuzz"></a>开始fuzz</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">mkdir</span> -p <span class="hljs-variable">$HOME</span>/fuzz_main/fuzz<br><span class="hljs-built_in">cd</span> <span class="hljs-variable">$HOME</span>/fuzz_main/fuzz<br>afl-fuzz -i <span class="hljs-variable">$HOME</span>/fuzz_main/exif-samples-master/jpg -o ./out -s 123 -- <span class="hljs-variable">$HOME</span>/fuzz_main/install/bin/exif @@<br></code></pre></td></tr></table></figure>
+
+<p>这次fuzz应该比较快，大约不到10分钟。大约出现15个左右的特别崩溃就能够停止。</p>
+<h3 id="调试崩溃"><a href="#调试崩溃" class="headerlink" title="调试崩溃"></a>调试崩溃</h3><p>练习一中我们使用gdb进行调试，这次我们使用vscode配合Remote-SSH插件来进行远程调试。</p>
+<p>至于为什么要进行远程调试是因为为了节约资源我把Linux桌面环境关闭了，使用Windows自带的终端装上SSH在完成工作。</p>
+<p>首先你得安装好了vscode以及C&#x2F;C++系列插件和Remote-SSH并将一系列SSH配置好，我采取的方案是使用私钥连接Linux，这样可以做到不用每次连接都需要输入密码的效果，而且vscode也能自动读取配置好的SSH配置文件。具体实现可以问AI。</p>
+<p>在连接完成后选择打开文件，导航到：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-variable">$HOME</span>/fuzz_main/exif-exif-0_6_15-release<br></code></pre></td></tr></table></figure>
+
+<p>新建<code>.vscode</code>文件夹在其中新建<code>lauch.json</code>文件内容：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;version&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0.2.0&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;configurations&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>        <span class="hljs-punctuation">&#123;</span><br>            <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Debug exif&quot;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;cppdbg&quot;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;request&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;launch&quot;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;program&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;$&#123;env:HOME&#125;/fuzz_main/dbg_install/bin/exif&quot;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;args&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;$&#123;env:HOME&#125;/fuzz_main/fuzz/out/default/crashes/&lt;崩溃输入文件名&gt;&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;stopAtEntry&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;cwd&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;$&#123;workspaceFolder&#125;&quot;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;environment&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;externalConsole&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">false</span></span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;MIMode&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;gdb&quot;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;sourceFileMap&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>                <span class="hljs-attr">&quot;/home/zlsf/fuzz_main/libexif-libexif-0_6_14-release&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;$&#123;env:HOME&#125;/fuzz_main/libexif-libexif-0_6_14-release&quot;</span><br>            <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;setupCommands&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>                <span class="hljs-punctuation">&#123;</span><br>                    <span class="hljs-attr">&quot;description&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Enable pretty-printing&quot;</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;text&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;-enable-pretty-printing&quot;</span><span class="hljs-punctuation">,</span><br>                    <span class="hljs-attr">&quot;ignoreFailures&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">true</span></span><br>                <span class="hljs-punctuation">&#125;</span><br>            <span class="hljs-punctuation">]</span><br>        <span class="hljs-punctuation">&#125;</span><br>    <span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p>在调试之前点击扩展，一定要确定给SSH的远程LInux上也安装了C&#x2F;C++的插件，不然会调试失败。</p>
+<p>完成后点击F5即可开始调试，你也可以打开源代码直接下断点，这样F5会直接停在断点附近。</p>
+<p>我们可以在调试启动后在调试控制台最下面执行命令，如果需要使用Linux的gdb命令则需要在最前面加上<code>-exec</code>。</p>
+<h3 id="源码追踪"><a href="#源码追踪" class="headerlink" title="源码追踪"></a>源码追踪</h3><p>CVE-2012-2836</p>
+<p>如果某个崩溃输入让你的源码调试卡在了exif-mnote-data-canon.c中，那么这就大概是CVE-2012-2836。</p>
+<p>关键位置是exif-mnote-data-canon.c:218：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-type">static</span> <span class="hljs-type">void</span><br><span class="hljs-title function_">exif_mnote_data_canon_load</span> <span class="hljs-params">(ExifMnoteData *ne,</span><br><span class="hljs-params">	<span class="hljs-type">const</span> <span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> *buf, <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> buf_size)</span><br>&#123;<br>	ExifMnoteDataCanon *n = (ExifMnoteDataCanon *) ne;<br>	ExifShort c;<br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> i, o, s;<br><br>	<span class="hljs-comment">// ...</span><br>		<span class="hljs-keyword">if</span> (o + s &gt; buf_size) <span class="hljs-keyword">return</span>; <span class="hljs-comment">//问题出在这</span><br><br>		<span class="hljs-comment">/* Sanity check */</span><br>		n-&gt;entries[i].data = exif_mem_alloc (ne-&gt;mem, <span class="hljs-keyword">sizeof</span> (<span class="hljs-type">char</span>) * s);<br>		<span class="hljs-keyword">if</span> (!n-&gt;entries[i].data) <span class="hljs-keyword">return</span>;<br>		n-&gt;entries[i].size = s;<br>		<span class="hljs-built_in">memcpy</span> (n-&gt;entries[i].data, buf + o, s);<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>当执行这个判断时其各个变量如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs C">o = <span class="hljs-number">953</span><br>s = <span class="hljs-number">4294966796</span><br>buf_size = <span class="hljs-number">3245</span><br></code></pre></td></tr></table></figure>
+
+<p>此时明显o + s &gt; buf_size， 但是该return却没有被触发，通过这几个变量的定义我们可以发现他们都是unsigned int的，不会因为加法变成负数，但是整数溢出不存在变负数这一种情况。经过简单的计算：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> o = <span class="hljs-number">953</span>;<br><span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> s = <span class="hljs-number">4294966796</span>;  <span class="hljs-comment">// 0xFFFFFFEC</span><br><br>o + s = <span class="hljs-number">953</span> + <span class="hljs-number">4294966796</span> = <span class="hljs-number">4294967749</span><br>      = <span class="hljs-number">0x1000003B5</span><br>      = <span class="hljs-number">0x3B5</span> (截断到<span class="hljs-number">32</span>位)<br>      = <span class="hljs-number">949</span> &lt; buf_size = <span class="hljs-number">3245</span><br></code></pre></td></tr></table></figure>
+
+<p>这时出现了位溢出。</p>
+<p>修复方法也很简单</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-comment">// exif-mnote-data-canon.c change line in 218</span><br>-- 		<span class="hljs-keyword">if</span> (o + s &gt; buf_size) <span class="hljs-keyword">return</span>;<br>++		<span class="hljs-keyword">if</span> (o + s &lt; o || o + s &gt; buf_size) <span class="hljs-keyword">return</span>;<br></code></pre></td></tr></table></figure>
+
+<p>不过实际上根据我在互联网上搜索的内容，这并不是真正的CVE-2012-2836，因为CVE-2012-2836是出现在exif_data_load_data函数中，实际情况应该如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-type">void</span><br><span class="hljs-title function_">exif_data_load_data</span> <span class="hljs-params">(ExifData *data, <span class="hljs-type">const</span> <span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> *d_orig,</span><br><span class="hljs-params">		     <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> ds_orig)</span><br>&#123;<br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> l;<br>	ExifLong offset;<br>	ExifShort n;<br>	<span class="hljs-type">const</span> <span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> *d = d_orig;<br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> ds = ds_orig, len;<br>	<span class="hljs-comment">// ...</span><br>	offset = exif_get_long (d + <span class="hljs-number">10</span>, data-&gt;priv-&gt;order);<br>	exif_log (data-&gt;priv-&gt;<span class="hljs-built_in">log</span>, EXIF_LOG_CODE_DEBUG, <span class="hljs-string">&quot;ExifData&quot;</span>, <br>		  <span class="hljs-string">&quot;IFD 0 at %i.&quot;</span>, (<span class="hljs-type">int</span>) offset);<br><br>	<span class="hljs-comment">/* Parse the actual exif data (usually offset 14 from start) */</span><br>	exif_data_load_data_content (data, EXIF_IFD_0, d + <span class="hljs-number">6</span>, ds - <span class="hljs-number">6</span>, offset, <span class="hljs-number">0</span>);<br><br>	<span class="hljs-comment">/* IFD 1 offset */</span><br>	<span class="hljs-keyword">if</span> (offset + <span class="hljs-number">6</span> + <span class="hljs-number">2</span> &gt; ds) &#123; <span class="hljs-comment">//问题校验出在这，这里的offset也是unsigned int类似类型的，同样存在溢出</span><br>		<span class="hljs-keyword">return</span>;				<span class="hljs-comment">//这里是 exif-data.c:817</span><br>	&#125;<br>	n = exif_get_short (d + <span class="hljs-number">6</span> + offset, data-&gt;priv-&gt;order);<br>	<span class="hljs-keyword">if</span> (offset + <span class="hljs-number">6</span> + <span class="hljs-number">2</span> + <span class="hljs-number">12</span> * n + <span class="hljs-number">4</span> &gt; ds) &#123;<br>		<span class="hljs-keyword">return</span>;<br>	&#125;<br>	offset = exif_get_long (d + <span class="hljs-number">6</span> + offset + <span class="hljs-number">2</span> + <span class="hljs-number">12</span> * n, data-&gt;priv-&gt;order); <span class="hljs-comment">// 这个是问题触发函数</span><br>	<span class="hljs-comment">// ...</span><br>	exif_mnote_data_load (data-&gt;priv-&gt;md, d, ds); <span class="hljs-comment">// 而这个是我的问题函数 exif-data.c:867</span><br></code></pre></td></tr></table></figure>
+
+<p>不过都是同一类型的，位置也相差不远。</p>
+<p>CVE-2009-3895</p>
+<p>翻遍了我的16个输出数据没有发现这个漏洞，我们使用afl++的中断恢复继续寻找（最好备份以前的out文件夹）：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">export</span> AFL_AUTORESUME=1<br>afl-fuzz -i <span class="hljs-variable">$HOME</span>/fuzz_main/exif-samples-master/jpg -o ./out -s 123 -- <span class="hljs-variable">$HOME</span>/fuzz_main/install/bin/exif @@<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs sh">    AFL ++4.41a &#123;default&#125; (/home/zlsf/fuzz_main/install/bin/exif) [explore]<br>┌─ process timing ────────────────────────────────────┬─ overall results ────┐<br>│        run time : 0 days, 0 hrs, 21 min, 20 sec     │  cycles <span class="hljs-keyword">done</span> : 1     │<br>│   last new find : 0 days, 0 hrs, 0 min, 9 sec       │ corpus count : 714   │<br>│last saved crash : 0 days, 0 hrs, 1 min, 28 sec      │saved crashes : 25    │<br>│ last saved hang : none seen yet                     │  saved hangs : 0     │<br>├─ cycle progress ─────────────────────┬─ map coverage┴──────────────────────┤<br>│  now processing : 456*1 (63.9%)      │    map density : 10.43% / 23.12%    │<br>│  runs timed out : 1 (0.14%)          │ count coverage : 3.84 bits/tuple    │<br>├─ stage progress ─────────────────────┼─ findings <span class="hljs-keyword">in</span> depth ─────────────────┤<br>│  now trying : trim 8/8               │ favored items : 69 (9.66%)          │<br>│ stage execs : 869/908 (95.70%)       │  new edges on : 13 (1.82%)          │<br>│ total execs : 1.41M                  │ total crashes : 73 (25 saved)       │<br>│  <span class="hljs-built_in">exec</span> speed : 975.8/sec              │  total tmouts : 0 (0 saved)         │<br>├─ fuzzing strategy yields ────────────┴─────────────┬─ item geometry ───────┤<br>│   bit flips : 0/839k, 1/839k, 1/839k               │    levels : 16        │<br>│  byte flips : 0/104k, 0/104k, 0/104k               │   pending : 69        │<br>│ arithmetics : 0/7.35M, 0/14.7M, 0/14.7M            │  pend fav : 0         │<br>│  known ints : 0/944k, 3/3.99M, 0/5.88M             │ own finds : 618       │<br>│  dictionary : 1/3.15M, 0/3.15M, 0/0, 0/0           │  imported : 0         │<br>│havoc/splice : 152/228k, 0/0                        │ stability : 100.00%   │<br>│py/custom/rq : unused, unused, unused, unused       ├───────────────────────┘<br>│    trim/eff : 82.14%/586k, 99.99%                  │          [cpu000: 50%]<br>└─ strategy: explore ────────── state: <span class="hljs-keyword">in</span> progress ──┘^C<br><br>+++ Testing aborted by user +++<br>[*] Writing ./out/default/fastresume.bin ...<br>[+] fastresume.bin successfully written with 114962 bytes.<br>[+] We<span class="hljs-string">&#x27;re done here. Have a nice day!</span><br></code></pre></td></tr></table></figure>
+
+<p>通过追踪源码我发现问题出在：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs C">exif_entry_fix (ExifEntry *e)<br>&#123;<br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> i;<br>	ExifByteOrder o;<br>	ExifRational r;<br>	ExifSRational sr;<br>    <span class="hljs-comment">// ...</span><br>    exif_set_short (<br>    e-&gt;data + i *<br>    exif_format_get_size (<br>    EXIF_FORMAT_SHORT), o,<br>    (ExifShort) exif_get_long (<br>    e-&gt;data + i *<br>    exif_format_get_size (<br>    EXIF_FORMAT_LONG), o)); <span class="hljs-comment">// exif-entry.c:189</span><br> 	<span class="hljs-comment">// ...</span><br></code></pre></td></tr></table></figure>
+
+<p>其中<code>exif_get_long (e-&gt;data + i * exif_format_get_size (EXIF_FORMAT_LONG), o)</code>这里，其中<code>i</code>在某一时刻的值为2147483649导致大规模越界超出了的堆的范围。</p>
+<p>向上追踪则是：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs C">exif_data_load_data_entry (ExifData *data, ExifEntry *entry,<br>			   <span class="hljs-type">const</span> <span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> *d,<br>			   <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> size, <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> offset)<br>&#123;<br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> s, doff;<br><br>	entry-&gt;tag        = exif_get_short (d + offset + <span class="hljs-number">0</span>, data-&gt;priv-&gt;order);<br>	entry-&gt;format     = exif_get_short (d + offset + <span class="hljs-number">2</span>, data-&gt;priv-&gt;order);<br>	entry-&gt;components = exif_get_long  (d + offset + <span class="hljs-number">4</span>, data-&gt;priv-&gt;order);	<br>	exif_log (data-&gt;priv-&gt;<span class="hljs-built_in">log</span>, EXIF_LOG_CODE_DEBUG, <span class="hljs-string">&quot;ExifData&quot;</span>,<br>		  <span class="hljs-string">&quot;Loading entry 0x%x (&#x27;%s&#x27;)...&quot;</span>, entry-&gt;tag,<br>		  exif_tag_get_name (entry-&gt;tag)); <span class="hljs-comment">//这里出了问题 exif-data.c:166</span><br>    <span class="hljs-comment">// ...</span><br></code></pre></td></tr></table></figure>
+
+<p>这里是读取文件到内存的函数，看来是文件的非法格式导致后续<code>i</code>过大的问题。</p>
+<p>修复：</p>
+<p>在for循环之前判断一下<code>e-&gt;components</code>是否大的不合常理即可。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>AFL++实战其二</div>
+      <div>https://zlsf-zl.github.io/2026/04/06/AFL-实战其二/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>ZLSF</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年4月6日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="NC - 非商业性使用">
+                    <i class="iconfont icon-nc"></i>
+                  </span>
+                </a>
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="SA - 相同方式共享">
+                    <i class="iconfont icon-sa"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2026/04/07/AFL-%E5%AE%9E%E6%88%98%E5%85%B6%E4%B8%89/" title="AFL++实战其三">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">AFL++实战其三</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2026/04/04/AFL-%E5%AE%9E%E6%88%98%E5%85%B6%E4%B8%80/" title="AFL++实战其一">
+                        <span class="hidden-mobile">AFL++实战其一</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"6qfbMdW9PFOPATbmhAiyPWcK-MdYXbMMI","appKey":"X9xyyWbc7hafcwTqYXwdhjE5","path":"window.location.pathname","placeholder":"文明发言","avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"https://6qfbmdw9.api.lncldglobal.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+      <span>by ZLSF</span>
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

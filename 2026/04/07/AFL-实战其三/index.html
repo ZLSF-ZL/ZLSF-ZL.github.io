@@ -1,0 +1,742 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/bug.png">
+  <link rel="icon" href="/img/bug.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#1F3144">
+  <meta name="author" content="ZLSF">
+  <meta name="keywords" content="ZLSF,zlsf">
+  
+    <meta name="description" content="练习3 -  TCPdump版本：TCPdump 4.9.2 漏洞编号：CVE-2017-13028 CVE-2017-13028 是一个可通过 BOOTP 数据包（Bootstrap 协议）触发的边界外读取漏洞。 越界读取是指程序读取数据超过预期缓冲区的结束点或开始时发生的漏洞。 因此，它允许远程攻击者实施拒绝服务，或可能从进程内存中获取潜在敏感信息。  下载TCPdump12mkdir $HO">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AFL++实战其三">
+<meta property="og:url" content="https://zlsf-zl.github.io/2026/04/07/AFL-%E5%AE%9E%E6%88%98%E5%85%B6%E4%B8%89/index.html">
+<meta property="og:site_name" content="ZLSF的博客">
+<meta property="og:description" content="练习3 -  TCPdump版本：TCPdump 4.9.2 漏洞编号：CVE-2017-13028 CVE-2017-13028 是一个可通过 BOOTP 数据包（Bootstrap 协议）触发的边界外读取漏洞。 越界读取是指程序读取数据超过预期缓冲区的结束点或开始时发生的漏洞。 因此，它允许远程攻击者实施拒绝服务，或可能从进程内存中获取潜在敏感信息。  下载TCPdump12mkdir $HO">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-04-07T10:00:40.000Z">
+<meta property="article:modified_time" content="2026-04-08T09:01:49.046Z">
+<meta property="article:author" content="ZLSF">
+<meta property="article:tag" content="ZLSF,zlsf">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>AFL++实战其三 - ZLSF的博客</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"zlsf-zl.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"6qfbMdW9PFOPATbmhAiyPWcK-MdYXbMMI","app_key":"X9xyyWbc7hafcwTqYXwdhjE5","server_url":"https://6qfbmdw9.api.lncldglobal.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>ZLSF的博客</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/start.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="AFL++实战其三"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-04-07 18:00" pubdate>
+          2026年4月7日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          11 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">AFL++实战其三</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="练习3-TCPdump"><a href="#练习3-TCPdump" class="headerlink" title="练习3 -  TCPdump"></a>练习3 -  TCPdump</h2><p>版本：TCPdump 4.9.2</p>
+<p>漏洞编号：CVE-2017-13028</p>
+<p>CVE-2017-13028 是一个可通过 BOOTP 数据包（Bootstrap 协议）触发的边界外读取漏洞。</p>
+<p>越界读取是指程序读取数据超过预期缓冲区的结束点或开始时发生的漏洞。</p>
+<p>因此，它允许远程攻击者实施拒绝服务，或可能从进程内存中获取潜在敏感信息。</p>
+<hr>
+<h3 id="下载TCPdump"><a href="#下载TCPdump" class="headerlink" title="下载TCPdump"></a>下载TCPdump</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">mkdir</span> <span class="hljs-variable">$HOME</span>/fuzz_main/<br><span class="hljs-built_in">cd</span> <span class="hljs-variable">$HOME</span>/fuzz_main/<br></code></pre></td></tr></table></figure>
+
+<p>下载 tcpdump 4.9.2：</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">wget https://github.com/the-tcpdump-group/tcpdump/archive/refs/tags/tcpdump-4.9.2.tar.gz<br>tar -xzvf tcpdump-4.9.2.tar.gz<br></code></pre></td></tr></table></figure>
+
+<p>我们还需要下载 libpcap，这是其跨平台库：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">wget https://github.com/the-tcpdump-group/libpcap/archive/refs/tags/libpcap-1.8.0.tar.gz<br>tar -xzvf libpcap-1.8.0.tar.gz<br></code></pre></td></tr></table></figure>
+
+<p>将 libpcap-libpcap-1.8.0 重命名为 libpcap-1.8.0，因为这样编译 tcpdump 时其才能找到库（有点傻）：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">mv</span> libpcap-libpcap-1.8.0/ libpcap-1.8.0<br></code></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="ASan"><a href="#ASan" class="headerlink" title="ASan"></a>ASan</h3><p><code>Asan</code>是一种适用与C&#x2F;C++的快速内存错误检测器。</p>
+<p>它由编译器仪器模块和运行时库组成。该工具能够发现堆、堆栈和全局对象的越界访问，以及“释放后使用”、“双重释放”和内存泄漏的漏洞。</p>
+<p>通过在原先内存前后放置禁区来检查是否越界访问。</p>
+<hr>
+<h3 id="通过Asan构建你的源码"><a href="#通过Asan构建你的源码" class="headerlink" title="通过Asan构建你的源码"></a>通过Asan构建你的源码</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">cd</span> <span class="hljs-variable">$HOME</span>/fuzz_main/libpcap-1.8.0/<br><span class="hljs-built_in">export</span> LLVM_CONFIG=<span class="hljs-string">&quot;llvm-config-11&quot;</span><br>CC=afl-clang-lto ./configure --enable-shared=no --prefix=<span class="hljs-string">&quot;<span class="hljs-variable">$HOME</span>/fuzz_main/install/&quot;</span><br>AFL_USE_ASAN=1 make<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">cd</span> <span class="hljs-variable">$HOME</span>/fuzz_main/tcpdump-tcpdump-4.9.2/<br>AFL_USE_ASAN=1 CC=afl-clang-lto ./configure --prefix=<span class="hljs-string">&quot;<span class="hljs-variable">$HOME</span>/fuzz_main/install/&quot;</span> CFLAGS=<span class="hljs-string">&quot;-Wno-error=implicit-int&quot;</span><br>AFL_USE_ASAN=1 make<br>AFL_USE_ASAN=1 make install<br></code></pre></td></tr></table></figure>
+
+<p>使用 afl-clang-lto 编译时如果不加 CFLAGS&#x3D;”-Wno-error&#x3D;implicit-int” 则会报64位输出匹配错误，加上就能正常通过了。</p>
+<hr>
+<h3 id="开始fuzz"><a href="#开始fuzz" class="headerlink" title="开始fuzz"></a>开始fuzz</h3><p>语料库我们取用 tcpdump 项目中 tests 的示例文件即可：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">afl-fuzz -m none -i <span class="hljs-variable">$HOME</span>/fuzz_main/tcpdump-tcpdump-4.9.2/tests/ -o ./out -s 123 -- <span class="hljs-variable">$HOME</span>/fuzz_main/install/sbin/tcpdump -vvvvXX -ee -nn -r @@<br></code></pre></td></tr></table></figure>
+
+<p>启用Asan需要大量内存，这里使用 -m none 选项表示不限制内存用量。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs sh">  AFL ++4.41a &#123;default&#125; (/home/zlsf/fuzz_main/install/sbin/tcpdump) [explore]<br>┌─ process timing ────────────────────────────────────┬─ overall results ────┐<br>│        run time : 0 days, 7 hrs, 52 min, 56 sec     │  cycles <span class="hljs-keyword">done</span> : 0     │<br>│   last new find : 0 days, 0 hrs, 0 min, 24 sec      │ corpus count : 11.2k │<br>│last saved crash : 0 days, 1 hrs, 41 min, 26 sec     │saved crashes : 1     │<br>│ last saved hang : none seen yet                     │  saved hangs : 0     │<br>├─ cycle progress ─────────────────────┬─ map coverage┴──────────────────────┤<br>│  now processing : 10.9k.1 (98.0%)    │    map density : 0.78% / 19.95%     │<br>│  runs timed out : 0 (0.00%)          │ count coverage : 3.26 bits/tuple    │<br>├─ stage progress ─────────────────────┼─ findings <span class="hljs-keyword">in</span> depth ─────────────────┤<br>│  now trying : inference              │ favored items : 609 (5.45%)         │<br>│ stage execs : 874/513 (170.37%)      │  new edges on : 408 (3.65%)         │<br>│ total execs : 6.35M                  │ total crashes : 3 (1 saved)         │<br>│  <span class="hljs-built_in">exec</span> speed : 0.00/sec (zzzz...)     │  total tmouts : 11.1k (0 saved)     │<br>├─ fuzzing strategy yields ────────────┴─────────────┬─ item geometry ───────┤<br>│   bit flips : 7/1.83M, 3/1.83M, 2/1.83M            │    levels : 16        │<br>│  byte flips : 1/228k, 1/228k, 0/228k               │   pending : 9385      │<br>│ arithmetics : 36/16.0M, 0/32.0M, 0/32.0M           │  pend fav : 112       │<br>│  known ints : 4/2.06M, 4/8.68M, 0/12.8M            │ own finds : 10.4k     │<br>│  dictionary : 4/35.7M, 0/35.7M, 0/0, 0/0           │  imported : 0         │<br>│havoc/splice : 1177/1.07M, 0/0                      │ stability : 100.00%   │<br>│py/custom/rq : unused, unused, unused, unused       ├───────────────────────┘<br>│    trim/eff : 14.53%/678k, 99.99%                  │          [cpu000: 75%]<br>└─ strategy: explore ────────── state: <span class="hljs-keyword">in</span> progress ──┘^C<br><br>+++ Testing aborted by user +++<br><br>[!] Stopped during the first cycle, results may be incomplete.<br>    (For info on resuming, see /usr/local/share/doc/afl/README.md)<br>[*] Writing ./out/default/fastresume.bin ...<br>[+] fastresume.bin successfully written with 9453487 bytes.<br>[+] We<span class="hljs-string">&#x27;re done here. Have a nice day!</span><br></code></pre></td></tr></table></figure>
+
+<p>今天的 Fuzz 格外的漫长啊，花了我接近八个小时，只出现了一个独特错误。</p>
+<p>不过经过验证调用链，这个崩溃正好是我们需要的CVE-2017-13028 ：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs text">==2586765==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x5120000002d9 at pc 0x5555557d5b1c bp 0x7fffffffd9e0 sp 0x7fffffffd188<br>READ of size 4 at 0x5120000002d9 thread T0<br>    #0 0x5555557d5b1b in MemcmpInterceptorCommon(void*, int (*)(void const*, void const*, unsigned long), void const*, void const*, unsigned long) crtstuff.c<br>    #1 0x5555557d5ff0 in memcmp (/home/zlsf/fuzz_main/install/sbin/tcpdump+0x281ff0) (BuildId: b2a754f7d67207d8)<br>    #2 0x555555937998 in bootp_print /home/zlsf/fuzz_main/tcpdump-tcpdump-4.9.2/./print-bootp.c:382:6<br>    #3 0x5555559e8a6d in ip_print_demux /home/zlsf/fuzz_main/tcpdump-tcpdump-4.9.2/./print-ip.c:402:3<br>    #4 0x5555559f05e0 in ip_print /home/zlsf/fuzz_main/tcpdump-tcpdump-4.9.2/./print-ip.c:673:3<br>    #5 0x55555598879d in ethertype_print /home/zlsf/fuzz_main/tcpdump-tcpdump-4.9.2/./print-ether.c:333:10<br>    #6 0x555555986621 in ether_print /home/zlsf/fuzz_main/tcpdump-tcpdump-4.9.2/./print-ether.c:236:7<br>    #7 0x5555558ac2ef in pretty_print_packet /home/zlsf/fuzz_main/tcpdump-tcpdump-4.9.2/./print.c:332:18<br>    #8 0x5555558ac2ef in print_packet /home/zlsf/fuzz_main/tcpdump-tcpdump-4.9.2/./tcpdump.c:2497:2<br>    #9 0x555555dcba7c in pcap_offline_read /home/zlsf/fuzz_main/libpcap-1.8.0/./savefile.c:507:4<br>    #10 0x5555558a24ba in pcap_loop /home/zlsf/fuzz_main/libpcap-1.8.0/./pcap.c:875:8<br>    #11 0x5555558a24ba in main /home/zlsf/fuzz_main/tcpdump-tcpdump-4.9.2/./tcpdump.c:2000:12<br>    #12 0x7ffff762a1c9 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:58:16<br>    #13 0x7ffff762a28a in __libc_start_main csu/../csu/libc-start.c:360:3<br>    #14 0x5555557b93c4 in _start (/home/zlsf/fuzz_main/install/sbin/tcpdump+0x2653c4) (BuildId: b2a754f7d67207d8)<br></code></pre></td></tr></table></figure>
+
+<p>其中我们清晰的看见函数调用链经过了<code>bootp_print</code>这个函数。</p>
+<h3 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h3><p>print-bootp.c：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-type">void</span><br><span class="hljs-title function_">bootp_print</span><span class="hljs-params">(netdissect_options *ndo,</span><br><span class="hljs-params">	    <span class="hljs-keyword">register</span> <span class="hljs-type">const</span> u_char *cp, u_int length)</span><br>&#123;<br>	<span class="hljs-keyword">register</span> <span class="hljs-type">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">bootp</span> *<span class="hljs-title">bp</span>;</span><br>	<span class="hljs-type">static</span> <span class="hljs-type">const</span> u_char vm_cmu[<span class="hljs-number">4</span>] = VM_CMU;<br>	<span class="hljs-type">static</span> <span class="hljs-type">const</span> u_char vm_rfc1048[<span class="hljs-number">4</span>] = VM_RFC1048;<br>	<span class="hljs-comment">// ...</span><br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">memcmp</span>((<span class="hljs-type">const</span> <span class="hljs-type">char</span> *)bp-&gt;bp_vend, vm_rfc1048,<br>        <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">uint32_t</span>)) == <span class="hljs-number">0</span>)<br>    rfc1048_print(ndo, bp-&gt;bp_vend); <span class="hljs-comment">// print-bootp.c:382</span><br>    <span class="hljs-comment">// ...</span><br></code></pre></td></tr></table></figure>
+
+<p>这段逻辑是为了解析BOOTP包的厂商而设计的。</p>
+<p>这里进行了内存比较，vm_rfc1048是固定4字节大小的特征值。但是bp-&gt;bp_vend是我们可控的，在我的崩溃文件输入下，它只有3个字节。多读取了一个字节。</p>
+<p>但是这个漏洞我感觉远远达不到实施Dos或读取敏感信息的程度就是了。</p>
+<h3 id="修复"><a href="#修复" class="headerlink" title="修复"></a>修复</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs C">-- 	<span class="hljs-keyword">if</span> (<span class="hljs-built_in">memcmp</span>((<span class="hljs-type">const</span> <span class="hljs-type">char</span> *)bp-&gt;bp_vend, vm_rfc1048,<br>		    <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">uint32_t</span>)) == <span class="hljs-number">0</span>)<br>		rfc1048_print(ndo, bp-&gt;bp_vend);<br>-- <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (<span class="hljs-built_in">memcmp</span>((<span class="hljs-type">const</span> <span class="hljs-type">char</span> *)bp-&gt;bp_vend, vm_cmu,<br>			<span class="hljs-keyword">sizeof</span>(<span class="hljs-type">uint32_t</span>)) == <span class="hljs-number">0</span>)<br>		cmu_print(ndo, bp-&gt;bp_vend);<br><br>++ 	<span class="hljs-keyword">if</span> (strnlen((<span class="hljs-type">const</span> <span class="hljs-type">char</span> *)bp-&gt;bp_vend, <span class="hljs-number">4</span>) == <span class="hljs-number">4</span> &amp;&amp; <span class="hljs-built_in">memcmp</span>((<span class="hljs-type">const</span> <span class="hljs-type">char</span> *)bp-&gt;bp_vend, vm_rfc1048,<br>		    <span class="hljs-keyword">sizeof</span>(<span class="hljs-type">uint32_t</span>)) == <span class="hljs-number">0</span>)<br>		rfc1048_print(ndo, bp-&gt;bp_vend);<br>++	<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (strnlen((<span class="hljs-type">const</span> <span class="hljs-type">char</span> *)bp-&gt;bp_vend, <span class="hljs-number">4</span>) == <span class="hljs-number">4</span> &amp;&amp; <span class="hljs-built_in">memcmp</span>((<span class="hljs-type">const</span> <span class="hljs-type">char</span> *)bp-&gt;bp_vend, vm_cmu,<br>			<span class="hljs-keyword">sizeof</span>(<span class="hljs-type">uint32_t</span>)) == <span class="hljs-number">0</span>)<br>		cmu_print(ndo, bp-&gt;bp_vend);<br></code></pre></td></tr></table></figure>
+
+<p>官方的修复方法也是检查长度，不过长度不符合就是直接退出。四舍五入和我的修复差不多。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>AFL++实战其三</div>
+      <div>https://zlsf-zl.github.io/2026/04/07/AFL-实战其三/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>ZLSF</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年4月7日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="NC - 非商业性使用">
+                    <i class="iconfont icon-nc"></i>
+                  </span>
+                </a>
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="SA - 相同方式共享">
+                    <i class="iconfont icon-sa"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2026/04/06/AFL-%E5%AE%9E%E6%88%98%E5%85%B6%E4%BA%8C/" title="AFL++实战其二">
+                        <span class="hidden-mobile">AFL++实战其二</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"6qfbMdW9PFOPATbmhAiyPWcK-MdYXbMMI","appKey":"X9xyyWbc7hafcwTqYXwdhjE5","path":"window.location.pathname","placeholder":"文明发言","avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"https://6qfbmdw9.api.lncldglobal.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+      <span>by ZLSF</span>
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
