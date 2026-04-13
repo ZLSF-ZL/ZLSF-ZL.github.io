@@ -232,15 +232,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/01/01/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.1-4.7/" target="_self">
-          Pwn学习笔记 - 4.1-4.7
+        <a href="/2024/02/26/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-2.26-3.3/" target="_self">
+          Pwn学习笔记 - 2.26-3.3
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/01/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.1-4.7/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/02/26/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-2.26-3.3/" target="_self">
         <div>
-          本周学习总结终于轮到我打新手赛了。全局常量声明：新手上路，文章内容仅是由教程观点和自己总结获得，仅供参考。一、[Easy] – [XYCTF2024]static_linkCheck:64位程序，开启canary和NX。虽然checksec检查到了canary，但是vuln函数并没有使用canary。我们现在有了0x100 - 0x28 的溢出。程序中未发现system和”&#x2F;bin&#x
+          周磊的学习周报（2.26-3.3） 本周学习总结本来看了堆教程视频，准备拿青少年CTF做训练，结果打了个寂寞。全局常量声明：新手上路，文章内容仅是由教程观点和自己总结获得，仅供参考。 一、Offbyone同样是在堆溢出的漏洞可以实现此漏洞，但是只需要溢出1字节。对于unsortedbins， glibc会不停的对其其中的物理相邻的块进行合并，而我们正式利用了这一点。在块的size字段中记录了上个堆
         </div>
       </a>
 
@@ -248,8 +248,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-01-01 00:00" pubdate>
-              2024-01-01
+            <time datetime="2024-02-26 00:00" pubdate>
+              2024-02-26
             </time>
           </div>
         
@@ -265,15 +265,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/01/01/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.15-4.21/" target="_self">
-          Pwn学习笔记 - 4.15-4.21
+        <a href="/2024/02/19/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-2.19-2.25/" target="_self">
+          Pwn学习笔记 - 2.19-2.25
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/01/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.15-4.21/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/02/19/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-2.19-2.25/" target="_self">
         <div>
-          本周学习总结全局常量声明：文章内容仅是由教程观点和自己总结获得，仅供参考。一、[HCTF 2nd]–fmt基础的栈上字符串格式化泄漏，通过%35$p获得__libc_start_main+231的地址，通过计算获得libc基地址，通过%39$p获得pie+0x992的地址，通过计算获得pie的基地址。vuln3本身是无限死循环且无法退出，所以这里考虑攻击printf的got表改为system，通过
+          周磊的学习周报（2.19-2.25） 本周学习总结堆の康复训练。。。全局常量声明：新手上路，文章内容仅是由教程观点和自己总结获得，仅供参考。 一、UnlinkUnlink是一种合并堆块的手段，在有堆溢出漏洞时可以被利用为地址任意写。网络上讲解的时候大都直接放源码，CPU给我干烧了，实际上该漏洞十分简单。这个漏洞的关键在于对当前chunk进行写入的时候可以对该chunk物理上相邻的下一个chunk的
         </div>
       </a>
 
@@ -281,8 +281,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-01-01 00:00" pubdate>
-              2024-01-01
+            <time datetime="2024-02-19 00:00" pubdate>
+              2024-02-19
             </time>
           </div>
         
@@ -298,15 +298,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/01/01/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.21-4.27/" target="_self">
-          Pwn学习笔记 - 4.21-4.27
+        <a href="/2024/02/12/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-2.12-2.18/" target="_self">
+          Pwn学习笔记 - 2.12-2.18
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/01/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.21-4.27/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/02/12/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-2.12-2.18/" target="_self">
         <div>
-          本周学习总结全局常量声明：文章内容仅是由教程观点和自己总结获得，仅供参考。一、Unlink测试Glibc为2.23-0ubuntu11.3_amd64对于Unlink手法的使用和效果在B站星盟团队的pwn系列视频中有详细的讲解。视频链接：Unlink_哔哩哔哩_bilibili这里进行适当补充。1.在测试的Glibc环境下，只有当相邻堆块差距达到一定大小的情况下才会触发相邻合并（比如0x20和0x
+          周磊的学习周报（2.12-2.18） 本周学习总结pwn最近学的高血压了，学点web放松一下。全局常量声明：新手上路，文章内容仅是由教程观点和自己总结获得，仅供参考。 一、Baby–[LitCTF 2023]我Flag呢？打开网页如下：  使用F12找到flag：  二、Baby–[LitCTF 2023]导弹迷踪打开网页如下：  在调试工具中找到js文件，通过正则表达式搜索到flag：  三、B
         </div>
       </a>
 
@@ -314,8 +314,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-01-01 00:00" pubdate>
-              2024-01-01
+            <time datetime="2024-02-12 00:00" pubdate>
+              2024-02-12
             </time>
           </div>
         
@@ -331,15 +331,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/01/01/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.8-4.14/" target="_self">
-          Pwn学习笔记 - 4.8-4.14
+        <a href="/2024/01/29/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-1.29-2.4/" target="_self">
+          Pwn学习笔记 - 1.29-2.4
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/01/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.8-4.14/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/29/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-1.29-2.4/" target="_self">
         <div>
-          本周学习总结最近挺忙的，水一下算了。全局常量声明：新手上路，文章内容仅是由教程观点和自己总结获得，仅供参考。一、[NSSRound#21 Basic]–Beautiful_Girl本来是一道IO题，但是由于出题人故意留下的障眼法给变简单了。用特意溢出的一个字节可以让我们控制rbp的最后一个字节，这就可以让我们用运气法来控制程序流到ROP，由于程序比上次的题复杂，所以成功概率较低。exp：二、[NS
+          周磊的学习周报（1.29-2.4） 本周学习总结有被创到。全局常量声明：新手上路，文章内容仅是由教程观点和自己总结获得，仅供参考。 一、诡异的循环…在接触过编程的同志们都知道，程序本身只会按照自己的代码所写的运行，即使因为一些错误的原因导致的程序执行流不正常，那么也应该只会执行程序中本身有的代码，而不是凭空出现一段诡异的循环。这是一段程序的源代码：  libc版本：2.35-0ubuntu3_am
         </div>
       </a>
 
@@ -347,8 +347,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-01-01 00:00" pubdate>
-              2024-01-01
+            <time datetime="2024-01-29 00:00" pubdate>
+              2024-01-29
             </time>
           </div>
         
@@ -364,15 +364,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/01/01/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-5.13-5.20/" target="_self">
-          Pwn学习笔记 - 5.13-5.20
+        <a href="/2024/01/21/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-1.21-1.28/" target="_self">
+          Pwn学习笔记 - 1.21-1.28
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/01/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-5.13-5.20/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/21/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-1.21-1.28/" target="_self">
         <div>
-          本周学习总结全局常量声明：文章内容仅是由教程观点和自己总结获得，仅供参考。py，爽！一、[ISCC2024]–miaoCheck:32位程序，开启canary和NX。漏洞点：先通过字符串格式化漏洞泄漏canary，然后第二次栈溢出构造ROP来getshell。exp：flag：服务器错误二、[ISCC2024]–Your_programCheck:64位程序。无保护。漏洞点：无限栈溢出。可以考虑再
+          周磊的学习周报（1.21-1.28） 本周学习总结堆。。。堆起来了？全局常量声明：新手上路，文章内容仅是由教程观点和自己总结获得，仅供参考。 一、Bins在glibc中对于被free掉的堆块有不同的bins进行管理，方便下次再次使用malloc进行申请。fastbins，tcachebins，unsortedbins等。x64（对于x32的范围数值需要除以2） 1.fastbins回收的块范围是0
         </div>
       </a>
 
@@ -380,8 +380,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-01-01 00:00" pubdate>
-              2024-01-01
+            <time datetime="2024-01-21 00:00" pubdate>
+              2024-01-21
             </time>
           </div>
         
@@ -397,15 +397,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/01/01/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-5.20-5.26/" target="_self">
-          Pwn学习笔记 - 5.20-5.26
+        <a href="/2023/12/11/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-12.11-12.17/" target="_self">
+          Pwn学习笔记 - 12.11-12.17
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/01/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-5.20-5.26/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/12/11/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-12.11-12.17/" target="_self">
         <div>
-          本周学习总结CISN，ISCC，what can i say？全局常量声明：文章内容仅是由教程观点和自己总结获得，仅供参考。一、[CISN2024初赛]–gostackCheck:64位程序，NX全开。关键代码如下：虽然代码反编译出来是依托答辩，但是我们可以通过gdb的动态调试获得一些漏洞。调试的结果就是可以用0x1D8的填充进行栈溢出，但要求0x108的填充位置为栈上的一个地址才能绕过检查，同时
+          周磊的学习周报（12.11-12.17） 本周学习总结重新安装了虚拟机环境，虽然还不是很完善，将就着用吧。仍然发现有许多漏洞不会用，导致做题目很慢。期末辣！不想考试啊！全局常量声明：新手上路，文章内容仅是由教程观点和自己总结获得，仅供参考。 一、“not-found-Glibc2.34 错误”解决办法使用 glibc-all-in-one + patchelf 办法解决。 1.patchelf下载
         </div>
       </a>
 
@@ -413,8 +413,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-01-01 00:00" pubdate>
-              2024-01-01
+            <time datetime="2023-12-11 00:00" pubdate>
+              2023-12-11
             </time>
           </div>
         
@@ -430,15 +430,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/01/01/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-5.27-6.2/" target="_self">
-          Pwn学习笔记 - 5.27-6.2
+        <a href="/2023/12/04/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-12.04-12.10/" target="_self">
+          Pwn学习笔记 - 12.04-12.10
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/01/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-5.27-6.2/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/12/04/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-12.04-12.10/" target="_self">
         <div>
-          本周学习总结咕了这么久，总算是正式开启堆打IO的学习之路了。全局常量声明：文章内容仅是由教程观点和自己总结获得，仅供参考。一、攻击IO劫持程序流的根本原理。程序在使用exit退出或发生堆错误进行输出时会调用某函数对每个IO进行某些操作，这些函数最终调用的是一个叫_IO_flush_all_lockp的函数，在该函数中满足某些条件时会调用over_flow函数，而该函数是以一种调用地址存在于叫vta
+          周磊的学习周报（12.04-12.10） 本周学习总结所有人都看过来，看我看我，我宣布的事，我是个———————–。栈迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移迁移。全局常量声明：新手上路，文章内容仅是由教程观点和自己总结获得，仅供参考。 一、虽然我承认阁下的system很强，但是如果我拿出execve，阁下又该如何应对你是否有过system死都打不通的情况，每次都为这玩意苦
         </div>
       </a>
 
@@ -446,8 +446,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-01-01 00:00" pubdate>
-              2024-01-01
+            <time datetime="2023-12-04 00:00" pubdate>
+              2023-12-04
             </time>
           </div>
         
@@ -463,15 +463,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/01/01/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-5.6-5.12/" target="_self">
-          Pwn学习笔记 - 5.6-5.12
+        <a href="/2023/11/27/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-11.27-12.03/" target="_self">
+          Pwn学习笔记 - 11.27-12.03
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/01/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-5.6-5.12/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/11/27/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-11.27-12.03/" target="_self">
         <div>
-          本周学习总结ISCC，我阐述你的梦。全局常量声明：文章内容仅是由教程观点和自己总结获得，仅供参考。一、[ISCC2024]–chaos看，别问。flag：ISCC{M6u7oMuvYXbuBlFIjBcHwSmx8jmU2LBrJPCt}二、[ISCC2024]–ISCC_easycheck:32位程序，NX保护开启。漏洞为字符串格式漏洞和栈溢出漏洞。exp:flag:ISCC{IsCu4w4Ad
+          周磊的学习周报（11.27-12.03） 本周学习总结成功完成了新环境的搭建。完成了老平台的所有除了堆以外的题目，之后主要解buu的题目。全局常量声明：新手上路，文章内容仅是由教程观点和自己总结获得，仅供参考。 一、关于kali等linux下无法安装pwngdb以及其他工具情况解决办法kali下因为pip的版本原因，无法安装gdb的插件pwngdb。为了在不破坏kali原生系统的情况下，我决定使用
         </div>
       </a>
 
@@ -479,8 +479,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-01-01 00:00" pubdate>
-              2024-01-01
+            <time datetime="2023-11-27 00:00" pubdate>
+              2023-11-27
             </time>
           </div>
         
@@ -496,15 +496,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/01/01/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-6.3-6.9/" target="_self">
-          Pwn学习笔记 - 6.3-6.9
+        <a href="/2023/11/20/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-11.20-11.26/" target="_self">
+          Pwn学习笔记 - 11.20-11.26
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/01/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-6.3-6.9/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/11/20/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-11.20-11.26/" target="_self">
         <div>
-          本周学习总结WHAT! IS! IO!全局常量声明：文章内容仅是由教程观点和自己总结获得，仅供参考。一、house of apple攻击模式House of apple系列估计是我学的第一个对比较新的glibc还有效攻击的手法。该攻击的利用条件十分的简单：在house of orange的基础上，利用原先house of orange的vtable表进行跳转到_wide_data-&gt;vtab
+          周磊的学习周报（11.20-11.26） 本周学习总结正式开始了pwn题之旅，已经成功进入到了三天一题的阶段，看来题目选的没错呢。开始尝试对ida反编译程序进行更深的理解（而然理解不能）全局常量声明：新手上路，文章内容仅是由教程观点和自己总结获得，仅供参考。 一、对于pwn题目使用的libc文件中函数偏移的查询最近发现许多题需要用到libc文件，但是题目中没有libc文件，此时该如何是好？在大量的
         </div>
       </a>
 
@@ -512,8 +512,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-01-01 00:00" pubdate>
-              2024-01-01
+            <time datetime="2023-11-20 00:00" pubdate>
+              2023-11-20
             </time>
           </div>
         
@@ -529,15 +529,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2024/01/01/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-7.15-7.21/" target="_self">
-          Pwn学习笔记 - 7.15-7.21
+        <a href="/2023/11/13/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-11.13-11.19/" target="_self">
+          Pwn学习笔记 - 11.13-11.19
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/01/01/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-7.15-7.21/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/11/13/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-11.13-11.19/" target="_self">
         <div>
-          本周学习总结CTFの康复训练全局常量声明：文章内容仅是由教程观点和自己总结获得，仅供参考。一、[2024春秋杯夏季联赛]–stdoutcheck：64位程序，开启NX。ida分析：main：vuln：看起来是个常见的缓冲区溢出漏洞，但是在init函数中设置输出缓冲区初始化的时候关闭了输出导致不能产生然后回显，所以不能暴露任何地址或信息，还容易造成缓冲区混乱。init：在libc源代码中发现了函数s
+          周磊的学习周报（11.13-11.19） 本周学习总结总算看完了入门视频。很好的堆题，使我的exp旋转。全局常量声明：新手上路，文章内容仅是由教程观点和自己总结获得，仅供参考。 一、fmt字符串格式化漏洞–来自原始纯粹的力量–x32你是否见过如下代码：某个粗心大意的程序员将程序写成了这样，虽然一般来说可以正常运行，但是其实这样会出现意想不到的漏洞。因为没有了“”，导致程序会将变量c中的字符串自动用
         </div>
       </a>
 
@@ -545,8 +545,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2024-01-01 00:00" pubdate>
-              2024-01-01
+            <time datetime="2023-11-13 00:00" pubdate>
+              2023-11-13
             </time>
           </div>
         

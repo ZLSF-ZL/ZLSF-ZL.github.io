@@ -1,0 +1,775 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/bug.png">
+  <link rel="icon" href="/img/bug.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#1F3144">
+  <meta name="author" content="ZLSF">
+  <meta name="keywords" content="ZLSF,zlsf">
+  
+    <meta name="description" content="周磊的学习周报（4.21-4.27） 本周学习总结全局常量声明：文章内容仅是由教程观点和自己总结获得，仅供参考。 一、Unlink测试Glibc为2.23-0ubuntu11.3_amd64对于Unlink手法的使用和效果在B站星盟团队的pwn系列视频中有详细的讲解。视频链接：Unlink_哔哩哔哩_bilibili这里进行适当补充。 1.在测试的Glibc环境下，只有当相邻堆块差距达到一定大小的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Pwn学习笔记 - 4.21-4.27">
+<meta property="og:url" content="https://zlsf-zl.github.io/2024/04/21/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.21-4.27/index.html">
+<meta property="og:site_name" content="ZLSF的博客">
+<meta property="og:description" content="周磊的学习周报（4.21-4.27） 本周学习总结全局常量声明：文章内容仅是由教程观点和自己总结获得，仅供参考。 一、Unlink测试Glibc为2.23-0ubuntu11.3_amd64对于Unlink手法的使用和效果在B站星盟团队的pwn系列视频中有详细的讲解。视频链接：Unlink_哔哩哔哩_bilibili这里进行适当补充。 1.在测试的Glibc环境下，只有当相邻堆块差距达到一定大小的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/04/21/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.21-4.27/image1.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/04/21/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.21-4.27/image2.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/04/21/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.21-4.27/image3.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/04/21/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.21-4.27/image4.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/04/21/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.21-4.27/image5.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/04/21/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.21-4.27/image6.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/04/21/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.21-4.27/image7.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/04/21/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.21-4.27/image8.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/04/21/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.21-4.27/image9.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/04/21/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.21-4.27/image10.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/04/21/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.21-4.27/image11.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/04/21/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.21-4.27/image12.png">
+<meta property="article:published_time" content="2024-04-20T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-04-13T10:28:29.666Z">
+<meta property="article:author" content="ZLSF">
+<meta property="article:tag" content="Pwn">
+<meta property="article:tag" content="学习笔记">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://zlsf-zl.github.io/2024/04/21/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.21-4.27/image1.png">
+  
+  
+  
+  <title>Pwn学习笔记 - 4.21-4.27 - ZLSF的博客</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"zlsf-zl.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"6qfbMdW9PFOPATbmhAiyPWcK-MdYXbMMI","app_key":"X9xyyWbc7hafcwTqYXwdhjE5","server_url":"https://6qfbmdw9.api.lncldglobal.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>ZLSF的博客</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/start.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Pwn学习笔记 - 4.21-4.27"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-04-21 00:00" pubdate>
+          2024年4月21日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          792 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          7 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Pwn学习笔记 - 4.21-4.27</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>周磊的学习周报（4.21-4.27）</p>
+<h2 id="本周学习总结"><a href="#本周学习总结" class="headerlink" title="本周学习总结"></a>本周学习总结</h2><p>全局常量声明：文章内容仅是由教程观点和自己总结获得，仅供参考。</p>
+<h2 id="一、Unlink"><a href="#一、Unlink" class="headerlink" title="一、Unlink"></a>一、Unlink</h2><p>测试Glibc为2.23-0ubuntu11.3_amd64<br>对于Unlink手法的使用和效果在B站星盟团队的pwn系列视频中有详细的讲解。<br>视频链接：Unlink_哔哩哔哩_bilibili<br>这里进行适当补充。</p>
+<h3 id="1-在测试的Glibc环境下，只有当相邻堆块差距达到一定大小的情况下才会触发相邻合并（比如0x20和0x80）"><a href="#1-在测试的Glibc环境下，只有当相邻堆块差距达到一定大小的情况下才会触发相邻合并（比如0x20和0x80）" class="headerlink" title="1.在测试的Glibc环境下，只有当相邻堆块差距达到一定大小的情况下才会触发相邻合并（比如0x20和0x80）"></a>1.在测试的Glibc环境下，只有当相邻堆块差距达到一定大小的情况下才会触发相邻合并（比如0x20和0x80）</h3><h3 id="2-对于fd和bk的校验则是要求fd-0x18和bk-0x10中的内容和当前被合并堆块的prive-size地址相同。"><a href="#2-对于fd和bk的校验则是要求fd-0x18和bk-0x10中的内容和当前被合并堆块的prive-size地址相同。" class="headerlink" title="2.对于fd和bk的校验则是要求fd+0x18和bk+0x10中的内容和当前被合并堆块的prive_size地址相同。"></a>2.对于fd和bk的校验则是要求fd+0x18和bk+0x10中的内容和当前被合并堆块的prive_size地址相同。</h3><p>假设被合并堆块的当前地址为0x11451400，则*(fd+0x18) &#x3D;&#x3D; 0x11451400 &amp;&amp; *(bk+0x10) &#x3D;&#x3D; 0x11451400<br>而不是(fd+0x18) &#x3D;&#x3D; 0x11451400 &amp;&amp; (bk+0x10) &#x3D;&#x3D; 0x11451400。</p>
+<h3 id="3-在Unlink利用中，必须将原被合并堆块的fd变成prive-size，bk变成size，fd和bk紧接着写入，最后改变下个堆块的prive-size和size位，这么做的原因是为了方便合并时绕过对prive-size的检查，因为在星盟的例子里，bss段上存储的是堆块的fd地址。"><a href="#3-在Unlink利用中，必须将原被合并堆块的fd变成prive-size，bk变成size，fd和bk紧接着写入，最后改变下个堆块的prive-size和size位，这么做的原因是为了方便合并时绕过对prive-size的检查，因为在星盟的例子里，bss段上存储的是堆块的fd地址。" class="headerlink" title="3.在Unlink利用中，必须将原被合并堆块的fd变成prive_size，bk变成size，fd和bk紧接着写入，最后改变下个堆块的prive_size和size位，这么做的原因是为了方便合并时绕过对prive_size的检查，因为在星盟的例子里，bss段上存储的是堆块的fd地址。"></a>3.在Unlink利用中，必须将原被合并堆块的fd变成prive_size，bk变成size，fd和bk紧接着写入，最后改变下个堆块的prive_size和size位，这么做的原因是为了方便合并时绕过对prive_size的检查，因为在星盟的例子里，bss段上存储的是堆块的fd地址。</h3><h2 id="二、-SUCTF-2018-招新赛-–unlink–对Unlink的使用"><a href="#二、-SUCTF-2018-招新赛-–unlink–对Unlink的使用" class="headerlink" title="二、[SUCTF 2018 招新赛]–unlink–对Unlink的使用"></a>二、[SUCTF 2018 招新赛]–unlink–对Unlink的使用</h2><p>check：</p>
+<p><img src="/2024/04/21/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.21-4.27/image1.png" srcset="/img/loading.gif" lazyload></p>
+<p>64位程序，canary和NX开启。<br>漏洞：</p>
+<p><img src="/2024/04/21/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.21-4.27/image2.png" srcset="/img/loading.gif" lazyload></p>
+<p>这个函数存在唯一漏洞堆溢出。程序本身支持增查删改。<br>程序通过bss段上的一个变量来存储每个堆块的fd地址，可以考虑用Unlink将bss段上这个变量的地址写入这个bss变量的其中某个位置，使得我们呢想编辑堆块一样编辑bss段上这个变量的地址。<br>然后通过向bss段变量中写入__free_hook的地址，然后直接编辑__free_hook为system，然后就能getshell。<br>exp：</p>
+<h2 id="三、-SUCTF-2018-招新赛-–unlink–通过offbyone来实现堆块堆叠"><a href="#三、-SUCTF-2018-招新赛-–unlink–通过offbyone来实现堆块堆叠" class="headerlink" title="三、[SUCTF 2018 招新赛]–unlink–通过offbyone来实现堆块堆叠"></a>三、[SUCTF 2018 招新赛]–unlink–通过offbyone来实现堆块堆叠</h2><p>通过offbyone堆叠也是一样的原理。在Unlink的基础上实现的堆叠。<br>check：</p>
+<p><img src="/2024/04/21/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.21-4.27/image3.png" srcset="/img/loading.gif" lazyload></p>
+<p>64位程序，canary和NX开启。<br>在Unlink的基础上，改原先劫持bss段上的地址目标为直接对堆块进行劫持。<br>具体方法为在可释放后合并的相邻两个堆块A和B中，通过修改A的fd+0x18和bk+0x10的值到堆块A的A+0x20位置（只要不干扰unlink合并的位置都可以），在此之前需要暴露堆基地址或计算出A的堆地址以获得相关数据，<br>修改完成后释放B堆块，此时A和B堆块合并，但是A堆块仍然和编辑，且可编辑的位置刚好是合并后堆块的fd地址，可以通过直接修改或申请再释放后修改来申请任意地址的堆块。<br>exp：</p>
+<h2 id="四、-LitCTF-2023-–Http-pro-max-plus"><a href="#四、-LitCTF-2023-–Http-pro-max-plus" class="headerlink" title="四、[LitCTF 2023]–Http pro max plus"></a>四、[LitCTF 2023]–Http pro max plus</h2><p>获得IP地址node5.anna.nssctf.cn:28789</p>
+<p><img src="/2024/04/21/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.21-4.27/image4.png" srcset="/img/loading.gif" lazyload></p>
+<p>只能通过本地IP地址访问。</p>
+<p><img src="/2024/04/21/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.21-4.27/image5.png" srcset="/img/loading.gif" lazyload></p>
+<p>xxf无法绕过，尝试使用C-IP。</p>
+<p><img src="/2024/04/21/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.21-4.27/image6.png" srcset="/img/loading.gif" lazyload></p>
+<p>需要来源为pornhub.com(你最好别访问)。</p>
+<p><img src="/2024/04/21/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.21-4.27/image7.png" srcset="/img/loading.gif" lazyload></p>
+<p>需要使用Chrome浏览器访问。</p>
+<p><img src="/2024/04/21/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.21-4.27/image8.png" srcset="/img/loading.gif" lazyload></p>
+<p>要求开启代理为Clash.win。</p>
+<p><img src="/2024/04/21/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.21-4.27/image9.png" srcset="/img/loading.gif" lazyload></p>
+<p>触发借一步说话。</p>
+<p><img src="/2024/04/21/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.21-4.27/image10.png" srcset="/img/loading.gif" lazyload></p>
+<p>注释发现好康的文件。</p>
+<p><img src="/2024/04/21/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.21-4.27/image11.png" srcset="/img/loading.gif" lazyload></p>
+<p>获得flag。</p>
+<h2 id="下周学习计划"><a href="#下周学习计划" class="headerlink" title="下周学习计划"></a>下周学习计划</h2><p>IO！我tm学学学学学学学学学学学学学学学学学学学学。</p>
+<h2 id="学习感受"><a href="#学习感受" class="headerlink" title="学习感受"></a>学习感受</h2><p><img src="/2024/04/21/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.21-4.27/image12.png" srcset="/img/loading.gif" lazyload></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/CTF/" class="category-chain-item">CTF</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Pwn/" class="print-no-link">#Pwn</a>
+      
+        <a href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="print-no-link">#学习笔记</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Pwn学习笔记 - 4.21-4.27</div>
+      <div>https://zlsf-zl.github.io/2024/04/21/学习笔记-4.21-4.27/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>ZLSF</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年4月21日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="NC - 非商业性使用">
+                    <i class="iconfont icon-nc"></i>
+                  </span>
+                </a>
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="SA - 相同方式共享">
+                    <i class="iconfont icon-sa"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/05/06/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-5.6-5.12/" title="Pwn学习笔记 - 5.6-5.12">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Pwn学习笔记 - 5.6-5.12</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/04/15/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-4.15-4.21/" title="Pwn学习笔记 - 4.15-4.21">
+                        <span class="hidden-mobile">Pwn学习笔记 - 4.15-4.21</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"6qfbMdW9PFOPATbmhAiyPWcK-MdYXbMMI","appKey":"X9xyyWbc7hafcwTqYXwdhjE5","path":"window.location.pathname","placeholder":"文明发言","avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"https://6qfbmdw9.api.lncldglobal.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+      <span>by ZLSF</span>
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
