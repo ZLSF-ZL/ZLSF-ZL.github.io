@@ -1,0 +1,762 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/bug.png">
+  <link rel="icon" href="/img/bug.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#1F3144">
+  <meta name="author" content="ZLSF">
+  <meta name="keywords" content="ZLSF,zlsf">
+  
+    <meta name="description" content="练习四 - LibTIFF版本：libtiff 4.0.4 漏洞编号：CVE-2016-9297 CVE-2016-9297 是一个越界读取漏洞，可以通过精心设计的 TIFF_SETGET_C16ASCII 或 TIFF_SETGET_C32_ASCII 标签值触发。 越界读取是指程序读取数据超过预期缓冲区的结束点或开始时发生的漏洞。 因此，它允许远程攻击者实施拒绝服务，或可能从进程内存中获取潜在">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AFL++实战其四">
+<meta property="og:url" content="https://zlsf-zl.github.io/2026/04/08/AFL-%E5%AE%9E%E6%88%98%E5%85%B6%E5%9B%9B/index.html">
+<meta property="og:site_name" content="ZLSF的博客">
+<meta property="og:description" content="练习四 - LibTIFF版本：libtiff 4.0.4 漏洞编号：CVE-2016-9297 CVE-2016-9297 是一个越界读取漏洞，可以通过精心设计的 TIFF_SETGET_C16ASCII 或 TIFF_SETGET_C32_ASCII 标签值触发。 越界读取是指程序读取数据超过预期缓冲区的结束点或开始时发生的漏洞。 因此，它允许远程攻击者实施拒绝服务，或可能从进程内存中获取潜在">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://zlsf-zl.github.io/2026/04/08/AFL-%E5%AE%9E%E6%88%98%E5%85%B6%E5%9B%9B/001.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2026/04/08/AFL-%E5%AE%9E%E6%88%98%E5%85%B6%E5%9B%9B/002.png">
+<meta property="article:published_time" content="2026-04-08T14:03:03.000Z">
+<meta property="article:modified_time" content="2026-04-09T14:56:08.788Z">
+<meta property="article:author" content="ZLSF">
+<meta property="article:tag" content="ZLSF,zlsf">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://zlsf-zl.github.io/2026/04/08/AFL-%E5%AE%9E%E6%88%98%E5%85%B6%E5%9B%9B/001.png">
+  
+  
+  
+  <title>AFL++实战其四 - ZLSF的博客</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"zlsf-zl.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"6qfbMdW9PFOPATbmhAiyPWcK-MdYXbMMI","app_key":"X9xyyWbc7hafcwTqYXwdhjE5","server_url":"https://6qfbmdw9.api.lncldglobal.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>ZLSF的博客</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/start.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="AFL++实战其四"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-04-08 22:03" pubdate>
+          2026年4月8日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          11 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">AFL++实战其四</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="练习四-LibTIFF"><a href="#练习四-LibTIFF" class="headerlink" title="练习四 - LibTIFF"></a>练习四 - LibTIFF</h2><p>版本：libtiff 4.0.4</p>
+<p>漏洞编号：CVE-2016-9297</p>
+<p>CVE-2016-9297 是一个越界读取漏洞，可以通过精心设计的 TIFF_SETGET_C16ASCII 或 TIFF_SETGET_C32_ASCII 标签值触发。</p>
+<p>越界读取是指程序读取数据超过预期缓冲区的结束点或开始时发生的漏洞。</p>
+<p>因此，它允许远程攻击者实施拒绝服务，或可能从进程内存中获取潜在敏感信息</p>
+<hr>
+<h3 id="下载LibTIFF"><a href="#下载LibTIFF" class="headerlink" title="下载LibTIFF"></a>下载LibTIFF</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">mkdir</span> <span class="hljs-variable">$HOME</span>/fuzz_main/<br><span class="hljs-built_in">cd</span> <span class="hljs-variable">$HOME</span>/fuzz_main/<br>wget https://github.com/libsdl-org/libtiff/archive/refs/tags/v4.0.4.tar.gz<br>tar -xzvf v4.0.4.tar.gz<br></code></pre></td></tr></table></figure>
+
+<h3 id="测试覆盖范围"><a href="#测试覆盖范围" class="headerlink" title="测试覆盖范围"></a>测试覆盖范围</h3><p>一般命令行类工具都提供了额外参数来实现不同额外功能，对于我们 fuzz 来说，能通过参数组合启用程序越多的功能越好，意味着这会覆盖更多的代码。</p>
+<p>我们将采用工具 LCOV 来测试覆盖率</p>
+<p>首先我们得安装 LCOV：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">sudo</span> apt install lcov<br></code></pre></td></tr></table></figure>
+
+<p>使用<code>--coverage</code>标志编译 libTIFF：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">cd</span> <span class="hljs-variable">$HOME</span>/fuzz_main/<br><span class="hljs-built_in">cd</span> <span class="hljs-variable">$HOME</span>/fuzz_main/libtiff-4.0.4/<br>CFLAGS=<span class="hljs-string">&quot;--coverage&quot;</span> LDFLAGS=<span class="hljs-string">&quot;--coverage&quot;</span> ./configure --prefix=<span class="hljs-string">&quot;<span class="hljs-variable">$HOME</span>/fuzz_main/cov_install/&quot;</span> --disable-shared<br>make<br>make install<br></code></pre></td></tr></table></figure>
+
+<p>通过以下输入收集代码的覆盖率：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">mkdir</span> <span class="hljs-variable">$HOME</span>/fuzz_main/fuzz/<br><span class="hljs-built_in">cd</span> <span class="hljs-variable">$HOME</span>/fuzz_main/fuzz/<br>lcov --zerocounters --directory <span class="hljs-variable">$HOME</span>/fuzz_main/libtiff-4.0.4 <span class="hljs-comment"># 清零代码计数器，如果你不想多条测试命令覆盖率被叠加就得在每次收集覆盖率前执行这条命令</span><br>lcov --capture --initial --directory <span class="hljs-variable">$HOME</span>/fuzz_main/libtiff-4.0.4 --output-file app.info --ignore-errors <span class="hljs-built_in">source</span> <span class="hljs-comment"># 建立覆盖率数据，表示无输入下的默认覆盖率，加--ignore-errors source 的原因是因为lcov有时候会碰到记录编译时的临时文件而报错</span><br><span class="hljs-variable">$HOME</span>/fuzz_main/install/bin/tiffinfo -D -j -c -s -r -w <span class="hljs-variable">$HOME</span>/fuzz_main/libtiff-4.0.4/test/images/logluv-3c-16b.tiff <span class="hljs-comment"># 这是测试语句，你可以改变它的参数，但是每次改变都需要清零计数器</span><br>lcov --no-checksum --directory <span class="hljs-variable">$HOME</span>/fuzz_main/libtiff-4.0.4 --capture --output-file app2.info <span class="hljs-comment"># 这是将当前测试语句的覆盖率生成信息文件</span><br>genhtml --highlight --legend -output-directory ./app2/ ./app2.info <span class="hljs-comment"># 这是将覆盖率的信息文件与源代码合成可视化网页，其中保护覆盖率以及具体哪行代码未被覆盖</span><br></code></pre></td></tr></table></figure>
+
+<p>如果操作正确，你可以点开 app2 下的 index.htm ：</p>
+<p><img src="/2026/04/08/AFL-%E5%AE%9E%E6%88%98%E5%85%B6%E5%9B%9B/001.png" srcset="/img/loading.gif" lazyload></p>
+<p>我们可以尝试另外一条命令：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sh">lcov --zerocounters --directory <span class="hljs-variable">$HOME</span>/fuzz_main/libtiff-4.0.4 <br>lcov --capture --initial --directory <span class="hljs-variable">$HOME</span>/fuzz_main/libtiff-4.0.4 --output-file app.info --ignore-errors <span class="hljs-built_in">source</span> <br><span class="hljs-variable">$HOME</span>/fuzz_main/install/bin/tiffinfo -D -d -j -c -s -w <span class="hljs-variable">$HOME</span>/fuzz_main/libtiff-4.0.4/test/images/logluv-3c-16b.tiff <br>lcov --no-checksum --directory <span class="hljs-variable">$HOME</span>/fuzz_main/libtiff-4.0.4 --capture --output-file app1.info<br>genhtml --highlight --legend -output-directory ./app1/ ./app1.info<br></code></pre></td></tr></table></figure>
+
+<p>此时点开 app1 下的 index.html ：</p>
+<p><img src="/2026/04/08/AFL-%E5%AE%9E%E6%88%98%E5%85%B6%E5%9B%9B/002.png" srcset="/img/loading.gif" lazyload></p>
+<p>明显第二次覆盖率达到了 Functions:13.0% ; Lines: 8.0%</p>
+<p>所以我们 fuzz 时就应该使用第二次测试用的参数。</p>
+<hr>
+<h3 id="准备fuzz"><a href="#准备fuzz" class="headerlink" title="准备fuzz"></a>准备fuzz</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">cd</span> <span class="hljs-variable">$HOME</span>/fuzz_main/libtiff-4.0.4/<br>make clean<br><span class="hljs-built_in">export</span> LLVM_CONFIG=<span class="hljs-string">&quot;llvm-config-11&quot;</span><br>CC=afl-clang-lto ./configure --prefix=<span class="hljs-string">&quot;<span class="hljs-variable">$HOME</span>/fuzz_main/install/&quot;</span> --disable-shared<br>AFL_USE_ASAN=1 make -j4<br>AFL_USE_ASAN=1 make install<br></code></pre></td></tr></table></figure>
+
+<p>使用以下命令 fuzz：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">afl-fuzz -m none -i <span class="hljs-variable">$HOME</span>/fuzz_main/libtiff-4.0.4/test/images/ -o ./out -s 123 -- <span class="hljs-variable">$HOME</span>/fuzz_main/install/bin/tiffinfo -D -d -j -c -s -w @@<br></code></pre></td></tr></table></figure>
+
+<p>这次 fuzz 应该非常快，不出10分钟应该会有十几个独特崩溃。</p>
+<hr>
+<h3 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h3><p>根据错误输出我们可以看到这又是一个堆溢出漏洞。</p>
+<p>我们根据代码调用追踪到 tif_print.c:126 ：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-comment">// ...</span><br><span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(fip-&gt;field_type == TIFF_DOUBLE)<br>	<span class="hljs-built_in">fprintf</span>(fd, <span class="hljs-string">&quot;%f&quot;</span>, ((<span class="hljs-type">double</span> *) raw_data)[j]);<br><span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(fip-&gt;field_type == TIFF_ASCII) &#123; <span class="hljs-comment">// tif_print.c:126</span><br>	<span class="hljs-built_in">fprintf</span>(fd, <span class="hljs-string">&quot;%s&quot;</span>, (<span class="hljs-type">char</span> *) raw_data);<br>	<span class="hljs-keyword">break</span>;<br>&#125;<br><span class="hljs-keyword">else</span> &#123;<br>	<span class="hljs-built_in">fprintf</span>(fd, <span class="hljs-string">&quot;&lt;unsupported data type in TIFFPrint&gt;&quot;</span>);<br>	<span class="hljs-keyword">break</span>;<br>&#125;<br><span class="hljs-comment">// ...</span><br></code></pre></td></tr></table></figure>
+
+<p>这里<code>raw_data</code>指向的是 <code>0x5555555d8ee0</code> ，该位置的值：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs text">-exec x/20gx 0x5555555d8ee0<br>0x5555555d8ee0:	0x00005555555d424d	0x00005555555d42b0<br>0x5555555d8ef0:	0x00005555555d42e0	0x0000000000000021<br>0x5555555d8f00:	0x0000000000000008	0x00005555555d4370<br>0x5555555d8f10:	0x00005555555d43a0	0x0000000000000021<br>0x5555555d8f20:	0x0000000000000008	0x00005555555d4430<br>0x5555555d8f30:	0x00005555555d4460	0x0000000000000411<br>0x5555555d8f40:	0x3536206761542020	0x756769203a303330<br>0x5555555d8f50:	0x203a6e6f69746172	0x6920656c676e6973<br>0x5555555d8f60:	0x616c70206567616d	0x00005555550a656e<br>0x5555555d8f70:	0x00005555555d45e0	0x00005555555d4610<br></code></pre></td></tr></table></figure>
+
+<p>我们发现一旦输出这里的值<code>0x00005555555d424d</code>就会包含一个 PIE 地址，有泄漏 PIE 基地址的风险。</p>
+<p>那么为什么要输出这里的值呢？</p>
+<p>经过调试断点发现当断点在<code>setByteArray</code>（第二段崩溃链发现）时继续运行就会去到上面那个输出。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-type">static</span> <span class="hljs-type">void</span><br><span class="hljs-title function_">setByteArray</span><span class="hljs-params">(<span class="hljs-type">void</span>** vpp, <span class="hljs-type">void</span>* vp, <span class="hljs-type">size_t</span> nmemb, <span class="hljs-type">size_t</span> elem_size)</span><br>&#123;<br>	<span class="hljs-keyword">if</span> (*vpp)<br>		_TIFFfree(*vpp), *vpp = <span class="hljs-number">0</span>;<br>	<span class="hljs-keyword">if</span> (vp) &#123;<br>		<span class="hljs-type">tmsize_t</span> bytes = (<span class="hljs-type">tmsize_t</span>)(nmemb * elem_size);<br>		<span class="hljs-keyword">if</span> (elem_size &amp;&amp; bytes / elem_size == nmemb)<br>			*vpp = (<span class="hljs-type">void</span>*) _TIFFmalloc(bytes); <span class="hljs-comment">// 关键点</span><br>		<span class="hljs-keyword">if</span> (*vpp)<br>			_TIFFmemcpy(*vpp, vp, bytes);<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>经过调用链我们可以发现<code>_TIFFmalloc(bytes)</code>最终会调用<code>malloc</code>申请<code>bytes</code>大小的空间。</p>
+<p>在我调试这里的时候<code>bytes</code> &#x3D; 1，这意味着经过程序只需要一个字节空间，但是 Linux 系统会分配 0x20 大小的空间。</p>
+<p>并且后面可以直接看到如果申请成功，<code>vp</code>会复制到申请到的内存中，而这个<code>vp</code> &#x3D; 0x4d ，这也就是上面泄漏的<code>0x00005555555d424d</code>的最后一个字节。</p>
+<h3 id="修复"><a href="#修复" class="headerlink" title="修复"></a>修复</h3><p>我觉得可以在复制到目标之前清空目标地址的空间内容。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-type">static</span> <span class="hljs-type">void</span><br><span class="hljs-title function_">setByteArray</span><span class="hljs-params">(<span class="hljs-type">void</span>** vpp, <span class="hljs-type">void</span>* vp, <span class="hljs-type">size_t</span> nmemb, <span class="hljs-type">size_t</span> elem_size)</span><br>&#123;<br>	<span class="hljs-keyword">if</span> (*vpp)<br>		_TIFFfree(*vpp), *vpp = <span class="hljs-number">0</span>;<br>	<span class="hljs-keyword">if</span> (vp) &#123;<br>		<span class="hljs-type">tmsize_t</span> bytes = (<span class="hljs-type">tmsize_t</span>)(nmemb * elem_size);<br>		<span class="hljs-keyword">if</span> (elem_size &amp;&amp; bytes / elem_size == nmemb)<br>			*vpp = (<span class="hljs-type">void</span>*) _TIFFmalloc(bytes+<span class="hljs-number">1</span>); <span class="hljs-comment">// 关键点</span><br>		<span class="hljs-keyword">if</span> (*vpp)&#123;<br>            _TIFFmemcpy(*vpp, vp, bytes);<br>            *((<span class="hljs-type">char</span> *)(*vpp) + bytes) = <span class="hljs-string">&#x27;\x00&#x27;</span>;<br>        &#125;<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>实际上官方补丁：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-type">static</span> <span class="hljs-type">void</span><br><span class="hljs-title function_">setByteArray</span><span class="hljs-params">(<span class="hljs-type">void</span>** vpp, <span class="hljs-type">void</span>* vp, <span class="hljs-type">size_t</span> nmemb, <span class="hljs-type">size_t</span> elem_size)</span><br>&#123;<br>    <span class="hljs-keyword">if</span> (*vpp)<br>        _TIFFfree(*vpp), *vpp = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">if</span> (vp) &#123;<br>        <span class="hljs-comment">// 正确的溢出检查：乘法前检查</span><br>        <span class="hljs-keyword">if</span> (nmemb == <span class="hljs-number">0</span> || elem_size == <span class="hljs-number">0</span>)  <span class="hljs-comment">// 排除0</span><br>            <span class="hljs-keyword">return</span>;<br>        <br>        <span class="hljs-comment">// 关键：检查乘法是否会溢出</span><br>        <span class="hljs-keyword">if</span> (nmemb &gt; SIZE_MAX / elem_size)  <span class="hljs-comment">// 溢出检查！</span><br>            <span class="hljs-keyword">return</span>;  <span class="hljs-comment">// 或错误处理</span><br>        <br>        <span class="hljs-type">tmsize_t</span> bytes = (<span class="hljs-type">tmsize_t</span>)(nmemb * elem_size);<br>        <br>        <span class="hljs-comment">// 双重检查</span><br>        <span class="hljs-keyword">if</span> (bytes / elem_size != nmemb)<br>            <span class="hljs-keyword">return</span>;<br>        <br>        *vpp = (<span class="hljs-type">void</span>*) _TIFFmalloc(bytes+<span class="hljs-number">1</span>);<br>        <span class="hljs-keyword">if</span> (*vpp) &#123;<br>            _TIFFmemcpy(*vpp, vp, bytes);<br>            ((<span class="hljs-type">char</span>*)(*vpp))[bytes] = <span class="hljs-string">&#x27;\0&#x27;</span>;  <span class="hljs-comment">// 安全的null终止</span><br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>好吧我确实没有想到<code>nmemb * elem_size</code>可能会溢出。</p>
+<p>不过我的补丁至少暂时有效 QvQ。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>AFL++实战其四</div>
+      <div>https://zlsf-zl.github.io/2026/04/08/AFL-实战其四/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>ZLSF</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年4月8日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="NC - 非商业性使用">
+                    <i class="iconfont icon-nc"></i>
+                  </span>
+                </a>
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="SA - 相同方式共享">
+                    <i class="iconfont icon-sa"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2026/04/11/AFL-%E5%AE%9E%E6%88%98%E5%85%B6%E4%BA%94/" title="AFL++实战其五">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">AFL++实战其五</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2026/04/07/AFL-%E5%AE%9E%E6%88%98%E5%85%B6%E4%B8%89/" title="AFL++实战其三">
+                        <span class="hidden-mobile">AFL++实战其三</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"6qfbMdW9PFOPATbmhAiyPWcK-MdYXbMMI","appKey":"X9xyyWbc7hafcwTqYXwdhjE5","path":"window.location.pathname","placeholder":"文明发言","avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"https://6qfbmdw9.api.lncldglobal.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+      <span>by ZLSF</span>
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

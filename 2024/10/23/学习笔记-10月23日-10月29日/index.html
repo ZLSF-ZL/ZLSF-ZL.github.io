@@ -16,24 +16,27 @@
   <meta name="author" content="ZLSF">
   <meta name="keywords" content="ZLSF,zlsf">
   
-    <meta name="description" content="Let&#39;s Start">
+    <meta name="description" content="Pwn学习笔记 - 10月23日-10月29日  本周开始恶补Pwn基础，一边学一边打招新赛。 Pwn入门教程地址为： https:&#x2F;&#x2F;www.bilibili.com&#x2F;video&#x2F;BV1854y1y7Ro  新手上路，文章内容仅是由教程观点和自己总结获得，仅供参考。  第一周（视频1-2集）一、准备工作1.前置技能需求：  1）C语言基础（入门时不需要完全会，但是要知道基础函数的作用以及C的一些">
 <meta property="og:type" content="article">
-<meta property="og:title" content="start">
-<meta property="og:url" content="https://zlsf-zl.github.io/2024/07/18/start/index.html">
+<meta property="og:title" content="Pwn学习笔记 - 10月23日-10月29日">
+<meta property="og:url" content="https://zlsf-zl.github.io/2024/10/23/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-10%E6%9C%8823%E6%97%A5-10%E6%9C%8829%E6%97%A5/index.html">
 <meta property="og:site_name" content="ZLSF的博客">
-<meta property="og:description" content="Let&#39;s Start">
+<meta property="og:description" content="Pwn学习笔记 - 10月23日-10月29日  本周开始恶补Pwn基础，一边学一边打招新赛。 Pwn入门教程地址为： https:&#x2F;&#x2F;www.bilibili.com&#x2F;video&#x2F;BV1854y1y7Ro  新手上路，文章内容仅是由教程观点和自己总结获得，仅供参考。  第一周（视频1-2集）一、准备工作1.前置技能需求：  1）C语言基础（入门时不需要完全会，但是要知道基础函数的作用以及C的一些">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://zlsf-zl.github.io/2024/07/18/start/start.jpg">
-<meta property="article:published_time" content="2024-07-18T12:18:31.000Z">
-<meta property="article:modified_time" content="2024-07-18T13:20:54.968Z">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/10/23/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-10%E6%9C%8823%E6%97%A5-10%E6%9C%8829%E6%97%A5/image1.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/10/23/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-10%E6%9C%8823%E6%97%A5-10%E6%9C%8829%E6%97%A5/image2.png">
+<meta property="og:image" content="https://zlsf-zl.github.io/2024/10/23/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-10%E6%9C%8823%E6%97%A5-10%E6%9C%8829%E6%97%A5/image3.png">
+<meta property="article:published_time" content="2024-10-23T12:18:31.000Z">
+<meta property="article:modified_time" content="2026-04-13T09:52:54.313Z">
 <meta property="article:author" content="ZLSF">
-<meta property="article:tag" content="ZLSF,zlsf">
+<meta property="article:tag" content="Pwn">
+<meta property="article:tag" content="学习笔记">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://zlsf-zl.github.io/2024/07/18/start/start.jpg">
+<meta name="twitter:image" content="https://zlsf-zl.github.io/2024/10/23/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-10%E6%9C%8823%E6%97%A5-10%E6%9C%8829%E6%97%A5/image1.png">
   
   
   
-  <title>start - ZLSF的博客</title>
+  <title>Pwn学习笔记 - 10月23日-10月29日 - ZLSF的博客</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -204,7 +207,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="start"></span>
+            <span id="subtitle" data-typed-text="Pwn学习笔记 - 10月23日-10月29日"></span>
           
         </div>
 
@@ -215,8 +218,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-07-18 20:18" pubdate>
-          2024年7月18日 晚上
+        <time datetime="2024-10-23 20:18" pubdate>
+          2024年10月23日 晚上
         </time>
       </span>
     
@@ -227,7 +230,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2 字
+          2k 字
         
       </span>
     
@@ -238,7 +241,7 @@
         
         
         
-          1 分钟
+          17 分钟
         
       </span>
     
@@ -283,14 +286,88 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">start</h1>
+            <h1 id="seo-header">Pwn学习笔记 - 10月23日-10月29日</h1>
             
             
               <div class="markdown-body">
                 
-                <h3><center>Let's Start</center></h3>
+                <h3><center>Pwn学习笔记 - 10月23日-10月29日</center></h3>
 
-<p><img src="/2024/07/18/start/start.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>本周开始恶补Pwn基础，一边学一边打招新赛。</p>
+<p>Pwn入门教程地址为：</p>
+<p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1854y1y7Ro">https://www.bilibili.com/video/BV1854y1y7Ro</a></p>
+<blockquote>
+<p>新手上路，文章内容仅是由教程观点和自己总结获得，仅供参考。</p>
+</blockquote>
+<h3 id="第一周（视频1-2集）"><a href="#第一周（视频1-2集）" class="headerlink" title="第一周（视频1-2集）"></a>第一周（视频1-2集）</h3><h4 id="一、准备工作"><a href="#一、准备工作" class="headerlink" title="一、准备工作"></a>一、准备工作</h4><p><strong>1.前置技能需求：</strong></p>
+<ul>
+<li>1）C语言基础（入门时不需要完全会，但是要知道基础函数的作用以及C的一些特性）</li>
+<li>2）Linux基础（会使用命令行基础命令就行了，Linux环境可以找现成的）</li>
+<li>3）python入门基础（大概了解python编程时的语法就可以了）</li>
+<li>4）汇编入门基础（学一点点的汇编，让你Pwn的更轻松）</li>
+</ul>
+<p><strong>2.工具准备（入门）：</strong></p>
+<ul>
+<li>1）ida（目前地表最强反编译软件，必备）</li>
+<li>2）gdb（一些Linux环境里面会预装）</li>
+<li>3）pwntools库（python库，必备）</li>
+<li>4）python3.x版本（必备）</li>
+</ul>
+<h4 id="二、解题目的"><a href="#二、解题目的" class="headerlink" title="二、解题目的"></a>二、解题目的</h4><ol>
+<li>通过服务器提供给外界的远程程序服务，控制程序流（程序运行流程）执行<code>system(&quot;/bin/sh&quot;)</code>，获得服务器的控制权，用<code>cat</code>指令打印目录下的flag</li>
+</ol>
+<h4 id="三、Pwn手法"><a href="#三、Pwn手法" class="headerlink" title="三、Pwn手法"></a>三、Pwn手法</h4><h5 id="1-栈溢出"><a href="#1-栈溢出" class="headerlink" title="1.栈溢出"></a>1.栈溢出</h5><p>C语言的特点之一，某些输入语句未限制用户输入或者错误的限制导致输入语句将用户输入的所有数据全部存入栈中，即使输入的数据已经超过合法申请的栈中局部变量的大小。栈溢出的示例语句如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span><br>&#123;<br><span class="hljs-comment">//0x114514 system(&quot;/bin/sh&quot;);</span><br><span class="hljs-type">char</span> c[<span class="hljs-number">20</span>];   <span class="hljs-comment">//申请的栈大小只有20字节</span><br>read(<span class="hljs-number">0</span>,c,<span class="hljs-number">50</span>); <span class="hljs-comment">//从用户输入读取50字节</span><br><span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>我们都知道程序执行时需要调入内存中执行，那么程序在内存中是什么样的呢？栈又在内存中的那个位置？如何通过栈溢出来使得程序流可控？</p>
+<p>先展示一下程序调入内存时的情况：</p>
+<p><img src="/2024/10/23/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-10%E6%9C%8823%E6%97%A5-10%E6%9C%8829%E6%97%A5/image1.png" srcset="/img/loading.gif" lazyload></p>
+<blockquote>
+<p>图片展示的是32位和64位程序运行时在内存中的情况，程序运行时同一采用虚拟地址来寻找指令和数据的地址，所有的程序设计时按照直接独占所有内存来设计，当运行时再由系统来分配实际内存。</p>
+</blockquote>
+<p>在这张图片中，我们现在只需要关注两个区域就可以了，分别是<strong>Text Segment (指令段)<strong>和</strong>Stack (栈区)</strong></p>
+<p>我们先来看程序开始运行时栈的情况（栈是从高地址到低地址存放的）：</p>
+<p><img src="/2024/10/23/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-10%E6%9C%8823%E6%97%A5-10%E6%9C%8829%E6%97%A5/image2.png" srcset="/img/loading.gif" lazyload></p>
+<ol>
+<li><p>假设这是main函数运行时为main函数开辟的栈帧，其中 <strong>ebp</strong> 和 <strong>esp</strong>（把他们当做C中的指针就行了）分别指向了<strong>栈底</strong>和<strong>栈顶</strong>，<strong>eip</strong> 则是下一条指令的地址。（ebp，esp，eip都在cpu中，寄存器）</p>
+</li>
+<li><p>当main函数运行完成后准备返回上一个主调函数时，程序会让esp移动到ebp的位置，然后执行<code>pop ebp</code>，esp自动向上移动一格，然后执行<code>pop eip</code>，esp自动向上移动一格，程序开始执行eip（此时eip应该跳回Text Segment段了）所指向的指令。</p>
+</li>
+</ol>
+<p>我们该如何利用这个过程来控制程序的执行流呢？关键在于<strong>eip</strong>。前面说过了，如果输入语句对我们的输入没有做出合适的限制，我们可以输入超过字符数组C长度的数据，如果我们先输入20个字节的数据，再输入一个字节数据，那么这多出的一个字节会被存放到ebp的框中，同理也可以改变eip框中的值。如果我们先写21个字节的任意数据，再写入一个已知指令的地址<code>0x114514 system(&quot;/bin/sh&quot;)</code>，不就可以控制程序执行我们指定的指令了吗？</p>
+<p>但是如果直接运行程序，我们没办法直接输入地址型数据（0x114514），这个时候就轮到pwntools出场了，因为pwntools在python中使用，所以我们通常会一次性写好python代码来执行多个攻击动作，这样的python代码被我们叫做<strong>exp（攻击脚本）</strong>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *                                    <span class="hljs-comment">#导入pwntools库</span><br>context(arch=<span class="hljs-string">&#x27;i386&#x27;</span>,os=<span class="hljs-string">&#x27;linux&#x27;</span>,log_level=<span class="hljs-string">&#x27;debug&#x27;</span>)  <span class="hljs-comment"># arch有两个选项&#x27;i386&#x27;和&#x27;amd64&#x27;</span><br>p = remote(<span class="hljs-string">&#x27;远程服务器IP&#x27;</span>, 远程服务器端口)              <span class="hljs-comment">#连接远程服务器</span><br>payload = <span class="hljs-string">b&#x27;A&#x27;</span>*<span class="hljs-number">21</span> + p32(<span class="hljs-number">0x114514</span>)                    <span class="hljs-comment">#&#x27;A&#x27;*21表示创建21个字符&#x27;A&#x27;</span><br>p.sendline(payload)                                  <span class="hljs-comment">#向p发送payload</span><br>p.interactive()                                      <span class="hljs-comment">#成功执行system(&quot;/bin/sh&quot;)后进入交互模式</span><br></code></pre></td></tr></table></figure>
+
+<p>使用<code>python3 exp.py</code>来运行脚本，如果不出错的话我们已经成功取得了控制权，一般直接使用<code>cat flag</code>就可以得到flag了。</p>
+<p>当然，一个程序运行时不会只有一个main函数，当一个函数调用其他函数时栈又会发生什么变化呢？</p>
+<p>视频链接：<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1By4y1x7Yh">https://www.bilibili.com/video/BV1By4y1x7Yh</a></p>
+<p>视频中我们可以看到在函数发生调用时，每个函数的栈帧之间是相邻的，这样就给了我们控制程序流的时机。</p>
+<h3 id="四、关于一些对程序的保护措施的介绍"><a href="#四、关于一些对程序的保护措施的介绍" class="headerlink" title="四、关于一些对程序的保护措施的介绍"></a>四、关于一些对程序的保护措施的介绍</h3><p>如果你认为Pwn就这啊，那你就完全错了。就像我们出寝室要锁门一样，程序也会给自己加上一些保护，对于不同保护的程序我们也需要不同的手法来绕过他，在Linux下使用<code>checksec</code>命令查看程序的保护。</p>
+<p><img src="/2024/10/23/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-10%E6%9C%8823%E6%97%A5-10%E6%9C%8829%E6%97%A5/image3.png" srcset="/img/loading.gif" lazyload></p>
+<h4 id="1-Arch"><a href="#1-Arch" class="headerlink" title="1.Arch"></a>1.Arch</h4><p>可以看出来此程序是amd64或x86-64（反正都是64位）的程序，little是程序使用小端字序（大端小端的区别也是Pwn中重要的知识点），如果是32位程序，应该会显示关键字i386.</p>
+<h4 id="2-RELRO"><a href="#2-RELRO" class="headerlink" title="2.RELRO"></a>2.RELRO</h4><p>分别有三种状态：</p>
+<ul>
+<li><strong>No RELRO</strong>：在这种状态下，重定位表（PLT）和全局偏移表（GOT）都是可写的。这意味着攻击者可以修改这些结构中的指针，从而进行各种类型的攻击。</li>
+<li><strong>Partial RELRO</strong>：在这种状态下，重定位表被设置为只读，但全局偏移表（GOT）仍然是可写的。</li>
+<li><strong>Full RELRO</strong>：这是最高级别的 RELRO 状态。在这种状态下，重定位表（PLT）和全局偏移表（GOT）都被设置为只读。这样做可以防止攻击者修改这些结构中的指针。</li>
+</ul>
+<blockquote>
+<p>重定位表（PLT）和全局偏移表（GOT）都是在发生库函数调用时才会有的，他们指明了库函数加载到内存中后的具体位置。</p>
+</blockquote>
+<p>其实你写的<code>printf</code>根本不在Text Segment段，猜猜他在哪？</p>
+<h4 id="3-Stack（Canary）"><a href="#3-Stack（Canary）" class="headerlink" title="3.Stack（Canary）"></a>3.Stack（Canary）</h4><p>程序在栈中末尾的某个地方插入了一段随机的校验数据，当函数调用完成返回时，会先检查这段数据是否完整，当你精心构造的payload毁坏了这段校验数据，程序会拒绝执行接下来的指令。</p>
+<h4 id="4-NX（No-eXecute）"><a href="#4-NX（No-eXecute）" class="headerlink" title="4.NX（No-eXecute）"></a>4.NX（No-eXecute）</h4><p>主要体现在shellcode手法上，指在栈溢出后直接在栈上写入接下来要执行的指令，然后通过第二次溢出再跳转到这里执行指令，相当于把栈区当Text Segment在用。当NX开启时，这种行为会被制止。</p>
+<h4 id="5-PIE（Position-Independent-Executable）"><a href="#5-PIE（Position-Independent-Executable）" class="headerlink" title="5.PIE（Position Independent Executable）"></a>5.PIE（Position Independent Executable）</h4><p>当PIE开启时，程序的大部分地址都会被随机化，这就意味着通过gdb调试和ida得到的地址可能会不准确，想要确定system等函数的地址更加困难。</p>
+<blockquote>
+<p>麦克阿瑟将军曾经说过：”当我碰到开启PIE的Pwn题，我就知道，这题的分不再属于我了。”</p>
+</blockquote>
+<hr>
+<h2 id="下周学习计划"><a href="#下周学习计划" class="headerlink" title="下周学习计划"></a>下周学习计划</h2><ul>
+<li>继续学习Pwn基础视频</li>
+<li>刷题刷题刷题刷题刷题刷题刷题</li>
+</ul>
+<hr>
+<h2 id="学习感受"><a href="#学习感受" class="headerlink" title="学习感受"></a>学习感受</h2><p>对计算机底层有了更多的了解，还有一些程序运行时具体怎么操作的知识，了解了在构造程序时应该注意的一些安全问题。（其实就是学了Pwn以后腰不疼了，腿不酸了，就是头上有点凉）</p>
 
                 
               </div>
@@ -299,6 +376,36 @@
             <div>
               <div class="post-metas my-3">
   
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/CTF/" class="category-chain-item">CTF</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Pwn/" class="print-no-link">#Pwn</a>
+      
+        <a href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="print-no-link">#学习笔记</a>
+      
+    </div>
   
 </div>
 
@@ -308,8 +415,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>start</div>
-      <div>https://zlsf-zl.github.io/2024/07/18/start/</div>
+      <div>Pwn学习笔记 - 10月23日-10月29日</div>
+      <div>https://zlsf-zl.github.io/2024/10/23/学习笔记-10月23日-10月29日/</div>
     </div>
     <div class="license-meta">
       
@@ -321,7 +428,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2024年7月18日</div>
+          <div>2024年10月23日</div>
         </div>
       
       
@@ -365,15 +472,21 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/10/23/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-10%E6%9C%8823%E6%97%A5-10%E6%9C%8829%E6%97%A5/" title="Pwn学习笔记 - 10月23日-10月29日">
+                      <a href="/2024/11/24/%E8%9C%80%E9%81%93%E5%B1%B1CTF-PWN%E5%85%A8%E8%A7%A3WP/" title="蜀道山CTF-PWN全解WP">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Pwn学习笔记 - 10月23日-10月29日</span>
+                        <span class="hidden-mobile">蜀道山CTF-PWN全解WP</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
                   <article class="post-next col-6">
                     
+                    
+                      <a href="/2024/07/18/start/" title="start">
+                        <span class="hidden-mobile">start</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
                     
                   </article>
                 </div>
