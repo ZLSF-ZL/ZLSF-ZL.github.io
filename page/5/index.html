@@ -232,6 +232,105 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
+        <a href="/2024/06/03/6-3-6-9/" target="_self">
+          24-06-03
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/06/03/6-3-6-9/" target="_self">
+        <div>
+          本周学习总结 WHAT! IS! IO! 全局常量声明：文章内容仅是由教程观点和自己总结获得，仅供参考。 一、house of apple攻击模式 House of apple系列估计是我学的第一个对比较新的glibc还有效攻击的手法。 该攻击的利用条件十分的简单： | 1、程序从main函数返回或能调用exit函数2、能泄露出heap地址和libc地址3、 能使用一次largebin attac
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-06-03 00:00" pubdate>
+              2024-06-03
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/05/27/5-27-6-2/" target="_self">
+          24-05-27
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/05/27/5-27-6-2/" target="_self">
+        <div>
+          本周学习总结 咕了这么久，总算是正式开启堆打IO的学习之路了。 全局常量声明：文章内容仅是由教程观点和自己总结获得，仅供参考。 一、攻击IO劫持程序流的根本原理。 程序在使用exit退出或发生堆错误进行输出时会调用某函数对每个IO进行某些操作，这些函数最终调用的是一个叫_IO_flush_all_lockp的函数，在该函数中满足某些条件时会调用over_flow函数，而该函数是以一种调用地址存在于
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-05-27 00:00" pubdate>
+              2024-05-27
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/05/20/5-20-5-26/" target="_self">
+          24-05-20
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2024/05/20/5-20-5-26/" target="_self">
+        <div>
+          本周学习总结 CISN，ISCC，what can i say？ 全局常量声明：文章内容仅是由教程观点和自己总结获得，仅供参考。 一、[CISN2024初赛]–gostack Check:  64位程序，NX全开。 关键代码如下：    虽然代码反编译出来是依托答辩，但是我们可以通过gdb的动态调试获得一些漏洞。 调试的结果就是可以用0x1D8的填充进行栈溢出，但要求0x108的填充位置为栈上的一
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-05-20 00:00" pubdate>
+              2024-05-20
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
         <a href="/2024/05/13/5-13-5-20/" target="_self">
           24-05-13
         </a>
@@ -448,105 +547,6 @@
             <i class="iconfont icon-date"></i>
             <time datetime="2024-03-24 00:00" pubdate>
               2024-03-24
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/03/18/3-18-3-24/" target="_self">
-          24-03-18
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/03/18/3-18-3-24/" target="_self">
-        <div>
-          本周学习总结 堆 堆 堆 堆 堆 堆 堆 堆 堆 堆 堆 堆 堆 堆 堆 全局常量声明：新手上路，文章内容仅是由教程观点和自己总结获得，仅供参考。 一、double free double free是一种常见的堆攻击办法，通过重复释放同一堆块来修改其fd和bk指针来实现地址任意写。 但是同时glibc也对double free做了预防，但是仍然存在绕过的办法。 这里为了简单粗暴的展示这种有效的攻击
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-03-18 00:00" pubdate>
-              2024-03-18
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/03/10/3-10-3-17/" target="_self">
-          24-03-10
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/03/10/3-10-3-17/" target="_self">
-        <div>
-          本周学习总结 全局常量声明：新手上路，文章内容仅是由教程观点和自己总结获得，仅供参考。 一、更方便的设置题目的libc 需要提前准备好patchelf和glibc-all-in-one。 通过linux支持的sh脚本来创建一个全局可调用的可交互且方便的设置题目libc的方法。 在使用这个脚本之前你需要对脚本的路径做出合适的修改，默认应该将glibc-all-in-one放在当前用户的家目录下，如果
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-03-10 00:00" pubdate>
-              2024-03-10
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/02/26/2-26-3-3/" target="_self">
-          24-02-26
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/02/26/2-26-3-3/" target="_self">
-        <div>
-          本周学习总结 本来看了堆教程视频，准备拿青少年CTF做训练，结果打了个寂寞。 全局常量声明：新手上路，文章内容仅是由教程观点和自己总结获得，仅供参考。 一、Offbyone 同样是在堆溢出的漏洞可以实现此漏洞，但是只需要溢出1字节。 对于unsortedbins， glibc会不停的对其其中的物理相邻的块进行合并，而我们正式利用了这一点。 在块的size字段中记录了上个堆块的空闲状态和本堆块的大小
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-02-26 00:00" pubdate>
-              2024-02-26
             </time>
           </div>
         

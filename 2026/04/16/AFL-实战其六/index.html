@@ -1,0 +1,767 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/bug.png">
+  <link rel="icon" href="/img/bug.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#1F3144">
+  <meta name="author" content="ZLSF">
+  <meta name="keywords" content="ZLSF,zlsf">
+  
+    <meta name="description" content="练习6 - gimp版本：GIMP 2.8.16 漏洞编号：CVE-2016-4994 CVE-2016-4994 是一个“免费后使用”（Use-After-Free）漏洞，可以通过精心制作的 XCF 文件触发。 使用后错误是指程序在释放指针后仍继续使用指针。 这可能带来多种不利后果，从有效数据的损坏到任意代码的执行。  不儿哥们，环境也太老了吧。 致命点在于需要安装 python2 。 apt">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AFL++实战其六">
+<meta property="og:url" content="https://zlsf-zl.github.io/2026/04/16/AFL-%E5%AE%9E%E6%88%98%E5%85%B6%E5%85%AD/index.html">
+<meta property="og:site_name" content="ZLSF的博客">
+<meta property="og:description" content="练习6 - gimp版本：GIMP 2.8.16 漏洞编号：CVE-2016-4994 CVE-2016-4994 是一个“免费后使用”（Use-After-Free）漏洞，可以通过精心制作的 XCF 文件触发。 使用后错误是指程序在释放指针后仍继续使用指针。 这可能带来多种不利后果，从有效数据的损坏到任意代码的执行。  不儿哥们，环境也太老了吧。 致命点在于需要安装 python2 。 apt">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-04-16T05:19:35.000Z">
+<meta property="article:modified_time" content="2026-04-16T07:16:23.298Z">
+<meta property="article:author" content="ZLSF">
+<meta property="article:tag" content="ZLSF,zlsf">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>AFL++实战其六 - ZLSF的博客</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"zlsf-zl.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"6qfbMdW9PFOPATbmhAiyPWcK-MdYXbMMI","app_key":"X9xyyWbc7hafcwTqYXwdhjE5","server_url":"https://6qfbmdw9.api.lncldglobal.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>ZLSF的博客</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/start.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="AFL++实战其六"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-04-16 13:19" pubdate>
+          2026年4月16日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          9 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">AFL++实战其六</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="练习6-gimp"><a href="#练习6-gimp" class="headerlink" title="练习6 - gimp"></a>练习6 - gimp</h2><p>版本：GIMP 2.8.16</p>
+<p>漏洞编号：CVE-2016-4994</p>
+<p>CVE-2016-4994 是一个“免费后使用”（Use-After-Free）漏洞，可以通过精心制作的 XCF 文件触发。</p>
+<p>使用后错误是指程序在释放指针后仍继续使用指针。</p>
+<p>这可能带来多种不利后果，从有效数据的损坏到任意代码的执行。</p>
+<hr>
+<p>不儿哥们，环境也太老了吧。</p>
+<p>致命点在于需要安装 python2 。</p>
+<p>apt 已经没有这个了（我的环境是ubuntu24.04）。</p>
+<p>所以我们这次练习就当一个理论者吧。</p>
+<hr>
+<h3 id="下载你的目标"><a href="#下载你的目标" class="headerlink" title="下载你的目标"></a>下载你的目标</h3><p>首先你得装上环境依赖：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">sudo</span> apt-get install build-essential libatk1.0-dev libfontconfig1-dev libcairo2-dev libgudev-1.0-0 libdbus-1-dev libdbus-glib-1-dev libexif-dev libxfixes-dev libgtk2.0-dev python2.7-dev libpango1.0-dev libglib2.0-dev zlib1g-dev intltool libbabl-dev<br></code></pre></td></tr></table></figure>
+
+<p>第一步就寄了。</p>
+<p>这是 GEGL 0.2 ，原生 ubuntu 没这个：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">wget https://download.gimp.org/pub/gegl/0.2/gegl-0.2.0.tar.bz2<br>tar xvf gegl-0.2.0.tar.bz2 &amp;&amp; <span class="hljs-built_in">cd</span> gegl-0.2.0<br></code></pre></td></tr></table></figure>
+
+<p>对源代码做点改动：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">sed -i <span class="hljs-string">&#x27;s/CODEC_CAP_TRUNCATED/AV_CODEC_CAP_TRUNCATED/g&#x27;</span> ./operations/external/ff-load.c<br>sed -i <span class="hljs-string">&#x27;s/CODEC_FLAG_TRUNCATED/AV_CODEC_FLAG_TRUNCATED/g&#x27;</span> ./operations/external/ff-load.c<br></code></pre></td></tr></table></figure>
+
+<p>构建他：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh">./configure --enable-debug --disable-glibtest  --without-vala --without-cairo --without-pango --without-pangocairo --without-gdk-pixbuf --without-lensfun --without-libjpeg --without-libpng --without-librsvg --without-openexr --without-sdl --without-libopenraw --without-jasper --without-graphviz --without-lua --without-libavformat --without-libv4l --without-libspiro --without-exiv2 --without-umfpack<br>make -j$(<span class="hljs-built_in">nproc</span>)<br><span class="hljs-built_in">sudo</span> make install<br></code></pre></td></tr></table></figure>
+
+<p>现在下载 GIMP：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">cd</span> ..<br>wget https://mirror.klaus-uwe.me/gimp/pub/gimp/v2.8/gimp-2.8.16.tar.bz2<br>tar xvf gimp-2.8.16.tar.bz2 &amp;&amp; <span class="hljs-built_in">cd</span> gimp-2.8.16/<br></code></pre></td></tr></table></figure>
+
+<p>使用 afl-clang-lto 构建他：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh">CC=afl-clang-lto CXX=afl-clang-lto++ PKG_CONFIG_PATH=<span class="hljs-variable">$PKG_CONFIG_PATH</span>:<span class="hljs-variable">$HOME</span>/Fuzzing_gimp/gegl-0.2.0/ CFLAGS=<span class="hljs-string">&quot;-fsanitize=address&quot;</span> CXXFLAGS=<span class="hljs-string">&quot;-fsanitize=address&quot;</span> LDFLAGS=<span class="hljs-string">&quot;-fsanitize=address&quot;</span> ./configure --disable-gtktest --disable-glibtest --disable-alsatest --disable-nls --without-libtiff --without-libjpeg --without-bzip2 --without-gs --without-libpng --without-libmng --without-libexif --without-aa --without-libxpm --without-webkit --without-librsvg --without-print --without-poppler --without-cairo-pdf --without-gvfs --without-libcurl --without-wmf --without-libjasper --without-alsa --without-gudev --disable-python --enable-gimp-console --without-mac-twain --without-script-fu --without-gudev --without-dbus --disable-mp --without-linux-input --without-xvfb-run --with-gif-compression=none --without-xmc --with-shm=none --enable-debug  --prefix=<span class="hljs-string">&quot;<span class="hljs-variable">$HOME</span>/Fuzzing_gimp/gimp-2.8.16/install&quot;</span><br>make -j$(<span class="hljs-built_in">nproc</span>)<br>make install<br></code></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="持久模式"><a href="#持久模式" class="headerlink" title="持久模式"></a>持久模式</h3><p>就是通过写一个标志使得单个分支被连续多次变异后的文件输入，使得模糊效率大大提升。</p>
+<p>主要是跳过了程序的初始化进程。</p>
+<p>对于当前程序，我们可以修改 <code>app.c</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-comment">/*  Load the images given on the command-line. app.c:224</span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">if</span> (filenames)<br>  &#123;<br>    gint i;<br><br>    <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; filenames[i] != <span class="hljs-literal">NULL</span>; i++)<br>      &#123;<br>        <span class="hljs-keyword">if</span> (run_loop) &#123;<br>            <br>            <span class="hljs-meta">#<span class="hljs-keyword">ifdef</span> __AFL_COMPILER</span><br>            	<span class="hljs-keyword">while</span>(__AFL_LOOP(<span class="hljs-number">1000</span>)) &#123;<br>                 file_open_from_command_line (gimp, filenames[i], as_new); <br>              &#125;<br>          	<br>            <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);<br>            <br>            <span class="hljs-meta">#<span class="hljs-keyword">else</span></span><br>            	file_open_from_command_line (gimp, filenames[i], as_new);<br>            <span class="hljs-meta">#<span class="hljs-keyword">endif</span></span><br>        	&#125;<br>      &#125;<br>  &#125;<br></code></pre></td></tr></table></figure>
+
+<p>或是将<code>AFL_LOOP</code> 宏插入<code>xcf_load_invoker</code>函数中：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-type">static</span> GValueArray *<br><span class="hljs-title function_">xcf_load_invoker</span> <span class="hljs-params">(GimpProcedure      *procedure,</span><br><span class="hljs-params">                  Gimp               *gimp,</span><br><span class="hljs-params">                  GimpContext        *context,</span><br><span class="hljs-params">                  GimpProgress       *progress,</span><br><span class="hljs-params">                  <span class="hljs-type">const</span> GValueArray  *args,</span><br><span class="hljs-params">                  GError            **error)</span><br>&#123;<br>  XcfInfo      info;<br>  GValueArray *return_vals;<br>  GimpImage   *image   = <span class="hljs-literal">NULL</span>;<br>  <span class="hljs-type">const</span> gchar *filename;<br>  gboolean     success = FALSE;<br>  gchar        id[<span class="hljs-number">14</span>];<br><br>  gimp_set_busy (gimp);<br><br>  filename = g_value_get_string (&amp;args-&gt;values[<span class="hljs-number">1</span>]);<br><span class="hljs-meta">#<span class="hljs-keyword">ifdef</span> __AFL_COMPILER</span><br>  <span class="hljs-keyword">while</span>(__AFL_LOOP(<span class="hljs-number">10000</span>))&#123;<br><span class="hljs-meta">#<span class="hljs-keyword">endif</span></span><br>  info.fp = g_fopen (filename, <span class="hljs-string">&quot;rb&quot;</span>);<br><br>  <span class="hljs-keyword">if</span> (info.fp)<br>    &#123;<br>    <span class="hljs-comment">// ...</span><br></code></pre></td></tr></table></figure>
+
+<p>区别是前一种允许我们针对不同的输入格式，而第二种更快。</p>
+<p>种子语料库：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">mkdir</span> seeds&amp;&amp;<span class="hljs-built_in">cd</span> seeds<br>wget https://github.com/antonio-morales/Fuzzing101/blob/main/Exercise%206/SampleInput.xcf<br></code></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="开始模糊"><a href="#开始模糊" class="headerlink" title="开始模糊"></a>开始模糊</h3><p>移除不必要的插件来节省时间：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">rm</span> ./install/lib/gimp/2.0/plug-ins/*<br></code></pre></td></tr></table></figure>
+
+<p>开始 fuzz：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">ASAN_OPTIONS=detect_leaks=0,abort_on_error=1,symbolize=0 afl-fuzz -i ./seeds -o ./out -D -t 100 -- ./install/bin/gimp-console-2.8 --verbose -d -f @@<br></code></pre></td></tr></table></figure>
+
+<p><code>gimp-console-2.8 </code>是 GIMP 仅限控制台版本。</p>
+<p>…</p>
+<p>模糊而不能，直接看结果修复吧。</p>
+<hr>
+<h3 id="看看源码"><a href="#看看源码" class="headerlink" title="看看源码"></a>看看源码</h3><p>没有程序也没有输入，真难调试。官方修复示例也没了说是。</p>
+<p>贴一个 ai 发现的可疑漏洞链吧。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-type">static</span> gboolean<br><span class="hljs-title function_">xcf_load_level</span> <span class="hljs-params">(XcfInfo     *info,</span><br><span class="hljs-params">                TileManager *tiles)</span><br>&#123;<br>  guint32 saved_pos;<br>  guint32 offset, offset2;<br>  guint ntiles;<br>  gint  width;<br>  gint  height;<br>  gint  i;<br>  gint  fail;<br>  Tile *previous;<br>  Tile *tile;<br><br>  info-&gt;cp += xcf_read_int32 (info-&gt;fp, (guint32 *) &amp;width, <span class="hljs-number">1</span>);<br>  info-&gt;cp += xcf_read_int32 (info-&gt;fp, (guint32 *) &amp;height, <span class="hljs-number">1</span>);<br><br>  <span class="hljs-keyword">if</span> (width  != tile_manager_width  (tiles) ||<br>      height != tile_manager_height (tiles))<br>    <span class="hljs-keyword">return</span> FALSE;<br><br>  <span class="hljs-comment">/* read in the first tile offset.</span><br><span class="hljs-comment">   *  if it is &#x27;0&#x27;, then this tile level is empty</span><br><span class="hljs-comment">   *  and we can simply return.</span><br><span class="hljs-comment">   */</span><br>  info-&gt;cp += xcf_read_int32 (info-&gt;fp, &amp;offset, <span class="hljs-number">1</span>);<br>  <span class="hljs-keyword">if</span> (offset == <span class="hljs-number">0</span>)<br>    <span class="hljs-keyword">return</span> TRUE;<br><br>  <span class="hljs-comment">/* Initialize the reference for the in-memory tile-compression</span><br><span class="hljs-comment">   */</span><br>  previous = <span class="hljs-literal">NULL</span>;<br><br>  ntiles = tiles-&gt;ntile_rows * tiles-&gt;ntile_cols;<br>  <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; ntiles; i++)<br>    &#123;<br>      fail = FALSE;<br><br>      <span class="hljs-keyword">if</span> (offset == <span class="hljs-number">0</span>)<br>        &#123;<br>          gimp_message_literal (info-&gt;gimp, G_OBJECT (info-&gt;progress),<br>				GIMP_MESSAGE_ERROR,<br>				<span class="hljs-string">&quot;not enough tiles found in level&quot;</span>);<br>          <span class="hljs-keyword">return</span> FALSE;<br>        &#125;<br><br>      <span class="hljs-comment">/* save the current position as it is where the</span><br><span class="hljs-comment">       *  next tile offset is stored.</span><br><span class="hljs-comment">       */</span><br>      saved_pos = info-&gt;cp;<br><br>      <span class="hljs-comment">/* read in the offset of the next tile so we can calculate the amount</span><br><span class="hljs-comment">         of data needed for this tile*/</span><br>      info-&gt;cp += xcf_read_int32 (info-&gt;fp, &amp;offset2, <span class="hljs-number">1</span>);<br><br>      <span class="hljs-comment">/* if the offset is 0 then we need to read in the maximum possible</span><br><span class="hljs-comment">         allowing for negative compression */</span><br>      <span class="hljs-keyword">if</span> (offset2 == <span class="hljs-number">0</span>)<br>        offset2 = offset + TILE_WIDTH * TILE_WIDTH * <span class="hljs-number">4</span> * <span class="hljs-number">1.5</span>;<br>                                        <span class="hljs-comment">/* 1.5 is probably more</span><br><span class="hljs-comment">                                           than we need to allow */</span><br><br>      <span class="hljs-comment">/* seek to the tile offset */</span><br>      <span class="hljs-keyword">if</span> (! xcf_seek_pos (info, offset, <span class="hljs-literal">NULL</span>))<br>        <span class="hljs-keyword">return</span> FALSE;<br><br>      <span class="hljs-comment">/* get the tile from the tile manager */</span><br>      tile = tile_manager_get (tiles, i, TRUE, TRUE);<br><br>      <span class="hljs-comment">/* read in the tile */</span><br>      <span class="hljs-keyword">switch</span> (info-&gt;compression)<br>        &#123;<br>        <span class="hljs-keyword">case</span> COMPRESS_NONE:<br>          <span class="hljs-keyword">if</span> (!xcf_load_tile (info, tile))<br>            fail = TRUE;<br>          <span class="hljs-keyword">break</span>;<br>        <span class="hljs-keyword">case</span> COMPRESS_RLE:<br>          <span class="hljs-keyword">if</span> (!xcf_load_tile_rle (info, tile, offset2 - offset)) <span class="hljs-comment">//问题在这</span><br>            fail = TRUE;<br>          <span class="hljs-keyword">break</span>;<br>          <span class="hljs-comment">// ...</span><br></code></pre></td></tr></table></figure>
+
+<p><code>offset</code>与<code>offset2</code>都是无符号型的，这里当<code>offset2</code>&lt;<code>offset</code>时，会造成整数溢出，<code>xcf_load_tile_rle</code>内会调用<code>g_malloc(offset2 - offset)</code>这就是原因。</p>
+<h3 id="修复"><a href="#修复" class="headerlink" title="修复"></a>修复</h3><p>加一个：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-keyword">if</span>(offset2 &lt; offset) <span class="hljs-built_in">exit</span>(<span class="hljs-number">-1</span>); <br></code></pre></td></tr></table></figure>
+
+<p>…</p>
+<p>…</p>
+<p>…</p>
+<p>Q^Q</p>
+<p>…</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>AFL++实战其六</div>
+      <div>https://zlsf-zl.github.io/2026/04/16/AFL-实战其六/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>ZLSF</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年4月16日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="NC - 非商业性使用">
+                    <i class="iconfont icon-nc"></i>
+                  </span>
+                </a>
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="SA - 相同方式共享">
+                    <i class="iconfont icon-sa"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2026/04/17/AFL-%E5%AE%9E%E6%88%98%E5%85%B6%E5%85%AB/" title="AFL++实战其八">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">AFL++实战其八</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2026/04/11/AFL-%E5%AE%9E%E6%88%98%E5%85%B6%E4%BA%94/" title="AFL++实战其五">
+                        <span class="hidden-mobile">AFL++实战其五</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"6qfbMdW9PFOPATbmhAiyPWcK-MdYXbMMI","appKey":"X9xyyWbc7hafcwTqYXwdhjE5","path":"window.location.pathname","placeholder":"文明发言","avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"https://6qfbmdw9.api.lncldglobal.com","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+      <span>by ZLSF</span>
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
